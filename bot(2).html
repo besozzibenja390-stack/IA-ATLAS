@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Atlas v0.2.0</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      background: #000;
+      color: #aaa;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.4;
+      overflow: hidden;
+    }
+
+    .screen {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      height: 100dvh;
+    }
+
+    /* ── titlebar ── */
+    .titlebar {
+      background: #000080;
+      color: #fff;
+      padding: 6px 8px;
+      font-size: 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .title-left  { font-weight: bold; }
+    .title-right { color: #aaf; font-size: 11px; }
+
+    /* ── log ── */
+    .log {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 4px 6px;
+      background: #000;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .log::-webkit-scrollbar { display: none; }
+
+    .line {
+      display: flex;
+      white-space: pre-wrap;
+      word-break: break-word;
+      padding: 1px 0;
+    }
+    .ts   { color: #555; min-width: 38px; flex-shrink: 0; font-size: 11px; padding-top: 1px; }
+    .text { flex: 1; font-size: 13px; }
+
+    .c-green   { color: #0f0; }
+    .c-cyan    { color: #0ff; }
+    .c-yellow  { color: #ff0; }
+    .c-gray    { color: #888; }
+    .c-blue    { color: #88f; }
+    .c-magenta { color: #f4f; }
+    .c-red     { color: #f55; }
+    .c-white   { color: #fff; }
+
+    /* ── statusbar ── */
+    .statusbar {
+      background: #000080;
+      color: #fff;
+      padding: 3px 6px;
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .status-active { background: #fff; color: #000; padding: 0 4px; border-radius: 2px; }
+
+    /* ── input area ── */
+    .input-area {
+      background: #0a0a0a;
+      border-top: 1px solid #222;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .prompt {
+      color: #0ff;
+      white-space: nowrap;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    #msg {
+      flex: 1;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 4px;
+      outline: none;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      padding: 6px 8px;
+      caret-color: #fff;
+      /* evita zoom en iOS */
+      font-size: max(13px, 16px);
+    }
+
+    #sendBtn {
+      background: #000080;
+      border: 1px solid #44f;
+      border-radius: 4px;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      padding: 6px 12px;
+      cursor: pointer;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #sendBtn:active { background: #0000cc; }
+
+    /* ── pantalla de nick ── */
+    .name-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 2rem 1.5rem;
+      background: #000;
+      text-align: center;
+    }
+
+    .name-screen .logo {
+      color: #0ff;
+      font-size: 1.6rem;
+      font-weight: bold;
+      letter-spacing: 6px;
+      text-shadow: 0 0 10px #0ff;
+    }
+
+    .name-screen p {
+      color: #888;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .name-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .name-row input {
+      flex: 1;
+      background: #111;
+      border: 1px solid #44f;
+      border-radius: 4px;
+      outline: none;
+      color: #ff0;
+      font-family: 'Courier New', monospace;
+      /* evita zoom en iOS */
+      font-size: max(13px, 16px);
+      padding: 8px 10px;
+    }
+    .name-row input::placeholder { color: #444; }
+
+    .name-row button {
+      background: #000080;
+      border: 1px solid #44f;
+      border-radius: 4px;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      padding: 8px 14px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .name-row button:active { background: #0000cc; }
+
+    /* ── quick commands ── */
+    .quickbar {
+      background: #0a0a0a;
+      border-top: 1px solid #1a1a1a;
+      padding: 5px 6px;
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .quickbar::-webkit-scrollbar { display: none; }
+
+    .qbtn {
+      background: transparent;
+      border: 1px solid #333;
+      border-radius: 3px;
+      color: #888;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      padding: 3px 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .qbtn:active { border-color: #0ff; color: #0ff; background: rgba(0,255,255,0.05); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="screen">
+
+  <div class="titlebar">
+    <span class="title-left">Atlas v0.2.0 — #general</span>
+    <span class="title-right" id="clockTitle">00:00</span>
+  </div>
+
+  <!-- pantalla de nick -->
+  <div class="name-screen" id="nameScreen">
+    <div class="logo">ATLAS</div>
+    <p>Ingresá tu nick para conectarte</p>
+    <div class="name-row">
+      <input type="text" id="nameInput" maxlength="20" autocomplete="off" placeholder="tu_nick" autocorrect="off" autocapitalize="none"/>
+      <button onclick="confirmarNombre()">[ OK ]</button>
+    </div>
+  </div>
+
+  <!-- log -->
+  <div class="log hidden" id="log"></div>
+
+  <!-- quick commands -->
+  <div class="quickbar hidden" id="quickbar">
+    <button class="qbtn" onclick="quick('hola')">hola</button>
+    <button class="qbtn" onclick="quick('como estas')">como estas</button>
+    <button class="qbtn" onclick="quick('bien')">bien</button>
+    <button class="qbtn" onclick="quick('chau')">chau</button>
+    <button class="qbtn" onclick="quick('atlas memoria')">memoria</button>
+  </div>
+
+  <!-- statusbar -->
+  <div class="statusbar hidden" id="statusbar">
+    <span class="status-active" id="clockEl">00:00</span>
+    <span id="statusNick">[nick(+i)] [1:#general]</span>
+  </div>
+
+  <!-- input -->
+  <div class="input-area hidden" id="inputArea">
+    <span class="prompt" id="promptLabel">[nick]</span>
+    <input type="text" id="msg" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="escribí..."/>
+    <button id="sendBtn" onclick="enviar()">▶</button>
+  </div>
+
+</div>
+<script>
+  const logEl   = document.getElementById('log');
+  const msgInp  = document.getElementById('msg');
+  const nameInp = document.getElementById('nameInput');
+  let nick = '';
+
+  let memoria = {};
+  try { memoria = JSON.parse(localStorage.getItem('atlas_memoria') || '{}'); } catch(e){}
+
+  function guardarMemoria() {
+    try { localStorage.setItem('atlas_memoria', JSON.stringify(memoria)); } catch(e){}
+  }
+
+  function ts() {
+    return new Date().toLocaleTimeString('es-AR', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function addLine(html, cls='') {
+    const line = document.createElement('div');
+    line.className = 'line';
+    line.innerHTML = `<span class="ts">${ts()}</span><span class="text ${cls}">${html}</span>`;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function sysLine(t, cls='c-gray')  { addLine(t, cls); }
+  function botLine(t)   { addLine(`&lt;<span class="c-cyan" style="font-weight:bold">Atlas</span>&gt; ${t}`); }
+  function userLine(t)  { addLine(`&lt;<span class="c-yellow" style="font-weight:bold">${esc(nick)}</span>&gt; ${esc(t)}`); }
+  function infoLine(t)  { addLine(`--- ${t}`, 'c-blue'); }
+  function wikiLine(t)  { addLine(`[WIKI] ${t}`, 'c-magenta'); }
+  function learnLine(t) { addLine(`[LEARN] ${t}`, 'c-green'); }
+
+  function showChat() {
+    document.getElementById('nameScreen').classList.add('hidden');
+    logEl.classList.remove('hidden');
+    document.getElementById('quickbar').classList.remove('hidden');
+    document.getElementById('statusbar').classList.remove('hidden');
+    document.getElementById('inputArea').classList.remove('hidden');
+  }
+
+  nameInp.addEventListener('keydown', e => { if (e.key === 'Enter') confirmarNombre(); });
+
+  function confirmarNombre() {
+    const n = nameInp.value.trim().replace(/\s+/g,'_');
+    if (!n) return;
+    nick = n;
+    showChat();
+    document.getElementById('promptLabel').textContent = `[${nick}]`;
+    document.getElementById('statusNick').textContent = `[${nick}(+i)] [1:#general]`;
+
+    sysLine('--- Atlas v0.2.0 iniciado', 'c-green');
+    sysLine('--- Módulo aprendizaje: ON | Wikipedia: ON', 'c-green');
+    sysLine(`--- Tu nick: <span class="c-cyan">${esc(nick)}</span>`, 'c-cyan');
+    infoLine(`Memoria: ${Object.keys(memoria).length} entradas guardadas.`);
+    sysLine('--- Comandos: atlas aprende: X = Y | atlas olvida: X | atlas memoria', 'c-gray');
+    setTimeout(() => botLine(`hola <span class="c-yellow">${esc(nick)}</span>! soy Atlas. preguntame cualquier cosa.`), 300);
+  }
+
+  // ── Wikipedia ───────────────────────────────────────────────
+  async function buscarWiki(query) {
+    wikiLine(`buscando "<span class="c-white">${esc(query)}</span>"...`);
+    try {
+      const res = await fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (data.type === 'disambiguation') {
+        botLine(`"${esc(query)}" tiene varias acepciones. ¿Podés ser más específico?`);
+        return;
+      }
+      const resumen = data.extract ? data.extract.split('.')[0] + '.' : null;
+      if (!resumen) throw new Error();
+      wikiLine(`encontrado: <span class="c-white">${esc(data.title)}</span>`);
+      botLine(esc(resumen));
+      const clave = query.toLowerCase().trim();
+      memoria[clave] = resumen;
+      guardarMemoria();
+      learnLine(`aprendí y guardé: "<span class="c-white">${esc(query)}</span>"`);
+    } catch(e) {
+      botLine(`no encontré nada sobre "<span class="c-white">${esc(query)}</span>".`);
+      sysLine(`--- enseñame: atlas aprende: ${esc(query)} = tu respuesta`, 'c-yellow');
+    }
+  }
+
+  // ── lógica ──────────────────────────────────────────────────
+  async function respuesta(msg) {
+    const lower = msg.toLowerCase().trim();
+
+    const mAprende = lower.match(/^atlas\s+aprende:\s*(.+?)\s*=\s*(.+)$/);
+    if (mAprende) {
+      const clave = mAprende[1].trim();
+      const valor = msg.match(/^atlas\s+aprende:\s*.+?\s*=\s*(.+)$/i)?.[1]?.trim();
+      if (clave && valor) {
+        memoria[clave] = valor;
+        guardarMemoria();
+        learnLine(`aprendí: "<span class="c-white">${esc(clave)}</span>" → "<span class="c-white">${esc(valor)}</span>"`);
+        botLine(`ok, lo recordaré <span class="c-yellow">${esc(nick)}</span>.`);
+      }
+      return;
+    }
+
+    const mOlvida = lower.match(/^atlas\s+olvida:\s*(.+)$/);
+    if (mOlvida) {
+      const clave = mOlvida[1].trim();
+      if (memoria[clave]) {
+        delete memoria[clave];
+        guardarMemoria();
+        learnLine(`olvidé: "<span class="c-white">${esc(clave)}</span>"`);
+        botLine('listo, ya no lo recuerdo.');
+      } else {
+        botLine(`no tenía nada sobre "${esc(clave)}".`);
+      }
+      return;
+    }
+
+    if (lower === 'atlas memoria') {
+      const keys = Object.keys(memoria);
+      if (!keys.length) { botLine('no tengo nada aprendido todavía.'); return; }
+      infoLine(`${keys.length} entradas en memoria:`);
+      keys.forEach(k => sysLine(`  · ${esc(k)}: ${esc(memoria[k].substring(0,50))}${memoria[k].length>50?'...':''}`, 'c-gray'));
+      return;
+    }
+
+    if (lower === 'hola') {
+      const ops = [`hola <span class="c-yellow">${esc(nick)}</span>!`, `hey <span class="c-yellow">${esc(nick)}</span> ¿qué tal?`, `buenas <span class="c-yellow">${esc(nick)}</span>!`, `ey <span class="c-yellow">${esc(nick)}</span> ¿cómo andás?`];
+      botLine(ops[Math.floor(Math.random()*ops.length)]); return;
+    }
+    if (lower === 'chau')                               { botLine(`chau <span class="c-yellow">${esc(nick)}</span>!`); return; }
+    if (lower === 'como estas' || lower === 'cómo estás') { botLine('todo bien, ¿y vos?'); return; }
+    if (lower === 'bien')                               { botLine(`me alegra <span class="c-yellow">${esc(nick)}</span>!`); return; }
+
+    // buscar en memoria
+    for (const clave of Object.keys(memoria)) {
+      if (lower.includes(clave)) { botLine(esc(memoria[clave])); return; }
+    }
+
+    // Wikipedia
+    const stopwords = ['que es','qué es','que fue','quién es','quien es','cómo funciona','como funciona','contame sobre','hablame de','háblame de','info sobre','información sobre','sabés algo de','sabes algo de'];
+    let query = lower;
+    for (const sw of stopwords) query = query.replace(sw,'').trim();
+    if (!query) { botLine('no entendí la pregunta.'); return; }
+    await buscarWiki(query);
+  }
+
+  async function enviar() {
+    const msg = msgInp.value.trim();
+    if (!msg) return;
+    userLine(msg);
+    msgInp.value = '';
+    msgInp.disabled = true;
+    await respuesta(msg);
+    msgInp.disabled = false;
+    msgInp.focus();
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function quick(txt) { msgInp.value = txt; enviar(); }
+
+  msgInp.addEventListener('keydown', e => { if (e.key === 'Enter') enviar(); });
+
+  // reloj
+  function actualizarReloj() {
+    const t = ts();
+    document.getElementById('clockEl').textContent = t;
+    document.getElementById('clockTitle').textContent = t;
+  }
+  actualizarReloj();
+  setInterval(actualizarReloj, 10000);
+</script>
+</body>
+</html>
