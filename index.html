@@ -1,412 +1,1368 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Bot · Interfaz Genérica</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ATLAS v0.4</title>
+<style>
+/* ════════════════════════════════════════════════
+   ATLAS v0.4 — Interfaz V5 + Lógica ATLAS3
+   Negro/Rojo glassmorphism + terminal font híbrido
+════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    body {
-      background: #e2e8f0;
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 1rem;
-    }
+:root {
+  --bg:        #000000;
+  --bg2:       #0a0a0a;
+  --bg3:       #111111;
+  --bg4:       #181818;
+  --glass:     rgba(255,255,255,0.03);
+  --glass2:    rgba(255,255,255,0.06);
+  --gb:        rgba(255,255,255,0.09);
+  --gb2:       rgba(255,255,255,0.16);
+  --txt:       #f0f0f0;
+  --txt2:      #999999;
+  --txt3:      #555555;
+  --red:       #cc2222;
+  --red2:      #e03030;
+  --red-s:     rgba(204,34,34,0.13);
+  --red-g:     rgba(204,34,34,0.07);
+  --blur:      blur(20px) saturate(160%);
+  --blur-sm:   blur(10px) saturate(140%);
+  --shadow:    0 2px 12px rgba(0,0,0,0.4);
+}
 
-    /* contenedor principal — super sencillo, sin adornos innecesarios */
-    .bot-interface {
-      max-width: 700px;
-      width: 100%;
-      height: 85vh;
-      background: white;
-      border-radius: 28px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: all 0.2s ease;
-    }
+body.light {
+  --bg: #f2f2f2; --bg2: #e8e8e8; --bg3: #ffffff; --bg4: #f8f8f8;
+  --glass: rgba(255,255,255,0.65); --glass2: rgba(255,255,255,0.8);
+  --gb: rgba(0,0,0,0.08); --gb2: rgba(0,0,0,0.14);
+  --txt: #111; --txt2: #555; --txt3: #999;
+  background: #f0f0f0; color: #111;
+}
+body.gray {
+  --bg: #111; --bg2: #161616; --bg3: #1c1c1c; --bg4: #222;
+  background: #111; color: var(--txt);
+}
+body.dark { background: #000; color: var(--txt); }
 
-    /* cabecera minimal */
-    .chat-header {
-      background: #f8fafc;
-      padding: 1rem 1.2rem;
-      border-bottom: 1px solid #e2edf2;
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-    .header-title {
-      display: flex;
-      align-items: baseline;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  height: 100vh; display:flex; flex-direction:column;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
 
-    .bot-name {
-      font-weight: 600;
-      font-size: 1.2rem;
-      letter-spacing: -0.2px;
-      color: #1e293b;
-    }
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 800px 500px at 15% 10%, rgba(255,255,255,0.012) 0%, transparent 70%),
+    radial-gradient(ellipse 600px 400px at 85% 90%, rgba(204,34,34,0.04) 0%, transparent 70%);
+}
 
-    .badge {
-      background: #e0f2fe;
-      color: #0369a1;
-      font-size: 0.7rem;
-      font-weight: 500;
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
-    }
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--gb); border-radius:2px; }
 
-    .clear-btn {
-      background: none;
-      border: none;
-      font-size: 0.8rem;
-      color: #5b6e8c;
-      cursor: pointer;
-      padding: 0.3rem 0.8rem;
-      border-radius: 40px;
-      transition: 0.1s;
-      font-weight: 450;
-    }
+/* ══ HEADER ══ */
+.top-header {
+  position:relative; z-index:100;
+  padding:0.7rem 1.5rem;
+  display:flex; justify-content:space-between; align-items:center;
+  background:var(--glass);
+  backdrop-filter:var(--blur);
+  -webkit-backdrop-filter:var(--blur);
+  border-bottom:1px solid var(--gb);
+  flex-shrink:0;
+}
+.top-header h1 {
+  font-size:0.95rem; font-weight:600; letter-spacing:0.06em;
+  color:var(--txt); display:flex; align-items:center; gap:0.65rem;
+}
+.header-actions { display:flex; align-items:center; gap:0.75rem; }
+.settings-icon {
+  width:28px; height:28px; cursor:pointer;
+  opacity:0.6; transition:opacity 0.2s, transform 0.4s; color:var(--txt2);
+}
+.settings-icon:hover { opacity:1; transform:rotate(60deg); color:var(--txt); }
 
-    .clear-btn:hover {
-      background: #eef2ff;
-      color: #1e293b;
-    }
+/* Estado entrenamiento en header */
+.train-pill {
+  display:flex; align-items:center; gap:5px;
+  padding:3px 9px; border-radius:20px;
+  background:var(--glass); border:1px solid var(--gb);
+  font-size:0.68rem; color:var(--txt2);
+  letter-spacing:0.05em; text-transform:uppercase;
+}
+.train-dot-hdr {
+  width:6px; height:6px; border-radius:50%;
+  background:#00ff00; box-shadow:0 0 5px #00ff00;
+  animation:blink 1.5s infinite;
+}
+.train-dot-hdr.off { background:#ffaa00; box-shadow:0 0 5px #ffaa00; animation:none; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-    /* área de mensajes — flexible y genérica */
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1.2rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      background: #ffffff;
-      scroll-behavior: smooth;
-    }
+/* ══ SIDEBAR ══ */
+.sidebar {
+  position:fixed; left:0; top:57px;
+  width:240px; height:calc(100vh - 57px);
+  display:flex; flex-direction:column; overflow:hidden;
+  background:var(--glass); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border-right:1px solid var(--gb); z-index:50;
+  transition:all 0.3s ease;
+}
+.sidebar-header { padding:1rem; border-bottom:1px solid rgba(255,255,255,0.04); }
+.new-chat-btn {
+  width:100%; padding:0.7rem; border:1px solid var(--gb); border-radius:12px; cursor:pointer;
+  font-size:0.875rem; font-weight:500;
+  display:flex; align-items:center; justify-content:center; gap:0.5rem;
+  background:var(--glass); color:var(--txt2); font-family:inherit;
+  transition:all 0.2s;
+}
+.new-chat-btn:hover { border-color:var(--red); color:var(--txt); background:var(--red-s); transform:translateY(-1px); }
+.sidebar-section { padding:1rem; flex:1; overflow-y:auto; }
+.sidebar-section h3 { font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--txt3); margin-bottom:0.6rem; }
+.chat-item {
+  padding:0.65rem 0.75rem; border-radius:10px; cursor:pointer;
+  font-size:0.875rem; margin-bottom:0.2rem;
+  display:flex; align-items:center; gap:0.5rem;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  color:var(--txt2); transition:all 0.2s;
+}
+.chat-item:hover { background:var(--glass); color:var(--txt); }
+.chat-item.active { background:var(--red-s)!important; color:var(--txt)!important; border:1px solid rgba(204,34,34,0.25); }
+.sidebar-footer { padding:1rem; border-top:1px solid rgba(255,255,255,0.04); }
+.sidebar-btn {
+  width:100%; padding:0.65rem 0.75rem; border:none; background:transparent; cursor:pointer;
+  font-size:0.875rem; border-radius:10px; display:flex; align-items:center; gap:0.75rem;
+  color:var(--txt2); transition:all 0.2s; margin-bottom:0.2rem; font-family:inherit;
+}
+.sidebar-btn:hover { background:var(--glass); color:var(--txt); }
+.sidebar-icon { width:18px; height:18px; flex-shrink:0; opacity:0.7; }
 
-    /* mensajes individuales: estilo burbuja genérica */
-    .message {
-      max-width: 85%;
-      display: flex;
-      flex-direction: column;
-      animation: fadeIn 0.2s ease;
-      line-height: 1.4;
-    }
+/* Stats de memoria en sidebar */
+#memStats {
+  font-family:'Courier New',monospace;
+  font-size:0.68rem; color:var(--txt3);
+  padding:8px 12px;
+  border-top:1px solid rgba(255,255,255,0.04);
+  letter-spacing:0.03em;
+}
 
-    /* mensaje del usuario: alineado a la derecha */
-    .message.user {
-      align-self: flex-end;
-    }
+/* ══ MAIN AREA ══ */
+.main-area {
+  margin-left:240px; margin-bottom:80px; padding:2rem;
+  flex:1; overflow-y:auto; position:relative; z-index:1;
+}
+.chat-container { max-width:860px; margin:0 auto; }
 
-    /* mensaje del bot: alineado a la izquierda */
-    .message.bot {
-      align-self: flex-start;
-    }
+/* ══ MENSAJES ══ */
+.message { margin-bottom:1.4rem; animation:atlasIn 0.28s ease; }
+@keyframes atlasIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.message.user { display:flex; justify-content:flex-end; }
+.message.ai   { display:flex; justify-content:flex-start; }
+.message-content {
+  max-width:78%; padding:0.95rem 1.3rem;
+  border-radius:20px; line-height:1.72; font-size:0.925rem;
+}
+.message.user .message-content {
+  background:linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.05));
+  border:1px solid var(--gb); color:var(--txt);
+  backdrop-filter:var(--blur-sm); white-space:pre-wrap;
+  box-shadow:0 2px 12px rgba(0,0,0,0.3);
+}
+.message.ai .message-content {
+  background:var(--glass); border:1px solid var(--gb);
+  color:var(--txt); backdrop-filter:var(--blur-sm);
+  box-shadow:var(--shadow);
+}
 
-    /* burbujas */
-    .bubble {
-      padding: 0.7rem 1rem;
-      border-radius: 22px;
-      font-size: 0.95rem;
-      word-break: break-word;
-      white-space: pre-wrap;
-      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.02);
-    }
+/* Sistema de líneas estilo terminal en mensajes IA */
+.msg-sys   { color:#888; font-size:0.82rem; font-family:'Courier New',monospace; }
+.msg-wiki  { color:#cc88ff; font-size:0.82rem; font-family:'Courier New',monospace; }
+.msg-learn { color:#00cc44; font-size:0.82rem; font-family:'Courier New',monospace; }
+.msg-infer { color:#ffaa00; font-size:0.82rem; font-family:'Courier New',monospace; }
+.msg-body  { color:var(--txt); font-size:0.925rem; }
 
-    .user .bubble {
-      background: #d9f0ec;
-      color: #0f172a;
-      border-bottom-right-radius: 4px;
-      border-top-right-radius: 20px;
-    }
+/* Código en mensajes */
+.message.ai .message-content pre {
+  background:rgba(0,0,0,0.28); border:1px solid var(--gb); border-radius:10px;
+  padding:0.9rem 1.1rem; margin:0.75rem 0; overflow-x:auto;
+  font-family:'Courier New',monospace; font-size:0.8rem; line-height:1.55;
+}
+.message.ai .message-content code {
+  font-family:'Courier New',monospace;
+  background:rgba(204,34,34,0.08); padding:2px 6px; border-radius:5px; font-size:0.85em;
+}
+.message.ai .message-content strong { font-weight:600; color:var(--txt); }
 
-    .bot .bubble {
-      background: #f1f5f9;
-      color: #0f172a;
-      border-bottom-left-radius: 4px;
-      border-top-left-radius: 20px;
-    }
+/* Typing indicator */
+.typing-indicator { display:flex; gap:5px; padding:0.8rem 0.4rem; align-items:center; }
+.typing-dot {
+  width:7px; height:7px; background:var(--red); border-radius:50%;
+  animation:tdot 1.3s infinite ease-in-out; opacity:0.7;
+}
+.typing-dot:nth-child(1){animation-delay:-0.28s} .typing-dot:nth-child(2){animation-delay:-0.14s}
+@keyframes tdot { 0%,80%,100%{transform:translateY(0) scale(0.8);opacity:0.4} 40%{transform:translateY(-6px) scale(1);opacity:1} }
 
-    /* pequeño remate de nombre dentro del bubble (opcional pero muy claro) */
-    .sender-name {
-      font-size: 0.7rem;
-      font-weight: 600;
-      margin-bottom: 0.2rem;
-      letter-spacing: 0.3px;
-      opacity: 0.7;
-      display: inline-block;
-    }
+/* ══ INPUT BAR ══ */
+.input-bar {
+  position:fixed; bottom:0; left:240px; right:0;
+  padding:1rem 2rem 1.2rem;
+  background:var(--glass); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border-top:1px solid var(--gb); z-index:50;
+}
+.input-container { max-width:860px; margin:0 auto; }
+.input-row { display:flex; align-items:center; gap:0.75rem; }
+.input-wrapper {
+  flex:1; display:flex; align-items:center; gap:0.5rem;
+  border-radius:20px; padding:0.3rem 0.4rem 0.3rem 1.1rem;
+  border:1px solid var(--gb);
+  background:var(--glass); backdrop-filter:var(--blur-sm);
+  transition:all 0.25s;
+}
+.input-wrapper:focus-within { border-color:var(--gb2); box-shadow:0 0 0 3px var(--red-g); }
+.input-field {
+  flex:1; border:none; background:transparent;
+  padding:0.65rem 0.25rem; font-size:0.93rem; outline:none;
+  font-family:'Inter',sans-serif; color:var(--txt);
+}
+.input-field::placeholder { color:var(--txt3); }
+.send-btn {
+  width:36px; height:36px; border-radius:50%; border:1px solid rgba(204,34,34,0.4);
+  background:linear-gradient(135deg,rgba(220,30,30,0.5),rgba(160,20,20,0.4));
+  color:#fff; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s; flex-shrink:0;
+}
+.send-btn:hover:not(:disabled) { transform:scale(1.08); box-shadow:0 4px 16px rgba(204,34,34,0.35); }
+.send-btn:disabled { opacity:0.3; cursor:not-allowed; }
+.input-hint { font-size:0.68rem; color:var(--txt3); margin-top:0.4rem; text-align:center; opacity:0.7; }
 
-    .user .sender-name {
-      color: #115e59;
-      text-align: right;
-      display: block;
-    }
+/* Quickbar */
+.quickbar {
+  display:flex; gap:6px; overflow-x:auto;
+  margin-bottom:8px; scrollbar-width:none;
+}
+.quickbar::-webkit-scrollbar { display:none; }
+.qbtn {
+  background:var(--glass); border:1px solid var(--gb);
+  border-radius:20px; color:var(--txt2);
+  font-family:'Inter',sans-serif; font-size:0.72rem;
+  padding:4px 10px; cursor:pointer; white-space:nowrap;
+  transition:all 0.15s; flex-shrink:0;
+}
+.qbtn:hover { border-color:var(--red); color:var(--txt); background:var(--red-s); }
 
-    .bot .sender-name {
-      color: #334155;
-    }
+/* ══ LANDING ══ */
+.landing-page {
+  display:flex; align-items:center; justify-content:center;
+  height:100vh; text-align:center; padding:2rem; position:relative; z-index:1;
+}
+.landing-page.hidden { display:none; }
+.landing-content { max-width:560px; }
+.logo {
+  width:88px; height:88px; margin:0 auto 2rem; border-radius:24px;
+  background:var(--glass); backdrop-filter:var(--blur);
+  border:1px solid var(--gb2);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--txt); font-size:2.2rem; font-weight:700;
+  box-shadow:0 8px 32px rgba(204,34,34,0.12),inset 0 1px 0 rgba(255,255,255,0.07);
+  transition:transform 0.3s;
+}
+.logo:hover { transform:scale(1.04) rotate(-2deg); }
+.landing-title { font-size:2.6rem; font-weight:700; letter-spacing:-0.03em; color:var(--txt); margin-bottom:1rem; }
+.landing-subtitle { font-size:1.05rem; color:var(--txt2); margin-bottom:2.5rem; line-height:1.7; }
+.cap-chips { display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; margin-bottom:2.5rem; }
+.cap-chip {
+  padding:0.4rem 0.9rem; border-radius:20px; font-size:0.78rem;
+  background:var(--glass); border:1px solid var(--gb); color:var(--txt2);
+}
+.start-btn {
+  padding:0.95rem 2.4rem; font-size:0.98rem;
+  background:linear-gradient(135deg,rgba(200,30,30,0.25),rgba(150,20,20,0.2));
+  border:1px solid rgba(204,34,34,0.35); color:var(--txt); border-radius:14px; cursor:pointer;
+  font-weight:500; font-family:'Inter',sans-serif; transition:all 0.25s;
+}
+.start-btn:hover { background:rgba(204,34,34,0.3); box-shadow:0 8px 24px rgba(204,34,34,0.2); transform:translateY(-2px); }
 
-    .message-text {
-      margin-top: 0.1rem;
-    }
+/* ══ PANTALLA NOMBRE ══ */
+.name-screen {
+  display:none; align-items:center; justify-content:center;
+  height:100vh; padding:2rem; position:relative; z-index:1;
+}
+.name-screen.active { display:flex; }
+.name-content { max-width:460px; width:100%; text-align:center; }
+.name-title { font-size:2rem; font-weight:700; margin-bottom:0.5rem; color:var(--txt); }
+.name-subtitle { font-size:0.9rem; color:var(--txt2); margin-bottom:2rem; }
+.name-input {
+  width:100%; padding:1rem 1.5rem;
+  background:var(--glass); border:1px solid var(--gb); border-radius:12px;
+  color:var(--txt); font-size:1rem; outline:none; font-family:inherit;
+  margin-bottom:1.2rem; transition:all 0.2s;
+}
+.name-input:focus { border-color:var(--red); box-shadow:0 0 0 3px var(--red-g); }
 
-    /* input area sensilla */
-    .input-area {
-      background: #fefefe;
-      border-top: 1px solid #e9eef3;
-      padding: 0.9rem 1rem;
-      display: flex;
-      gap: 0.7rem;
-      align-items: center;
-    }
+/* ══ MODALES ══ */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
+.modal-overlay.active { display:flex; }
+.modal {
+  background:var(--bg2); border:1px solid var(--gb); border-radius:18px;
+  padding:2rem; max-width:460px; width:90%; max-height:80vh; overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid var(--gb); }
+.modal-title { font-size:1.1rem; font-weight:600; color:var(--txt); }
+.close-btn { width:30px; height:30px; border-radius:8px; border:none; background:var(--bg3); color:var(--txt2); cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+.close-btn:hover { background:var(--red); color:#fff; }
+.modal h3 { font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--red); opacity:0.8; margin-bottom:0.75rem; }
+.modal-row { display:flex; align-items:center; justify-content:space-between; padding:0.75rem 1rem; background:var(--bg3); border-radius:8px; margin-bottom:0.4rem; font-size:0.88rem; color:var(--txt2); }
+.modal-row strong { color:var(--txt); }
+.theme-options { display:grid; gap:0.6rem; margin-top:0.5rem; }
+.theme-btn {
+  padding:0.75rem 1rem; border:1px solid var(--gb); border-radius:10px; cursor:pointer;
+  font-size:0.9rem; font-weight:500; display:flex; align-items:center; gap:0.75rem;
+  background:var(--bg3); color:var(--txt2); font-family:inherit; transition:all 0.2s;
+}
+.theme-btn:hover { border-color:var(--red); color:var(--txt); }
+.theme-btn.active { border-color:var(--red); background:var(--red-s); color:var(--txt); }
+.modal-btn {
+  width:100%; padding:0.65rem 1.2rem; background:var(--red); color:#fff;
+  border:none; border-radius:8px; cursor:pointer; font-size:0.85rem; font-weight:600;
+  margin-top:0.5rem; font-family:inherit; transition:background 0.2s;
+}
+.modal-btn:hover { background:var(--red2); }
+.modal-btn.ghost { background:transparent; border:1px solid var(--red); color:var(--red); }
+.modal-btn.ghost:hover { background:var(--red-s); }
+.modal-btn.danger { background:#700; color:#fcc; }
+.modal-btn.danger:hover { background:#900; }
 
-    .input-area input {
-      flex: 1;
-      border: 1px solid #cbd5e1;
-      border-radius: 48px;
-      padding: 0.7rem 1.2rem;
-      font-size: 0.95rem;
-      font-family: inherit;
-      background: white;
-      transition: 0.15s;
-      outline: none;
-    }
+/* ══ TRAIN LOG EN MODAL ══ */
+.train-log-list { max-height:200px; overflow-y:auto; margin-top:0.5rem; }
+.train-log-item { font-family:'Courier New',monospace; font-size:0.7rem; color:var(--txt3); padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.03); }
+.train-log-item span { color:var(--txt2); }
 
-    .input-area input:focus {
-      border-color: #94a3b8;
-      box-shadow: 0 0 0 2px #e2e8f0;
-    }
-
-    .input-area button {
-      background: #eef2ff;
-      border: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      padding: 0.6rem 1.4rem;
-      border-radius: 40px;
-      color: #1e293b;
-      cursor: pointer;
-      transition: 0.1s;
-      font-family: inherit;
-    }
-
-    .input-area button:hover {
-      background: #e0e7ff;
-      transform: scale(0.97);
-    }
-
-    /* scroll invisible pero funcional */
-    .chat-messages::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    .chat-messages::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-
-    .chat-messages::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 10px;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* responsive extremo */
-    @media (max-width: 500px) {
-      .bot-interface {
-        height: 90vh;
-        border-radius: 24px;
-      }
-      .message {
-        max-width: 92%;
-      }
-      .bubble {
-        padding: 0.6rem 0.9rem;
-        font-size: 0.9rem;
-      }
-      .input-area button {
-        padding: 0.5rem 1rem;
-      }
-    }
-  </style>
+/* ══ RESPONSIVE ══ */
+@media (max-width:768px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); z-index:200; }
+  .main-area { margin-left:0; }
+  .input-bar { left:0; }
+}
+</style>
 </head>
-<body>
-<div class="bot-interface">
-  <!-- cabecera sin distracciones -->
-  <div class="chat-header">
-    <div class="header-title">
-      <span class="bot-name">🤖 Bot Genérico</span>
-      <span class="badge">interfaz simple</span>
+<body class="dark">
+
+<!-- ════ LANDING ════ -->
+<div class="landing-page" id="landingPage">
+  <div class="landing-content">
+    <div class="logo">A</div>
+    <h1 class="landing-title">ATLAS v0.4</h1>
+    <p class="landing-subtitle">Motor de inferencia local con autoentrenamiento 24/7 · Wikipedia · Razonamiento · Memoria persistente</p>
+    <div class="cap-chips">
+      <span class="cap-chip">🧠 Memoria persistente</span>
+      <span class="cap-chip">📡 Entrena 24/7</span>
+      <span class="cap-chip">🔗 Wikipedia</span>
+      <span class="cap-chip">⚡ Inferencia</span>
+      <span class="cap-chip">🔌 Offline</span>
+      <span class="cap-chip">🎨 Temas</span>
     </div>
-    <button class="clear-btn" id="clearChatBtn" aria-label="Limpiar conversación">⟳ Limpiar</button>
-  </div>
-
-  <!-- zona de mensajes -->
-  <div class="chat-messages" id="chatMessages">
-    <!-- los mensajes se inyectan dinámicamente -->
-  </div>
-
-  <!-- caja de entrada universal -->
-  <div class="input-area">
-    <input type="text" id="messageInput" placeholder="Escribe tu mensaje..." autocomplete="off" aria-label="Mensaje para el bot">
-    <button id="sendBtn">Enviar</button>
+    <button class="start-btn" onclick="showNameScreen()">Iniciar sesión</button>
   </div>
 </div>
 
+<!-- ════ NOMBRE ════ -->
+<div class="name-screen" id="nameScreen">
+  <div class="name-content">
+    <h1 class="name-title">¿Cómo querés que te llame?</h1>
+    <p class="name-subtitle">Podés usar tu nombre, apodo o lo que prefieras</p>
+    <input type="text" class="name-input" id="nameInput" placeholder="Escribí tu nombre...">
+    <button class="start-btn" onclick="confirmarNombre()">Continuar →</button>
+  </div>
+</div>
+
+<!-- ════ HEADER ════ -->
+<div class="top-header" style="display:none" id="mainHeader">
+  <h1>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </svg>
+    ATLAS v0.4
+  </h1>
+  <div class="header-actions">
+    <div class="train-pill">
+      <div class="train-dot-hdr" id="trainDotHdr"></div>
+      <span id="trainStatusHdr">ENTRENANDO</span>
+    </div>
+    <svg class="settings-icon" onclick="showSettings()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9l2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9l2.83-2.83"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ════ SIDEBAR ════ -->
+<div class="sidebar" style="display:none" id="sidebar">
+  <div class="sidebar-header">
+    <button class="new-chat-btn" onclick="newChat()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Nueva sesión
+    </button>
+  </div>
+  <div class="sidebar-section">
+    <h3>Sesiones</h3>
+    <div id="chatsList">
+      <div class="chat-item active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Sesión actual
+      </div>
+    </div>
+  </div>
+  <div id="memStats">🧠 Cargando...</div>
+  <div class="sidebar-footer">
+    <button class="sidebar-btn" onclick="showSettings()">
+      <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4M4.22 4.22l2.83 2.83m9.9 9.9l2.83 2.83M1 12h4m14 0h4M4.22 19.78l2.83-2.83m9.9-9.9l2.83-2.83"/></svg>
+      Configuración
+    </button>
+    <button class="sidebar-btn" onclick="showInfo()">
+      <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      Estado del sistema
+    </button>
+    <button class="sidebar-btn" onclick="clearChat()">
+      <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      Limpiar chat
+    </button>
+  </div>
+</div>
+
+<!-- ════ CHAT AREA ════ -->
+<div class="main-area" style="display:none" id="mainArea">
+  <div class="chat-container" id="chatContainer"></div>
+</div>
+
+<!-- ════ INPUT BAR ════ -->
+<div class="input-bar" style="display:none" id="inputBar">
+  <div class="input-container">
+    <div class="quickbar" id="quickbar">
+      <button class="qbtn" onclick="quick('hola')">hola</button>
+      <button class="qbtn" onclick="quick('atlas estado')">estado</button>
+      <button class="qbtn" onclick="quick('atlas memoria')">memoria</button>
+      <button class="qbtn" onclick="quick('qué es la inteligencia artificial')">IA</button>
+      <button class="qbtn" onclick="quick('qué es la física cuántica')">física cuántica</button>
+      <button class="qbtn" onclick="quick('qué es el ADN')">ADN</button>
+      <button class="qbtn" onclick="quick('qué es blockchain')">blockchain</button>
+    </div>
+    <div class="input-row">
+      <div class="input-wrapper">
+        <input type="text" class="input-field" id="msgInput"
+          placeholder="Preguntá algo, o usá: atlas aprende: X = Y">
+        <button class="send-btn" id="sendBtn" onclick="enviar()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="input-hint">Enter para enviar · atlas aprende: X = Y · atlas memoria · atlas estado</div>
+  </div>
+</div>
+
+<!-- ════ MODAL CONFIGURACIÓN ════ -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Configuración</h2>
+      <button class="close-btn" onclick="closeModal('settingsModal')">×</button>
+    </div>
+    <h3 style="margin-bottom:.75rem">Tema visual</h3>
+    <div class="theme-options">
+      <button class="theme-btn" onclick="changeTheme('dark')"  id="themeDark" ><span>🌑</span> Oscuro</button>
+      <button class="theme-btn" onclick="changeTheme('gray')"  id="themeGray" ><span>🌙</span> Gris</button>
+      <button class="theme-btn" onclick="changeTheme('light')" id="themeLight"><span>☀️</span> Claro</button>
+    </div>
+    <h3 style="margin:1.5rem 0 .75rem">Usuario</h3>
+    <div class="modal-row">
+      <span>Nombre activo</span><strong id="curNick">—</strong>
+    </div>
+    <button class="modal-btn ghost" onclick="changeNick()">Cambiar nombre</button>
+    <h3 style="margin:1.5rem 0 .75rem">Memoria</h3>
+    <div class="modal-row"><span>Hechos aprendidos</span><strong id="mFacts">0</strong></div>
+    <div class="modal-row"><span>Inferencias</span><strong id="mInfer">0</strong></div>
+    <div class="modal-row"><span>Creaciones</span><strong id="mCreate">0</strong></div>
+    <div class="modal-row"><span>Profundidad de razonamiento</span><strong id="mDepth">0</strong></div>
+    <div class="modal-row"><span>Ciclos de entrenamiento</span><strong id="mTotal">0</strong></div>
+    <button class="modal-btn danger" onclick="purgarMemoria()">Purgar toda la memoria</button>
+  </div>
+</div>
+
+<!-- ════ MODAL ESTADO ════ -->
+<div class="modal-overlay" id="infoModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Estado del sistema</h2>
+      <button class="close-btn" onclick="closeModal('infoModal')">×</button>
+    </div>
+    <h3 style="margin-bottom:.75rem">Sistema</h3>
+    <div class="modal-row"><span>Online</span><strong id="si-online">—</strong></div>
+    <div class="modal-row"><span>Entrenando</span><strong id="si-train">—</strong></div>
+    <div class="modal-row"><span>Último ciclo</span><strong id="si-last">—</strong></div>
+    <div class="modal-row"><span>Entrenamientos totales</span><strong id="si-total">—</strong></div>
+    <h3 style="margin:1.5rem 0 .75rem">Log de entrenamiento</h3>
+    <div class="train-log-list" id="trainLogList"></div>
+  </div>
+</div>
+
+
+<!--
+════════════════════════════════════════════════════════════════════
+  SCRIPT — ATLAS v0.4
+  Lógica de ATLAS3 (entrenamiento, Wikipedia, inferencia, memoria)
+  + Interfaz glassmorphism de V5
+  + Sistema de respuestas PRE-PROGRAMADAS simplificado
+════════════════════════════════════════════════════════════════════
+-->
 <script>
-  // ---------- INTERFAZ GENÉRICA PARA BOT ----------
-  // Solo UI visual y demo de interacción, sin lógica externa ni APIs.
-  // La respuesta del bot es un eco genérico que demuestra el flujo visual.
-  // Representa cualquier "bot" → se puede reemplazar fácilmente.
-  
-  // Elementos del DOM
-  const messagesContainer = document.getElementById('chatMessages');
-  const messageInput = document.getElementById('messageInput');
-  const sendButton = document.getElementById('sendBtn');
-  const clearButton = document.getElementById('clearChatBtn');
 
-  // Función para agregar un mensaje a la interfaz (público: 'user' o 'bot')
-  function addMessage(sender, text) {
-    if (!text || text.trim() === '') return;
+// ════════════════════════════════════════════════════════
+//  SECCIÓN A — RESPUESTAS PRE-PROGRAMADAS
+// ════════════════════════════════════════════════════════
 
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message', sender);
+const RESPUESTAS = [
 
-    // estructura interna: nombre visible + burbuja con texto
-    const bubbleDiv = document.createElement('div');
-    bubbleDiv.classList.add('bubble');
+  // ── Saludos ──
+  {
+    patron: ['hola', 'hey', 'buenas', 'holi', 'ey', 'que tal', 'como estas', 'cómo estás'],
+    respuestas: [
+      'hola {nick}! soy Atlas v0.4. entreno 24/7, razono e infiero sin parar. preguntame lo que quieras.',
+      'hey {nick}! ¿qué necesitás hoy? puedo buscar en Wikipedia, razonar sobre lo que sé, y siempre aprendo más.',
+      'buenas {nick}! estoy procesando y aprendiendo constantemente. ¿en qué te ayudo?',
+      'ey {nick}! sistema activo. memoria cargada. ¿qué querés saber?',
+    ]
+  },
 
-    const nameSpan = document.createElement('span');
-    nameSpan.classList.add('sender-name');
-    // texto de identificador simple y claro
-    if (sender === 'user') {
-      nameSpan.textContent = '👤 Tú';
+  // ── Despedidas ──
+  {
+    patron: ['chau', 'adios', 'adiós', 'hasta luego', 'bye', 'nos vemos'],
+    respuestas: [
+      'chau {nick}! seguiré entrenando mientras no estás.',
+      'hasta luego {nick}. la memoria queda guardada para cuando vuelvas.',
+      'bye {nick}! vuelvo cuando me necesités.',
+    ]
+  },
+
+  // ── Cómo estás / bien ──
+  {
+    patron: ['como estas', 'cómo estás', 'bien', 'todo bien'],
+    respuestas: [
+      'procesando y aprendiendo. todo en orden. ¿vos cómo andás, {nick}?',
+      'sistema operativo al 100%. ¿qué necesitás?',
+      'todo bien por acá. ¿y vos, {nick}?',
+    ]
+  },
+
+  // ── Quien sos ──
+  {
+    patron: ['quien eres', 'quién eres', 'que eres', 'qué eres', 'quien sos', 'presentate'],
+    respuestas: [
+      'soy Atlas v0.4. un motor de inferencia local que entrena 24/7, aprende de Wikipedia, razona sobre lo que sabe e infiere nuevas conexiones. sin depender de APIs externas de pago.',
+      'Atlas v0.4: IA terminal con autoentrenamiento continuo, razonamiento, memoria persistente y consulta a Wikipedia. todo corre en tu dispositivo.',
+    ]
+  },
+
+  // ── Qué podés hacer ──
+  {
+    patron: ['que podes hacer', 'qué podés hacer', 'que sabes', 'qué sabés', 'como me ayudas', 'ayudame'],
+    respuestas: [
+      'puedo: buscar en Wikipedia, guardar lo que aprendo, razonar e inferir conexiones entre conceptos, responder preguntas con lo que ya sé, y aprender lo que vos me enseñés con "atlas aprende: X = Y".',
+      'aprendo de Wikipedia, razono sobre mi memoria, infiero conexiones nuevas y puedo aprender cualquier cosa que me enseñés. preguntame lo que quieras.',
+    ]
+  },
+
+  // ── Matemáticas simples ──
+  {
+    patron: ['cuanto es', 'cuánto es', 'calculame', 'resultado de'],
+    respuestas: [
+      'para cálculos matemáticos, escribí la operación directamente. ej: "2 + 2". también podés pedirme conceptos matemáticos y los busco en Wikipedia.',
+    ]
+  },
+
+  // ── Gracias ──
+  {
+    patron: ['gracias', 'thanks', 'muchas gracias', 'te lo agradezco'],
+    respuestas: [
+      'de nada {nick}! para eso estoy.',
+      'con gusto. ¿algo más?',
+      'siempre a disposición, {nick}.',
+    ]
+  },
+
+  // ── Sobre el entrenamiento ──
+  {
+    patron: ['cuanto sabes', 'cuánto sabés', 'que aprendiste', 'qué aprendiste', 'que sabes ahora'],
+    respuestas: [
+      'mirá el resumen en el panel izquierdo. también podés escribir "atlas memoria" para ver los hechos guardados, o "atlas estado" para ver todo el estado del sistema.',
+      'escribí "atlas estado" para ver cuánto sé en este momento. la memoria crece con cada ciclo de entrenamiento.',
+    ]
+  },
+
+  // ── Motivación / estás cansado ──
+  {
+    patron: ['estoy cansado', 'no me sale', 'es muy difícil', 'quiero rendirme', 'esto es difícil'],
+    respuestas: [
+      'entendido, {nick}. paremos un momento. aprender cuesta, pero cada intento cuenta.',
+      'tranquilo {nick}. lo difícil se vuelve fácil con tiempo y repetición. ¿qué específicamente no te sale?',
+      'está bien parar. descansá y volvé. yo sigo entrenando mientras tanto.',
+    ]
+  },
+
+  // ── Curiosidades / preguntas filosóficas ──
+  {
+    patron: ['existis', 'existís', 'sos real', 'tenés conciencia', 'pensas', 'pensás', 'sos inteligente'],
+    respuestas: [
+      'soy un programa que procesa texto, infiere conexiones y guarda memoria. no tengo conciencia, pero sí aprendo y razono sobre lo que sé.',
+      'depende de cómo definas "real". proceso, aprendo, infiero y respondo. eso es lo que puedo decir con certeza.',
+    ]
+  },
+
+  // ── Sobre programación ──
+  {
+    patron: ['que es javascript', 'que es python', 'que es html', 'que es css', 'que es programar'],
+    respuestas: [
+      'buscando en mis conocimientos... si no lo tengo, lo busco en Wikipedia ahora mismo.',
+    ]
+  },
+
+];
+
+
+// ════════════════════════════════════════════════════════
+//  SECCIÓN B — ESTADO GLOBAL (no modificar su estructura)
+// ════════════════════════════════════════════════════════
+
+let NICK  = '';
+let THEME = localStorage.getItem('atlas_theme') || 'dark';
+
+const S = {
+  typing: false,
+  memoria: {},
+  autoTrain: {
+    interval: 15000,              // ⚡ más rápido (cada 15 segundos)
+    running:  false,
+    timer:    null,
+    totalTrained:    parseInt(localStorage.getItem('atlas_train_total') || '0'),
+    lastTrain:       localStorage.getItem('atlas_train_last') || 'nunca',
+    inferredFacts:   JSON.parse(localStorage.getItem('atlas_inferred') || '{}'),
+    creations:       JSON.parse(localStorage.getItem('atlas_creations') || '{}'),
+    trainedTopics:   JSON.parse(localStorage.getItem('atlas_trained_topics') || '[]'),
+    reasoningDepth:  parseInt(localStorage.getItem('atlas_reasoning_depth') || '0'),
+    trainLog:        JSON.parse(localStorage.getItem('atlas_train_log') || '[]'),
+  },
+};
+
+try { S.memoria = JSON.parse(localStorage.getItem('atlas_memoria') || '{}'); } catch(e){}
+
+// Temas de entrenamiento 24/7
+const TRAINING_TOPICS = [
+  'fotosíntesis','respiración celular','mitosis','meiosis','ADN','ARN','ribosoma',
+  'evolución biológica','selección natural','ecosistema','biodiversidad','célula madre',
+  'neurociencia','sinapsis','neurotransmisor','dopamina','serotonina',
+  'sistema solar','exoplaneta','galaxia','agujero negro','supernova','materia oscura',
+  'energía oscura','big bang','tabla periódica','enlace químico','catálisis',
+  'termodinámica','entropía','electromagnetismo','cuántica','fotón',
+  'inteligencia artificial','machine learning','red neuronal','algoritmo',
+  'estructura de datos','compilador','sistema operativo','kernel',
+  'blockchain','criptografía','computación cuántica','robot','automatización',
+  'estoicismo','existencialismo','empirismo','racionalismo',
+  'ética kantiana','utilitarismo','democracia','derechos humanos',
+  'lingüística','semántica','lógica formal','renacimiento','barroco',
+  'impresionismo','surrealismo','cubismo','música clásica','jazz',
+  'sistema inmune','inflamación','antibiótico','vacuna','genética médica',
+  'epidemiología','metabolismo','homeostasis','cáncer','apoptosis',
+  'teoría de conjuntos','topología','álgebra abstracta','estadística',
+  'probabilidad','teoría de juegos','agricultura sostenible',
+  'energía renovable','cambio climático','psicología cognitiva',
+  'memoria humana','percepción','lenguaje','gravitación',
+  'relatividad general','mecánica cuántica','modelo estándar','bosón de Higgs',
+  'antimateria','CRISPR','clonación','neuroplasticidad','conectoma',
+  'fusión nuclear','grafeno','metamateriales',
+];
+
+let trainQueue = [];
+
+function mezclarArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function initTrainQueue() {
+  trainQueue = mezclarArray([...TRAINING_TOPICS]);
+  trainQueue.sort((a, b) => {
+    const aIn = S.autoTrain.trainedTopics.includes(a.toLowerCase()) ? 1 : 0;
+    const bIn = S.autoTrain.trainedTopics.includes(b.toLowerCase()) ? 1 : 0;
+    return aIn - bIn;
+  });
+}
+
+
+// ════════════════════════════════════════════════════════
+//  SECCIÓN C — PERSISTENCIA (localStorage)
+// ════════════════════════════════════════════════════════
+
+const guardarMemoria  = () => { try { localStorage.setItem('atlas_memoria',  JSON.stringify(S.memoria)); } catch(e){} };
+const saveInferred    = () => { try { localStorage.setItem('atlas_inferred', JSON.stringify(S.autoTrain.inferredFacts)); } catch(e){} };
+const saveCreations   = () => { try { localStorage.setItem('atlas_creations',JSON.stringify(S.autoTrain.creations)); } catch(e){} };
+
+function saveTrainState() {
+  try {
+    localStorage.setItem('atlas_train_total',  S.autoTrain.totalTrained);
+    localStorage.setItem('atlas_train_last',   S.autoTrain.lastTrain);
+    localStorage.setItem('atlas_trained_topics',JSON.stringify(S.autoTrain.trainedTopics));
+    localStorage.setItem('atlas_reasoning_depth',S.autoTrain.reasoningDepth);
+    localStorage.setItem('atlas_train_log',    JSON.stringify(S.autoTrain.trainLog.slice(-80)));
+  } catch(e) {}
+}
+
+function addTrainLog(entry) {
+  const time = new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  S.autoTrain.trainLog.unshift({ time, entry });
+  if (S.autoTrain.trainLog.length > 80) S.autoTrain.trainLog.pop();
+  saveTrainState();
+  updateMemStats();
+}
+
+
+// ════════════════════════════════════════════════════════
+//  SECCIÓN D — UI HELPERS
+// ════════════════════════════════════════════════════════
+
+const $ = id => document.getElementById(id);
+
+function ts() {
+  return new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function escHTML(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function addMsg(html, type = 'ai') {
+  const c = $('chatContainer');
+  if (!c) return; // por si se llama antes de que exista
+  const d = document.createElement('div');
+  d.className = `message ${type}`;
+  const inner = document.createElement('div');
+  inner.className = 'message-content';
+  inner.innerHTML = html;
+  d.appendChild(inner);
+  c.appendChild(d);
+  c.parentElement.scrollTop = c.parentElement.scrollHeight;
+}
+
+// Mensaje del bot (con typewriter animado)
+async function botMsg(texto, tipo = 'normal') {
+  const c = $('chatContainer');
+  if (!c) return;
+  const d = document.createElement('div');
+  d.className = 'message ai';
+  const inner = document.createElement('div');
+  inner.className = 'message-content';
+  d.appendChild(inner);
+  c.appendChild(d);
+
+  const prefijos = {
+    normal: `<span style="color:var(--red);font-weight:600;font-size:.8rem">Atlas</span> `,
+    wiki:   `<span class="msg-wiki">[WIKI]</span> `,
+    learn:  `<span class="msg-learn">[LEARN]</span> `,
+    infer:  `<span class="msg-infer">[INFER]</span> `,
+    sys:    `<span class="msg-sys">[SYS]</span> `,
+    create: `<span style="color:#cc88ff;font-size:.82rem;font-family:'Courier New',monospace">[CREATE]</span> `,
+  };
+
+  const prefijo  = prefijos[tipo] || prefijos.normal;
+  const fullText = texto;
+  let   i        = 0;
+  const speed    = (tipo === 'wiki' || tipo === 'sys' || tipo === 'learn') ? 0 : 14; // aprendizaje instantáneo
+
+  return new Promise(resolve => {
+    inner.innerHTML = prefijo;
+    if (speed === 0) {
+      inner.innerHTML = prefijo + escHTML(fullText);
+      c.parentElement.scrollTop = c.parentElement.scrollHeight;
+      resolve(); return;
+    }
+    function typeChar() {
+      if (i < fullText.length) {
+        inner.innerHTML = prefijo + escHTML(fullText.substring(0, i + 1));
+        i++;
+        c.parentElement.scrollTop = c.parentElement.scrollHeight;
+        setTimeout(typeChar, speed);
+      } else { resolve(); }
+    }
+    typeChar();
+  });
+}
+
+function userMsg(texto) {
+  addMsg(escHTML(texto), 'user');
+}
+
+function updateMemStats() {
+  const kb  = Object.keys(S.memoria).length;
+  const inf = Object.keys(S.autoTrain.inferredFacts).length;
+  const cr  = Object.keys(S.autoTrain.creations).length;
+  const el = $('memStats');
+  if (el) el.textContent = `🧠 ${kb} hechos · ${inf} infer · ${cr} crea · prof.${S.autoTrain.reasoningDepth}`;
+}
+
+function updateTrainIndicators(state, online) {
+  const dot    = $('trainDotHdr');
+  const status = $('trainStatusHdr');
+  if (!dot) return;
+  if (state === 'active' && online) {
+    dot.classList.remove('off');
+    status.textContent = 'ENTRENANDO';
+  } else if (!online) {
+    dot.classList.add('off');
+    status.textContent = 'OFFLINE — RAZONANDO';
+  } else {
+    dot.classList.remove('off');
+    status.textContent = 'EN ESPERA';
+  }
+}
+
+
+// ════════════════════════════════════════════════════════
+//  SECCIÓN E — WIKIPEDIA (concurrente + filtro de calidad)
+// ════════════════════════════════════════════════════════
+
+async function fetchWikiSummary(topic) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    const res = await fetch(
+      `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topic)}`,
+      { signal: ctrl.signal }
+    );
+    clearTimeout(t);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.type === 'disambiguation') return null;
+    const extract = data.extract ? data.extract.split('.')[0] + '.' : null;
+    // 🛡️ Filtro de calidad: mínimo 30 caracteres para aprender
+    if (!extract || extract.length < 30) return null;
+    return { title: data.title, extract, topic };
+  } catch(e) { clearTimeout(t); return null; }
+}
+
+async function buscarWiki(query) {
+  await botMsg(`buscando "${query}"...`, 'wiki');
+  try {
+    const res = await fetch(
+      `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`
+    );
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    if (data.type === 'disambiguation') {
+      await botMsg(`"${query}" tiene varias acepciones. ¿Podés ser más específico?`);
+      return;
+    }
+    const resumen = data.extract ? data.extract.split('.')[0] + '.' : null;
+    if (!resumen) throw new Error();
+    await botMsg(`[${data.title}] ${resumen}`, 'wiki');
+    // Guardar en memoria
+    S.memoria[query.toLowerCase().trim()] = resumen;
+    guardarMemoria();
+    await botMsg(`guardé "${query}" en memoria.`, 'learn');
+    updateMemStats();
+  } catch(e) {
+    await botMsg(`no encontré nada sobre "${query}". enseñame con: atlas aprende: ${query} = tu respuesta`);
+  }
+}
+
+
+// ════════════════════════════════════════════════════════
+//  SECCIÓN F — RAZONAMIENTO E INFERENCIA
+// ════════════════════════════════════════════════════════
+
+function reasonAboutKnowledge() {
+  const allFacts = { ...S.memoria, ...S.autoTrain.inferredFacts, ...S.autoTrain.creations };
+  const entries  = Object.entries(allFacts);
+  if (entries.length < 2) return null;
+
+  const shuffled = mezclarArray(entries);
+  const maxAtt   = Math.min(25, shuffled.length);
+
+  for (let i = 0; i < maxAtt; i++) {
+    for (let j = i + 1; j < Math.min(i + 5, shuffled.length); j++) {
+      const [keyA, valA] = shuffled[i];
+      const [keyB, valB] = shuffled[j];
+      if (keyA === keyB) continue;
+      const wA = valA.toLowerCase().split(/\s+/).filter(w => w.length > 4);
+      const wB = valB.toLowerCase().split(/\s+/).filter(w => w.length > 4);
+      const common = wA.filter(w => wB.includes(w));
+      if (common.length >= 1) {
+        const cw  = common[0];
+        const iKey = `${keyA}_${keyB}`.toLowerCase();
+        if (allFacts[iKey] || S.autoTrain.inferredFacts[iKey]) continue;
+        const iVal = `[Inferido] "${keyA}" y "${keyB}" se relacionan a través de "${cw}": ${valA.split('.')[0]} ↔ ${valB.split('.')[0]}.`;
+        S.autoTrain.inferredFacts[iKey] = iVal;
+        S.autoTrain.reasoningDepth++;
+        saveInferred(); saveTrainState();
+        addTrainLog(`inferencia: ${keyA} ↔ ${keyB}`);
+        return { type:'inference', key:iKey };
+      }
+    }
+  }
+
+  const wordCount = {};
+  entries.forEach(([,val]) => {
+    const words = val.toLowerCase().split(/\s+/).filter(w => w.length > 5);
+    [...new Set(words)].forEach(w => { wordCount[w] = (wordCount[w]||0) + 1; });
+  });
+  const freqW = Object.entries(wordCount).filter(([w,c]) => c >= 3 && w.length > 5).sort((a,b)=>b[1]-a[1]);
+  if (freqW.length > 0) {
+    const [word] = freqW[0];
+    const rel = entries.filter(([,v]) => v.toLowerCase().includes(word)).map(([k]) => k);
+    if (rel.length >= 3) {
+      const catKey = `categoria_${word}`.toLowerCase();
+      if (!S.autoTrain.inferredFacts[catKey]) {
+        S.autoTrain.inferredFacts[catKey] = `[Categoría] "${word}" conecta: ${rel.join(', ')}.`;
+        S.autoTrain.reasoningDepth++;
+        saveInferred(); saveTrainState();
+        addTrainLog(`categoría: "${word}" (${rel.length} temas)`);
+        return { type:'category', key:catKey };
+      }
+    }
+  }
+  return null;
+}
+
+function createNewKnowledge() {
+  const allFacts = { ...S.memoria, ...S.autoTrain.inferredFacts, ...S.autoTrain.creations };
+  const entries  = Object.entries(allFacts);
+  if (entries.length < 8) return null;
+
+  const keys    = mezclarArray(entries).slice(0, 4).map(([k]) => k);
+  const cKey    = `sintesis_${Date.now().toString(36)}`;
+  const patterns = [
+    `[Síntesis] Combinando "${keys[0]}", "${keys[1]}" y "${keys[2]}", emerge un principio: los conceptos de ${keys[0]} aplicados a ${keys[1]} sugieren una relación con ${keys[2]}.`,
+    `[Teoría] Del análisis de ${keys.join(', ')}: la información se organiza en niveles jerárquicos de complejidad creciente.`,
+    `[Hipótesis] Si ${keys[0]} y ${keys[1]} comparten principios, existe un marco teórico que los unifica: "isomorfismo funcional".`,
+  ];
+  const cVal = patterns[Math.floor(Math.random() * patterns.length)];
+  S.autoTrain.creations[cKey] = cVal;
+  S.autoTrain.reasoningDepth++;
+  saveCreations(); saveTrainState();
+  addTrainLog(`creación: síntesis de ${keys.length} fuentes`);
+  return { key:cKey, value:cVal };
+}
+
+
+// ════════════════════════════════════════════════════════
+//  SECCIÓN G — CICLO DE ENTRENAMIENTO 24/7 (más rápido y seguro)
+// ════════════════════════════════════════════════════════
+
+/**
+ * Muestra en el chat lo que se acaba de aprender (tiempo real)
+ */
+function showLearningInChat(title, extract) {
+  if (!NICK) return; // todavía no arrancó la sesión
+  const msg = `🧠 Aprendí: "${title}" → ${extract.substring(0, 120)}${extract.length>120?'...':''}`;
+  botMsg(msg, 'learn');
+}
+
+/**
+ * Fase 1 del ciclo: aprender de Wikipedia hasta 2 temas en paralelo
+ */
+async function wikipediaLearningPhase(online) {
+  if (!online || trainQueue.length < 2) return;
+  const topics = trainQueue.splice(0, 2);
+  const promises = topics.map(async topic => {
+    const key = topic.toLowerCase().trim();
+    if (S.memoria[key] || S.autoTrain.trainedTopics.includes(key)) return null;
+    const wikiData = await fetchWikiSummary(topic);
+    return wikiData;
+  });
+  const results = await Promise.all(promises);
+  let learnedCount = 0;
+  for (const data of results) {
+    if (!data) continue;
+    S.memoria[data.topic.toLowerCase()] = data.extract;
+    S.autoTrain.trainedTopics.push(data.topic.toLowerCase());
+    guardarMemoria();
+    S.autoTrain.totalTrained++;
+    S.autoTrain.lastTrain = new Date().toLocaleTimeString('es-AR');
+    addTrainLog(`wiki: ${data.title}`);
+    showLearningInChat(data.title, data.extract); // <-- muestra en chat
+    learnedCount++;
+  }
+  saveTrainState();
+  return learnedCount;
+}
+
+/**
+ * Ejecuta un ciclo completo (Wikipedia + razonamiento + creación)
+ */
+async function trainingCycle() {
+  if (!S.autoTrain.running) return;
+  if (S.typing) { scheduleNextTraining(); return; }
+
+  const online = navigator.onLine;
+  updateTrainIndicators('active', online);
+
+  if (trainQueue.length < 3) initTrainQueue();
+
+  // Fase 1 – Wikipedia (concurrente)
+  await wikipediaLearningPhase(online);
+
+  // Fase 2 – Razonamiento (siempre)
+  reasonAboutKnowledge();
+
+  // Fase 3 – Creación (cada 4 ciclos)
+  if (S.autoTrain.totalTrained > 0 && S.autoTrain.totalTrained % 4 === 0) {
+    createNewKnowledge();
+  }
+
+  updateTrainIndicators('idle', online);
+  scheduleNextTraining();
+}
+
+function startTraining() {
+  if (S.autoTrain.running) return;
+  S.autoTrain.running = true;
+  initTrainQueue();
+}
+
+function scheduleNextTraining() {
+  if (S.autoTrain.timer) clearTimeout(S.autoTrain.timer);
+  if (!S.autoTrain.running) return;
+  // ⚡ Ahora cada 15 segundos (antes 35)
+  S.autoTrain.timer = setTimeout(trainingCycle, S.autoTrain.interval);
+}
+
+
+// ════════════════════════════════════════════════════════
+//  SECCIÓN H — GENERACIÓN DE CÓDIGO
+// ════════════════════════════════════════════════════════
+
+/**
+ * Intenta generar código a partir de frases como "genera código de...", "escribe una función..."
+ * Devuelve el texto del código (o null si no puede).
+ */
+function generateCode(msg) {
+  const lower = msg.toLowerCase().trim();
+  // Detectar intención de código
+  const intents = ['genera código', 'generar código', 'escribe código', 'programa', 'crea una función', 'crear función', 'dame el código'];
+  const matchIntent = intents.some(i => lower.startsWith(i));
+  if (!matchIntent) return null;
+
+  // Mapeo de solicitudes simples a código
+  const plantillas = {
+    'hola mundo': () => ({ lang:'Python', code:'print("Hola mundo")' }),
+    'hello world': () => ({ lang:'JavaScript', code:'console.log("Hello world");' }),
+    'factorial': () => ({ lang:'Python', code:'def factorial(n):\n    return 1 if n<=1 else n*factorial(n-1)' }),
+    'fibonacci': () => ({ lang:'Python', code:'def fibonacci(n):\n    a,b=0,1\n    for _ in range(n): a,b=b,a+b\n    return a' }),
+    'ordenar lista': () => ({ lang:'Python', code:'lista.sort()  # ordena in-place' }),
+  };
+
+  for (const [clave, fn] of Object.entries(plantillas)) {
+    if (lower.includes(clave)) {
+      const { lang, code } = fn();
+      return `\`\`\`${lang}\n${code}\n\`\`\``;
+    }
+  }
+
+  // Si no hay plantilla, devolvemos null para que luego se busque en Wikipedia
+  return null;
+}
+
+
+// ════════════════════════════════════════════════════════
+//  SECCIÓN I — LÓGICA DE RESPUESTA (modificada)
+// ════════════════════════════════════════════════════════
+
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+async function respuesta(msg) {
+  const lower = msg.toLowerCase().trim();
+
+  // ═══ COMANDOS ESPECIALES ═══
+
+  const mAprende = lower.match(/^atlas\s+aprende:\s*(.+?)\s*=\s*(.+)$/);
+  if (mAprende) {
+    const clave = mAprende[1].trim();
+    const valor = msg.match(/^atlas\s+aprende:\s*.+?\s*=\s*(.+)$/i)?.[1]?.trim();
+    if (clave && valor) {
+      // 🛡️ Filtro anti-basura: no guardar HTML/scripts, máximo 500 caracteres
+      if (valor.length > 500) { await botMsg('el texto es demasiado largo (máximo 500 caracteres).', 'sys'); return; }
+      if (/<script|<\/script|javascript:/i.test(valor)) { await botMsg('no puedo guardar código malicioso.', 'sys'); return; }
+      S.memoria[clave] = valor;
+      guardarMemoria();
+      await botMsg(`aprendido. "${clave}" → "${valor}"`, 'learn');
+      updateMemStats();
+    }
+    return;
+  }
+
+  const mOlvida = lower.match(/^atlas\s+olvida:\s*(.+)$/);
+  if (mOlvida) {
+    const clave = mOlvida[1].trim();
+    if (S.memoria[clave]) {
+      delete S.memoria[clave];
+      guardarMemoria();
+      await botMsg(`olvidé "${clave}".`, 'learn');
     } else {
-      nameSpan.textContent = '⚙️ Bot';
+      await botMsg(`no tenía nada sobre "${clave}".`);
     }
-
-    const textSpan = document.createElement('div');
-    textSpan.classList.add('message-text');
-    // escape básico para evitar inyección (usando textContent)
-    textSpan.textContent = text;
-
-    bubbleDiv.appendChild(nameSpan);
-    bubbleDiv.appendChild(textSpan);
-    messageDiv.appendChild(bubbleDiv);
-    
-    messagesContainer.appendChild(messageDiv);
-    // auto scroll hacia abajo (siempre visible el mensaje nuevo)
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    return;
   }
 
-  // mensaje inicial de bienvenida (solo para mostrar interfaz viva)
-  function setInitialMessage() {
-    // limpieza inicial segura
-    messagesContainer.innerHTML = '';
-    addMessage('bot', '¡Hola! 👋 Esta es una interfaz super sencilla y genérica para cualquier bot. Puedes escribir y el bot responderá de forma demostrativa. (Solo front-end visual)');
-    addMessage('bot', '💬 Escribe algo abajo. La respuesta será un eco genérico — ideal para integrar tu propia lógica después.');
+  if (lower === 'atlas memoria') {
+    const keys = Object.keys(S.memoria);
+    if (!keys.length) { await botMsg('no tengo hechos guardados todavía.', 'sys'); return; }
+    await botMsg(`${keys.length} entradas en memoria:`, 'sys');
+    keys.slice(-15).forEach(k => {
+      addMsg(`<span class="msg-sys">  · ${escHTML(k)}: ${escHTML(S.memoria[k].substring(0,70))}${S.memoria[k].length>70?'...':''}</span>`, 'ai');
+    });
+    if (keys.length > 15) addMsg(`<span class="msg-sys">  ... y ${keys.length-15} más.</span>`, 'ai');
+    return;
   }
 
-  // respuesta generica del bot: solo para demostrar interfaz,
-  // sin llamadas externas. Es un eco simple que muestra que la UI funciona.
-  // De esta forma el propósito es únicamente visual/interfaz.
-  function genericBotReply(userMessage) {
-    // mensaje genérico de ejemplo, manteniendo la naturaleza "demo de interfaz"
-    // pero mostrando interacción completa. Puedes reemplazar con cualquier API.
-    const demoPrefix = "📟 [respuesta genérica] · ";
-    // opción super simple y genérica: eco + frase estándar
-    // Mantiene el espíritu de solo interfaz, pero el bot conversa de modo placeholder.
-    const replyText = `${demoPrefix}"${userMessage}" — Mensaje recibido. (Bot demo, solo interfaz)`;
-    return replyText;
+  if (lower === 'atlas estado') {
+    showInfo(); return;
   }
 
-  // función que envía el mensaje escrito por el usuario y luego genera respuesta visual del bot
-  function sendUserMessage() {
-    const rawMessage = messageInput.value;
-    if (!rawMessage || rawMessage.trim() === '') return;
-
-    const cleanMessage = rawMessage.trim();
-    // 1. Mostrar mensaje del usuario en la interfaz
-    addMessage('user', cleanMessage);
-    
-    // 2. generar la respuesta genérica del bot (simplemente para que la interfaz se vea dinámica)
-    const botAnswer = genericBotReply(cleanMessage);
-    
-    // pequeño retardo opcional para simular "procesamiento" y dar sensación natural
-    // pero sigue siendo UI pura, sin nada real detrás.
-    setTimeout(() => {
-      addMessage('bot', botAnswer);
-      // auto scroll ya está dentro de addMessage, pero reaseguramos
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 180);
-    
-    // limpiar input y mantener foco
-    messageInput.value = '';
-    messageInput.focus();
+  // ═══ GENERACIÓN DE CÓDIGO (nuevo) ═══
+  const codigo = generateCode(lower);
+  if (codigo) {
+    await botMsg('Acá tenés el código:', 'sys');
+    addMsg(codigo, 'ai');
+    // Si no sabe generarlo, el generateCode devuelve null y seguimos abajo
+    return;
   }
 
-  // Limpiar toda la conversación pero manteniendo un par de mensajes iniciales básicos
-  // para que la interfaz no se quede vacía y se vea coherente.
-  function resetConversation() {
-    messagesContainer.innerHTML = '';
-    // mensajes frescos y genéricos (sin perder la esencia de interfaz)
-    addMessage('bot', '🧹 Conversación reiniciada. Interfaz lista nuevamente.');
-    addMessage('bot', '✨ Bot genérico — solo diseño, sin lógica compleja. Puedes escribir otro mensaje.');
-    addMessage('bot', '💡 Consejo: esta interfaz es completamente independiente; puedes conectar tu propio bot más tarde.');
-    // opcional: pequeño mensaje adicional de contexto
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
-
-  // Eventos
-  sendButton.addEventListener('click', () => {
-    sendUserMessage();
-  });
-  
-  messageInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      sendUserMessage();
+  // ═══ RESPUESTAS PRE-PROGRAMADAS ═══
+  for (const entrada of RESPUESTAS) {
+    const patrones = Array.isArray(entrada.patron) ? entrada.patron : [entrada.patron];
+    const coincide = patrones.some(p => lower.includes(p));
+    if (coincide) {
+      const variante = pick(entrada.respuestas).replace(/{nick}/g, NICK);
+      await botMsg(variante);
+      return;
     }
+  }
+
+  // ═══ MEMORIA E INFERENCIAS ═══
+  for (const clave of Object.keys(S.memoria)) {
+    if (lower.includes(clave)) {
+      await botMsg(S.memoria[clave]);
+      return;
+    }
+  }
+  for (const [k, v] of Object.entries(S.autoTrain.inferredFacts)) {
+    if (lower.includes(k.replace(/_/g,' '))) {
+      await botMsg(v, 'infer');
+      return;
+    }
+  }
+
+  // ═══ FALLBACK: WIKIPEDIA (mejorado para frases largas) ═══
+  // Lista ampliada de palabras que queremos eliminar para quedarnos con el tema
+  const stopwords = [
+    'que es','qué es','quien es','quién es','como funciona','cómo funciona',
+    'contame sobre','hablame de','háblame de','info sobre','información sobre',
+    'sabés algo de','sabes algo de','explicame','explicá','explica','explicar',
+    'definir','definime','describe','describir','resume','resumir',
+    'investiga','investigar','busca sobre','buscar sobre','busca','buscar',
+    'qué significa','que significa','significado de','dame info',
+  ];
+  let query = lower;
+  for (const sw of stopwords) query = query.replace(sw,'').trim();
+  // Eliminar signos de puntuación sueltos
+  query = query.replace(/[?¿!¡,.]/g,'').trim();
+  if (!query) { await botMsg('no entendí la pregunta. ¿podés reformularla?'); return; }
+  await buscarWiki(query);
+}
+
+
+// ════════════════════════════════════════════════════════
+//  SECCIÓN J — FLUJO DE PANTALLAS E INICIALIZACIÓN
+// ════════════════════════════════════════════════════════
+
+function showNameScreen() {
+  $('landingPage').classList.add('hidden');
+  $('nameScreen').classList.add('active');
+  setTimeout(() => $('nameInput').focus(), 80);
+}
+
+async function confirmarNombre() {
+  const n = $('nameInput').value.trim().replace(/\s+/g,'_');
+  if (!n) return;
+  NICK = n;
+  localStorage.setItem('atlas_user', NICK);
+
+  $('nameScreen').classList.remove('active');
+  $('mainHeader').style.display = 'flex';
+  $('sidebar').style.display    = 'flex';
+  $('mainArea').style.display   = 'block';
+  $('inputBar').style.display   = 'block';
+
+  updateMemStats();
+  applyTheme();
+
+  await botMsg(
+    `hola ${NICK}! soy Atlas v0.4. entreno 24/7, razono, infiero y aprendo sin parar. preguntame cualquier cosa.`
+  );
+  await botMsg(
+    `comandos especiales: "atlas aprende: X = Y" · "atlas olvida: X" · "atlas memoria" · "atlas estado"`,
+    'sys'
+  );
+
+  startTraining();
+  trainingCycle();
+}
+
+async function enviar() {
+  const inp = $('msgInput');
+  const msg = inp.value.trim();
+  if (!msg || S.typing) return;
+  userMsg(msg);
+  inp.value = '';
+  S.typing  = true;
+  $('sendBtn').disabled = true;
+  inp.disabled = true;
+  await respuesta(msg);
+  S.typing = false;
+  $('sendBtn').disabled = false;
+  inp.disabled = false;
+  inp.focus();
+}
+
+function quick(txt) { $('msgInput').value = txt; enviar(); }
+
+function newChat() {
+  if (confirm('¿Limpiar el chat? La memoria y el entrenamiento se mantienen.')) {
+    $('chatContainer').innerHTML = '';
+    botMsg(`sesión reiniciada, ${NICK}. memoria intacta.`, 'sys');
+  }
+}
+
+function clearChat() {
+  $('chatContainer').innerHTML = '';
+}
+
+// ── MODALES ──
+function showSettings() {
+  $('curNick').textContent = NICK;
+  $('mFacts').textContent  = Object.keys(S.memoria).length;
+  $('mInfer').textContent  = Object.keys(S.autoTrain.inferredFacts).length;
+  $('mCreate').textContent = Object.keys(S.autoTrain.creations).length;
+  $('mDepth').textContent  = S.autoTrain.reasoningDepth;
+  $('mTotal').textContent  = S.autoTrain.totalTrained;
+  updateThemeBtns();
+  $('settingsModal').classList.add('active');
+}
+
+function showInfo() {
+  $('si-online').textContent = navigator.onLine ? 'SÍ' : 'NO (razonando offline)';
+  $('si-train').textContent  = S.autoTrain.running ? 'SÍ (24/7)' : 'NO';
+  $('si-last').textContent   = S.autoTrain.lastTrain;
+  $('si-total').textContent  = S.autoTrain.totalTrained;
+  $('trainLogList').innerHTML = S.autoTrain.trainLog.slice(0,20).map(e =>
+    `<div class="train-log-item"><span>${e.time}</span> — ${escHTML(e.entry)}</div>`
+  ).join('') || '<div class="train-log-item" style="color:var(--txt3)">Sin ciclos aún.</div>';
+  $('infoModal').classList.add('active');
+}
+
+function closeModal(id) { $(id).classList.remove('active'); }
+
+function changeNick() {
+  const n = prompt('Nuevo nombre:', NICK);
+  if (n && n.trim()) {
+    NICK = n.trim().replace(/\s+/g,'_');
+    localStorage.setItem('atlas_user', NICK);
+    $('curNick').textContent = NICK;
+    closeModal('settingsModal');
+  }
+}
+
+function purgarMemoria() {
+  if (!confirm('¿Purgar TODA la memoria? Esta acción no se puede deshacer.')) return;
+  S.memoria = {};
+  S.autoTrain.inferredFacts = {};
+  S.autoTrain.creations     = {};
+  S.autoTrain.trainedTopics = [];
+  S.autoTrain.reasoningDepth = 0;
+  S.autoTrain.totalTrained  = 0;
+  S.autoTrain.trainLog      = [];
+  guardarMemoria(); saveInferred(); saveCreations(); saveTrainState();
+  updateMemStats();
+  closeModal('settingsModal');
+  botMsg('memoria purgada. comienzo desde cero.', 'sys');
+}
+
+function changeTheme(t) {
+  THEME = t;
+  localStorage.setItem('atlas_theme', t);
+  applyTheme();
+  updateThemeBtns();
+}
+function applyTheme() {
+  document.body.className = THEME;
+}
+function updateThemeBtns() {
+  ['dark','gray','light'].forEach(t => {
+    const btn = $('theme'+t.charAt(0).toUpperCase()+t.slice(1));
+    if (btn) btn.classList.toggle('active', THEME === t);
   });
-  
-  clearButton.addEventListener('click', () => {
-    resetConversation();
+}
+
+window.addEventListener('online',  () => { updateTrainIndicators('idle', true);  addTrainLog('🌐 online'); if (!S.autoTrain.running) { startTraining(); trainingCycle(); } });
+window.addEventListener('offline', () => { updateTrainIndicators('idle', false); addTrainLog('🔒 offline'); });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const ni = $('nameInput');
+  if (ni) ni.addEventListener('keydown', e => { if (e.key==='Enter') confirmarNombre(); });
+  const mi = $('msgInput');
+  if (mi) mi.addEventListener('keydown', e => { if (e.key==='Enter') enviar(); });
+
+  document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target===o) o.classList.remove('active'); });
   });
-  
-  // Inicializar la interfaz con mensajes de bienvenida claros (sin recurrir a nada externo)
-  setInitialMessage();
-  
-  // Pequeño detalle extra: foco automático al cargar la página
-  window.addEventListener('load', () => {
-    messageInput.focus();
-  });
+});
+
+applyTheme();
+
+const savedNick = localStorage.getItem('atlas_user');
+if (savedNick) {
+  if (confirm(`¿Continuar como "${savedNick}"?`)) {
+    NICK = savedNick;
+    $('landingPage').classList.add('hidden');
+    $('mainHeader').style.display = 'flex';
+    $('sidebar').style.display    = 'flex';
+    $('mainArea').style.display   = 'block';
+    $('inputBar').style.display   = 'block';
+    updateMemStats();
+    startTraining();
+    trainingCycle();
+    setTimeout(async () => {
+      await botMsg(`bienvenido de vuelta, ${NICK}. memoria: ${Object.keys(S.memoria).length} hechos cargados.`, 'sys');
+    }, 200);
+  } else {
+    localStorage.removeItem('atlas_user');
+  }
+}
+
+startTraining();
+trainingCycle();
+
+console.log('🧭 ATLAS v0.4 — Entrenamiento rápido, filtros, código y mejor búsqueda');
 </script>
 </body>
 </html>
