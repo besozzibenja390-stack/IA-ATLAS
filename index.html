@@ -1,1323 +1,1003 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SF · Sin Fronteras — Red Profesional</title>
-
-<style>
-
-/* ═══════════════════════════════════════
-   SF — SIN FRONTERAS · ESTILO 2008 PRO
-   Tema claro profesional + modo oscuro
-   ═════════════════════════════════════ */
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-/* Variables de tema CLARO (por defecto) */
-:root {
-  --bg-body: #e9edf2;
-  --bg-texture: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,0.25) 3px, rgba(255,255,255,0.25) 6px), linear-gradient(180deg, #f2f5f8 0%, #dce3ea 100%);
-  --surface: #ffffff;
-  --surface-border: #b0bec5;
-  --surface-border-top: #d9e1e8;
-  --shadow: 0 2px 5px rgba(0,0,0,0.1);
-  --text: #2c3e50;
-  --text-secondary: #607d8b;
-  --header-bg: linear-gradient(180deg, #3a4149 0%, #1c2127 100%);
-  --header-border: #0a0e12;
-  --header-text: #ffffff;
-  --header-accent: #d4af37; /* dorado suave para el logo */
-  --accent: #546e7a; /* gris azulado medio */
-  --accent-hover: #455a64;
-  --btn-primary-bg: linear-gradient(180deg, #6c7a89 0%, #3e4a53 100%);
-  --btn-primary-border: #232b31;
-  --btn-primary-border-top: #99a8b3;
-  --btn-primary-text: #ffffff;
-  --btn-secondary-bg: linear-gradient(180deg, #8d9aa5 0%, #54626e 100%);
-  --btn-secondary-border: #35404a;
-  --widget-title-bg: linear-gradient(180deg, #546e7a 0%, #2c3e50 100%);
-  --widget-title-text: #ffffff;
-  --post-box-title-bg: linear-gradient(180deg, #7f8c8d 0%, #444e54 100%);
-  --post-box-title-text: #ffffff;
-  --input-bg: #f8fafc;
-  --input-border: #bccbd4;
-  --input-focus-border: #546e7a;
-  --comment-bubble-bg: #f4f7f9;
-  --comment-bubble-border: #d5e1e8;
-  --welcome-bg: linear-gradient(180deg, #eef5ec 0%, #d4e5d0 100%);
-  --welcome-border: #9cbf9a;
-  --welcome-text: #2d4a2c;
-  --like-color: #c0392b; /* rojo oscuro para “me gusta” */
-  --lightbox-bg: rgba(0,0,0,0.9);
-  --lightbox-img-border: #fff;
-}
-
-/* Tema OSCURO */
-body.dark {
-  --bg-body: #12171c;
-  --bg-texture: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,0.03) 3px, rgba(255,255,255,0.03) 6px), linear-gradient(180deg, #1a1f26 0%, #0e1217 100%);
-  --surface: #1c2128;
-  --surface-border: #2a333d;
-  --surface-border-top: #3c4652;
-  --shadow: 0 2px 5px rgba(0,0,0,0.4);
-  --text: #cbd5e0;
-  --text-secondary: #8899a6;
-  --header-bg: linear-gradient(180deg, #1c2128 0%, #0a0e12 100%);
-  --header-border: #030508;
-  --header-text: #e0e6ec;
-  --header-accent: #d4af37;
-  --accent: #546e7a;
-  --accent-hover: #667d8c;
-  --btn-primary-bg: linear-gradient(180deg, #4b5561 0%, #242a31 100%);
-  --btn-primary-border: #14181d;
-  --btn-primary-border-top: #7a8793;
-  --btn-primary-text: #e0e6ec;
-  --btn-secondary-bg: linear-gradient(180deg, #5f6b77 0%, #333b44 100%);
-  --btn-secondary-border: #1c2228;
-  --widget-title-bg: linear-gradient(180deg, #3a4149 0%, #1c2127 100%);
-  --widget-title-text: #cbd5e0;
-  --post-box-title-bg: linear-gradient(180deg, #4a535b 0%, #262d34 100%);
-  --post-box-title-text: #e0e6ec;
-  --input-bg: #262d34;
-  --input-border: #3c4652;
-  --input-focus-border: #667d8c;
-  --comment-bubble-bg: #262d34;
-  --comment-bubble-border: #3c4652;
-  --welcome-bg: linear-gradient(180deg, #28322b 0%, #18211b 100%);
-  --welcome-border: #3d4f40;
-  --welcome-text: #c0d6c4;
-  --like-color: #e06c5c;
-  --lightbox-bg: rgba(0,0,0,0.95);
-  --lightbox-img-border: #3c4652;
-}
-
-body {
-  font-family: 'Trebuchet MS', Verdana, sans-serif;
-  font-size: 13px;
-  background: var(--bg-body);
-  background-image: var(--bg-texture);
-  min-height: 100vh;
-  color: var(--text);
-  transition: background 0.3s, color 0.3s;
-}
-
-/* ── HEADER CORPORATIVO ── */
-#header {
-  background: var(--header-bg);
-  border-bottom: 3px solid var(--header-border);
-  padding: 0;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-}
-
-#header-inner {
-  max-width: 980px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-}
-
-#logo {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 28px;
-  font-weight: bold;
-  color: var(--header-text);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-  letter-spacing: -0.5px;
-  text-decoration: none;
-}
-
-#logo span {
-  color: var(--header-accent);
-}
-
-#logo small {
-  font-size: 10px;
-  font-family: 'Trebuchet MS', Verdana, sans-serif;
-  color: #adbac8;
-  font-weight: normal;
-  display: block;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-top: -4px;
-}
-
-#header-nav {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-#user-info {
-  color: #cbd5e0;
-  font-size: 12px;
-  margin-right: 10px;
-  font-style: italic;
-}
-
-/* Botones de navegación estilo 2008 profesional */
-.nav-btn {
-  background: var(--btn-secondary-bg);
-  border: 1px solid var(--btn-secondary-border);
-  border-top: 1px solid var(--btn-primary-border-top);
-  color: var(--btn-primary-text);
-  font-family: 'Trebuchet MS', Verdana, sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 5px 14px;
-  cursor: pointer;
-  border-radius: 3px;
-  text-shadow: 0 -1px 1px rgba(0,0,0,0.4);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
-  transition: all 0.1s ease;
-}
-.nav-btn:hover {
-  filter: brightness(1.1);
-}
-.nav-btn:active {
-  filter: brightness(0.9);
-}
-
-.nav-btn.blue {
-  background: var(--btn-primary-bg);
-  border-color: var(--btn-primary-border);
-  border-top: 1px solid var(--btn-primary-border-top);
-}
-
-/* ── LAYOUT PRINCIPAL ── */
-#page {
-  max-width: 980px;
-  margin: 18px auto;
-  display: flex;
-  gap: 16px;
-  padding: 0 16px;
-}
-
-/* ── SIDEBAR IZQUIERDO ── */
-#sidebar {
-  width: 210px;
-  flex-shrink: 0;
-}
-
-.widget {
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-top: 1px solid var(--surface-border-top);
-  border-radius: 6px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-}
-
-.widget-title {
-  background: var(--widget-title-bg);
-  color: var(--widget-title-text);
-  font-weight: bold;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 7px 10px;
-  text-shadow: 0 -1px 1px rgba(0,0,0,0.3);
-  border-bottom: 1px solid #1a252f;
-}
-
-.widget-body {
-  padding: 10px;
-  color: var(--text);
-}
-
-/* Perfil en sidebar */
-#my-avatar-box {
-  text-align: center;
-  padding: 16px 10px 12px;
-}
-
-#my-avatar-initial {
-  width: 82px;
-  height: 82px;
-  border-radius: 50%;
-  border: 3px solid var(--surface-border-top);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2), 0 0 0 1px var(--accent);
-  background: var(--widget-title-bg);
-  color: var(--widget-title-text);
-  font-size: 34px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 10px;
-  font-family: Georgia, serif;
-}
-
-#my-name {
-  font-weight: bold;
-  font-size: 14px;
-  color: var(--text);
-}
-
-#my-email {
-  font-size: 11px;
-  color: var(--text-secondary);
-  margin-top: 2px;
-}
-
-.sidebar-link {
-  display: block;
-  padding: 6px 10px;
-  color: var(--accent);
-  text-decoration: none;
-  border-radius: 3px;
-  font-size: 12px;
-  cursor: pointer;
-  margin-bottom: 2px;
-  transition: background 0.15s;
-}
-.sidebar-link:hover {
-  background: var(--comment-bubble-bg);
-  color: var(--text);
-}
-.sidebar-link::before {
-  content: '› ';
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.sidebar-stats {
-  font-size: 11px;
-  color: var(--text-secondary);
-  line-height: 1.9;
-}
-.sidebar-stats b {
-  color: var(--text);
-  font-weight: bold;
-}
-
-/* Widget de apariencia (toggle tema) */
-#theme-toggle-btn {
-  width: 100%;
-  margin-top: 4px;
-  background: var(--btn-secondary-bg);
-  border: 1px solid var(--btn-secondary-border);
-  border-top: 1px solid var(--btn-primary-border-top);
-  color: var(--btn-primary-text);
-  font-weight: bold;
-  font-size: 11px;
-  padding: 5px 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  text-shadow: 0 -1px 1px rgba(0,0,0,0.3);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  transition: background 0.15s;
-}
-#theme-toggle-btn:hover {
-  filter: brightness(1.08);
-}
-
-/* ── CONTENIDO PRINCIPAL ── */
-#main {
-  flex: 1;
-  min-width: 0;
-}
-
-/* ── CAJA DE PUBLICAR ── */
-#post-box {
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-top: 1px solid var(--surface-border-top);
-  border-radius: 6px;
-  margin-bottom: 16px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-}
-
-#post-box-title {
-  background: var(--post-box-title-bg);
-  color: var(--post-box-title-text);
-  font-weight: bold;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 7px 12px;
-  text-shadow: 0 -1px 1px rgba(0,0,0,0.3);
-  border-bottom: 1px solid #2c353d;
-}
-
-#post-form {
-  padding: 14px;
-}
-
-#post-text {
-  width: 100%;
-  height: 80px;
-  border: 1px solid var(--input-border);
-  border-radius: 4px;
-  padding: 10px;
-  font-family: 'Trebuchet MS', Verdana, sans-serif;
-  font-size: 13px;
-  resize: vertical;
-  outline: none;
-  color: var(--text);
-  background: var(--input-bg);
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
-  transition: border-color 0.2s, background 0.2s;
-}
-#post-text:focus {
-  border-color: var(--input-focus-border);
-  background: var(--surface);
-}
-
-.post-form-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.post-form-row label {
-  font-size: 12px;
-  color: var(--text);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border: 1px dashed var(--input-border);
-  border-radius: 4px;
-  background: var(--input-bg);
-  transition: background 0.15s;
-}
-.post-form-row label:hover {
-  background: var(--comment-bubble-bg);
-}
-
-#photo-input { display: none; }
-
-#photo-preview {
-  max-height: 60px;
-  max-width: 85px;
-  border-radius: 4px;
-  border: 1px solid var(--input-border);
-  display: none;
-}
-
-.publish-btn {
-  margin-left: auto;
-  background: var(--btn-primary-bg);
-  border: 1px solid var(--btn-primary-border);
-  border-top: 1px solid var(--btn-primary-border-top);
-  color: var(--btn-primary-text);
-  font-family: 'Trebuchet MS', Verdana, sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 7px 22px;
-  cursor: pointer;
-  border-radius: 4px;
-  text-shadow: 0 -1px 1px rgba(0,0,0,0.4);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
-  transition: all 0.1s ease;
-}
-.publish-btn:hover {
-  filter: brightness(1.08);
-}
-.publish-btn:active {
-  filter: brightness(0.92);
-}
-
-/* ── FEED ── */
-#feed {
-  margin-top: 0;
-}
-
-.post {
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-top: 1px solid var(--surface-border-top);
-  border-radius: 6px;
-  padding: 14px;
-  margin-bottom: 12px;
-  box-shadow: var(--shadow);
-  animation: slideDown 0.25s ease;
-}
-
-.post + .post {
-  margin-top: 12px;
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.post-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.post-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 2px solid var(--surface-border-top);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.15), 0 0 0 1px var(--accent);
-  background: var(--widget-title-bg);
-  color: var(--widget-title-text);
-  font-weight: bold;
-  font-size: 18px;
-  font-family: Georgia, serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.post-meta { flex: 1; }
-
-.post-user {
-  font-weight: bold;
-  color: var(--text);
-  font-size: 13px;
-  cursor: pointer;
-}
-.post-user:hover { text-decoration: underline; }
-
-.post-time {
-  font-size: 11px;
-  color: var(--text-secondary);
-  margin-top: 1px;
-}
-
-.post-body {
-  line-height: 1.7;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-
-.post-img {
-  display: block;
-  max-width: 100%;
-  max-height: 360px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin: 10px 0;
-  border: 1px solid var(--input-border);
-  cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  transition: opacity 0.15s;
-}
-.post-img:hover { opacity: 0.93; }
-
-.post-actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid var(--surface-border-top);
-  font-size: 12px;
-}
-
-.post-action {
-  color: var(--accent);
-  cursor: pointer;
-  padding: 2px 5px;
-  border-radius: 3px;
-  transition: background 0.15s;
-}
-.post-action:hover {
-  background: var(--comment-bubble-bg);
-  color: var(--text);
-}
-.post-action.liked {
-  color: var(--like-color);
-  font-weight: bold;
-}
-
-.like-count {
-  color: var(--like-color);
-  font-weight: bold;
-}
-.comment-count {
-  color: var(--text-secondary);
-}
-
-.comments-section {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid var(--surface-border-top);
-  display: none;
-}
-.comments-section.open { display: block; }
-
-.comment {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 7px;
-  font-size: 12px;
-}
-.comment-av {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--widget-title-bg);
-  border: 1px solid var(--surface-border-top);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  color: var(--widget-title-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: bold;
-  flex-shrink: 0;
-}
-.comment-bubble {
-  background: var(--comment-bubble-bg);
-  border: 1px solid var(--comment-bubble-border);
-  border-radius: 0 8px 8px 8px;
-  padding: 5px 9px;
-  flex: 1;
-}
-.comment-name {
-  font-weight: bold;
-  color: var(--text);
-}
-
-.comment-form {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-.comment-input {
-  flex: 1;
-  border: 1px solid var(--input-border);
-  border-radius: 3px;
-  padding: 6px 10px;
-  font-family: 'Trebuchet MS', Verdana, sans-serif;
-  font-size: 12px;
-  outline: none;
-  background: var(--input-bg);
-  color: var(--text);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
-}
-.comment-input:focus { border-color: var(--input-focus-border); }
-.comment-send {
-  background: var(--btn-secondary-bg);
-  border: 1px solid var(--btn-secondary-border);
-  border-top: 1px solid var(--btn-primary-border-top);
-  color: var(--btn-primary-text);
-  font-size: 11px;
-  font-weight: bold;
-  padding: 5px 12px;
-  cursor: pointer;
-  border-radius: 3px;
-  text-shadow: 0 -1px 1px rgba(0,0,0,0.3);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  transition: all 0.1s;
-}
-.comment-send:hover {
-  filter: brightness(1.1);
-}
-
-/* ── PANTALLAS DE ACCESO ── */
-#access-screen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
-  background: var(--bg-body);
-  background-image: var(--bg-texture);
-}
-
-.access-box {
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-top: 1px solid var(--surface-border-top);
-  border-radius: 8px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-  width: 100%;
-  max-width: 440px;
-  overflow: hidden;
-}
-
-.access-header {
-  background: var(--header-bg);
-  padding: 24px 20px;
-  text-align: center;
-}
-
-.access-logo {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 36px;
-  font-weight: bold;
-  color: var(--header-text);
-  text-shadow: 0 2px 5px rgba(0,0,0,0.4);
-}
-.access-logo span { color: var(--header-accent); }
-
-.access-tagline {
-  font-size: 11px;
-  color: #adbac8;
-  margin-top: 6px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-}
-
-.access-tabs {
-  display: flex;
-  border-bottom: 2px solid var(--surface-border);
-}
-.access-tab {
-  flex: 1;
-  padding: 10px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  background: var(--input-bg);
-  color: var(--text-secondary);
-  border: none;
-  transition: background 0.15s;
-}
-.access-tab.active {
-  background: var(--surface);
-  color: var(--text);
-  border-bottom: 2px solid transparent;
-}
-.access-tab:hover { background: var(--comment-bubble-bg); }
-
-.access-body { padding: 24px 20px; }
-
-.form-group { margin-bottom: 14px; }
-.form-group label {
-  display: block;
-  font-size: 12px;
-  font-weight: bold;
-  color: var(--text);
-  margin-bottom: 5px;
-}
-.form-group input {
-  width: 100%;
-  padding: 9px 12px;
-  border: 1px solid var(--input-border);
-  border-radius: 4px;
-  font-family: 'Trebuchet MS', Verdana, sans-serif;
-  font-size: 13px;
-  outline: none;
-  background: var(--input-bg);
-  color: var(--text);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
-  transition: border-color 0.2s, background 0.2s;
-}
-.form-group input:focus {
-  border-color: var(--input-focus-border);
-  background: var(--surface);
-}
-
-.form-error {
-  color: #c0392b;
-  font-size: 11px;
-  margin-top: 4px;
-  display: none;
-  font-weight: bold;
-}
-.form-error.show { display: block; }
-
-.access-btn {
-  width: 100%;
-  padding: 11px;
-  background: var(--btn-primary-bg);
-  border: 1px solid var(--btn-primary-border);
-  border-top: 1px solid var(--btn-primary-border-top);
-  color: var(--btn-primary-text);
-  font-family: 'Trebuchet MS', Verdana, sans-serif;
-  font-size: 13px;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 4px;
-  text-shadow: 0 -1px 1px rgba(0,0,0,0.3);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
-  margin-top: 8px;
-  letter-spacing: 0.4px;
-  transition: all 0.1s ease;
-}
-.access-btn:hover { filter: brightness(1.08); }
-.access-btn:active { filter: brightness(0.92); }
-
-.access-footer {
-  text-align: center;
-  font-size: 11px;
-  color: var(--text-secondary);
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid var(--surface-border-top);
-}
-
-/* Footer del sitio */
-#site-footer {
-  text-align: center;
-  font-size: 11px;
-  color: var(--text-secondary);
-  padding: 22px;
-  margin-top: 24px;
-  border-top: 1px solid var(--surface-border);
-}
-#site-footer a { color: var(--accent); text-decoration: none; }
-#site-footer a:hover { text-decoration: underline; }
-
-/* ── MENSAJE DE BIENVENIDA ── */
-.welcome-bar {
-  background: var(--welcome-bg);
-  border: 1px solid var(--welcome-border);
-  border-radius: 4px;
-  padding: 9px 14px;
-  margin-bottom: 14px;
-  font-size: 12px;
-  color: var(--welcome-text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: var(--shadow);
-}
-
-/* Vacio */
-.empty-feed {
-  text-align: center;
-  padding: 50px 20px;
-  color: var(--text-secondary);
-  font-size: 13px;
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: 6px;
-  box-shadow: var(--shadow);
-}
-.empty-feed big {
-  display: block;
-  font-size: 36px;
-  margin-bottom: 12px;
-}
-
-/* ── IMAGEN AMPLIADA ── */
-#lightbox {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: var(--lightbox-bg);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-#lightbox.open { display: flex; }
-#lightbox img {
-  max-width: 90vw;
-  max-height: 90vh;
-  border: 3px solid var(--lightbox-img-border);
-  border-radius: 4px;
-  box-shadow: 0 0 50px rgba(0,0,0,0.6);
-}
-
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Atlas v0.3.0</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+            height: 100dvh;
+            background: #000;
+            color: #aaa;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            overflow: hidden;
+        }
+
+        .screen {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            height: 100dvh;
+        }
+
+        /* ── titlebar ── */
+        .titlebar {
+            background: #000080;
+            color: #fff;
+            padding: 6px 8px;
+            font-size: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .title-left {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .title-right {
+            color: #aaf;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ── indicador de entrenamiento en titlebar ── */
+        .train-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #0f0;
+            box-shadow: 0 0 6px #0f0;
+            animation: pulse 1.5s infinite;
+        }
+        .train-dot.offline {
+            background: #fa0;
+            box-shadow: 0 0 6px #fa0;
+            animation: none;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        .train-status {
+            color: #0f0;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+        .train-status.offline {
+            color: #fa0;
+        }
+
+        /* ── log ── */
+        .log {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 4px 6px;
+            background: #000;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .log::-webkit-scrollbar {
+            display: none;
+        }
+
+        .line {
+            display: flex;
+            white-space: pre-wrap;
+            word-break: break-word;
+            padding: 1px 0;
+        }
+        .ts {
+            color: #555;
+            min-width: 45px;
+            flex-shrink: 0;
+            font-size: 10px;
+            padding-top: 1px;
+        }
+        .text {
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .c-green {
+            color: #0f0;
+        }
+        .c-cyan {
+            color: #0ff;
+        }
+        .c-yellow {
+            color: #ff0;
+        }
+        .c-gray {
+            color: #888;
+        }
+        .c-blue {
+            color: #88f;
+        }
+        .c-magenta {
+            color: #f4f;
+        }
+        .c-red {
+            color: #f55;
+        }
+        .c-white {
+            color: #fff;
+        }
+        .c-orange {
+            color: #fa0;
+        }
+
+        /* ── statusbar ── */
+        .statusbar {
+            background: #000080;
+            color: #fff;
+            padding: 3px 6px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .status-active {
+            background: #fff;
+            color: #000;
+            padding: 0 4px;
+            border-radius: 2px;
+        }
+        .status-train {
+            background: #0a0;
+            color: #0f0;
+            padding: 0 5px;
+            border-radius: 2px;
+            font-size: 10px;
+            animation: pulse 1.5s infinite;
+        }
+        .status-train.offline {
+            background: #840;
+            color: #fa0;
+            animation: none;
+        }
+
+        /* ── input area ── */
+        .input-area {
+            background: #0a0a0a;
+            border-top: 1px solid #222;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .prompt {
+            color: #0ff;
+            white-space: nowrap;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        #msg {
+            flex: 1;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 4px;
+            outline: none;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: max(13px, 16px);
+            padding: 6px 8px;
+            caret-color: #fff;
+        }
+
+        #sendBtn {
+            background: #000080;
+            border: 1px solid #44f;
+            border-radius: 4px;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            padding: 6px 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #sendBtn:active {
+            background: #0000cc;
+        }
+
+        /* ── pantalla de nick ── */
+        .name-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 2rem 1.5rem;
+            background: #000;
+            text-align: center;
+        }
+
+        .name-screen .logo {
+            color: #0ff;
+            font-size: 1.6rem;
+            font-weight: bold;
+            letter-spacing: 6px;
+            text-shadow: 0 0 10px #0ff;
+        }
+
+        .name-screen p {
+            color: #888;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .name-row {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .name-row input {
+            flex: 1;
+            background: #111;
+            border: 1px solid #44f;
+            border-radius: 4px;
+            outline: none;
+            color: #ff0;
+            font-family: 'Courier New', monospace;
+            font-size: max(13px, 16px);
+            padding: 8px 10px;
+        }
+        .name-row input::placeholder {
+            color: #444;
+        }
+
+        .name-row button {
+            background: #000080;
+            border: 1px solid #44f;
+            border-radius: 4px;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            padding: 8px 14px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .name-row button:active {
+            background: #0000cc;
+        }
+
+        /* ── quick commands ── */
+        .quickbar {
+            background: #0a0a0a;
+            border-top: 1px solid #1a1a1a;
+            padding: 5px 6px;
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            flex-shrink: 0;
+        }
+        .quickbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .qbtn {
+            background: transparent;
+            border: 1px solid #333;
+            border-radius: 3px;
+            color: #888;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            padding: 3px 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .qbtn:active {
+            border-color: #0ff;
+            color: #0ff;
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
+    <div class="screen">
 
-<!-- ════════════════════════════
-     PANTALLA DE ACCESO
-════════════════════════════ -->
-<div id="access-screen">
-  <div class="access-box">
-    <div class="access-header">
-      <div class="access-logo">S<span>F</span></div>
-      <div class="access-tagline">Sin Fronteras · Red Profesional Global</div>
+        <div class="titlebar">
+            <span class="title-left">
+                Atlas v0.3.0 — #general
+                <span class="train-dot" id="trainDot" title="Autoentrenamiento 24/7"></span>
+                <span class="train-status" id="trainLabel">TRAIN</span>
+            </span>
+            <span class="title-right" id="clockTitle">00:00</span>
+        </div>
+
+        <!-- pantalla de nick -->
+        <div class="name-screen" id="nameScreen">
+            <div class="logo">ATLAS</div>
+            <p>Ingresá tu nick para conectarte</p>
+            <div class="name-row">
+                <input type="text" id="nameInput" maxlength="20" autocomplete="off" placeholder="tu_nick" autocorrect="off" autocapitalize="none" />
+                <button onclick="confirmarNombre()">[ OK ]</button>
+            </div>
+        </div>
+
+        <!-- log -->
+        <div class="log hidden" id="log"></div>
+
+        <!-- quick commands -->
+        <div class="quickbar hidden" id="quickbar">
+            <button class="qbtn" onclick="quick('hola')">hola</button>
+            <button class="qbtn" onclick="quick('como estas')">como estas</button>
+            <button class="qbtn" onclick="quick('bien')">bien</button>
+            <button class="qbtn" onclick="quick('chau')">chau</button>
+            <button class="qbtn" onclick="quick('atlas memoria')">memoria</button>
+            <button class="qbtn" onclick="quick('atlas estado')">estado</button>
+        </div>
+
+        <!-- statusbar -->
+        <div class="statusbar hidden" id="statusbar">
+            <span>
+                <span class="status-active" id="clockEl">00:00</span>
+                <span class="status-train" id="statusTrain">◉ TRAIN</span>
+            </span>
+            <span id="statusNick">[nick(+i)] [1:#general]</span>
+            <span id="memStats" style="color:#888;font-size:10px;"></span>
+        </div>
+
+        <!-- input -->
+        <div class="input-area hidden" id="inputArea">
+            <span class="prompt" id="promptLabel">[nick]</span>
+            <input type="text" id="msg" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="escribí..." />
+            <button id="sendBtn" onclick="enviar()">▶</button>
+        </div>
+
     </div>
+    <script>
+        const logEl = document.getElementById('log');
+        const msgInp = document.getElementById('msg');
+        const nameInp = document.getElementById('nameInput');
+        let nick = '';
 
-    <div class="access-tabs">
-      <button class="access-tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</button>
-      <button class="access-tab" id="tab-register" onclick="switchTab('register')">Registrarse</button>
-    </div>
+        // ═══════════════════════════════════════════════
+        // ESTADO GLOBAL
+        // ═══════════════════════════════════════════════
+        const S = {
+            typing: false,
+            memoria: {},
+            autoTrain: {
+                interval: 35000,
+                running: false,
+                timer: null,
+                totalTrained: parseInt(localStorage.getItem('atlas_train_total') || '0'),
+                lastTrain: localStorage.getItem('atlas_train_last') || 'nunca',
+                inferredFacts: JSON.parse(localStorage.getItem('atlas_inferred') || '{}'),
+                creations: JSON.parse(localStorage.getItem('atlas_creations') || '{}'),
+                trainedTopics: JSON.parse(localStorage.getItem('atlas_trained_topics') || '[]'),
+                reasoningDepth: parseInt(localStorage.getItem('atlas_reasoning_depth') || '0'),
+            },
+            trainLog: JSON.parse(localStorage.getItem('atlas_train_log') || '[]'),
+        };
 
-    <div class="access-body" id="form-login">
-      <div class="form-group">
-        <label>Correo electrónico</label>
-        <input type="email" id="login-email" placeholder="tu@email.com">
-      </div>
-      <div class="form-group">
-        <label>Contraseña</label>
-        <input type="password" id="login-pass" placeholder="••••••••"
-          onkeydown="if(event.key==='Enter')doLogin()">
-        <div class="form-error" id="login-error">Credenciales incorrectas. Verificá tus datos.</div>
-      </div>
-      <button class="access-btn" onclick="doLogin()">Acceder a SF →</button>
-      <div class="access-footer">
-        ¿No tenés cuenta? <a onclick="switchTab('register')" style="cursor:pointer;color:var(--accent);font-weight:bold">Registrate gratis</a>
-      </div>
-    </div>
+        try { S.memoria = JSON.parse(localStorage.getItem('atlas_memoria') || '{}'); } catch (e) {}
 
-    <div class="access-body" id="form-register" style="display:none">
-      <div class="form-group">
-        <label>Nombre completo</label>
-        <input type="text" id="reg-name" placeholder="Tu nombre real">
-      </div>
-      <div class="form-group">
-        <label>Correo electrónico</label>
-        <input type="email" id="reg-email" placeholder="tu@email.com">
-        <div class="form-error" id="reg-error-email">Este email ya está registrado.</div>
-      </div>
-      <div class="form-group">
-        <label>Contraseña (mínimo 6 caracteres)</label>
-        <input type="password" id="reg-pass" placeholder="••••••••"
-          onkeydown="if(event.key==='Enter')doRegister()">
-        <div class="form-error" id="reg-error-pass">La contraseña debe tener al menos 6 caracteres.</div>
-      </div>
-      <button class="access-btn" onclick="doRegister()">Crear cuenta gratuita</button>
-      <div class="access-footer">
-        Al registrarte aceptás los <a href="#" style="color:var(--accent);">Términos de uso</a> de SF.
-      </div>
-    </div>
-  </div>
-</div>
+        // ── TEMAS DE ENTRENAMIENTO ──
+        const TRAINING_TOPICS = [
+            'fotosíntesis', 'respiración celular', 'mitosis', 'meiosis', 'ADN', 'ARN', 'ribosoma',
+            'evolución biológica', 'selección natural', 'ecosistema', 'biodiversidad', 'célula madre',
+            'neurociencia', 'sinapsis', 'neurotransmisor', 'dopamina', 'serotonina',
+            'sistema solar', 'exoplaneta', 'galaxia', 'agujero negro', 'supernova', 'materia oscura',
+            'energía oscura', 'big bang', 'tabla periódica', 'enlace químico', 'catálisis',
+            'termodinámica', 'entropía', 'electromagnetismo', 'cuántica', 'fotón',
+            'inteligencia artificial', 'machine learning', 'red neuronal', 'algoritmo',
+            'estructura de datos', 'compilador', 'sistema operativo', 'kernel',
+            'blockchain', 'criptografía', 'computación cuántica', 'robot', 'automatización',
+            'estoicismo', 'existencialismo', 'empirismo', 'racionalismo',
+            'ética kantiana', 'utilitarismo', 'democracia', 'derechos humanos',
+            'lingüística', 'semántica', 'lógica formal', 'renacimiento', 'barroco',
+            'impresionismo', 'surrealismo', 'cubismo', 'música clásica', 'jazz',
+            'sistema inmune', 'inflamación', 'antibiótico', 'vacuna', 'genética médica',
+            'epidemiología', 'metabolismo', 'homeostasis', 'cáncer', 'apoptosis',
+            'teoría de conjuntos', 'topología', 'álgebra abstracta', 'estadística',
+            'probabilidad', 'teoría de juegos', 'agricultura sostenible',
+            'energía renovable', 'cambio climático', 'psicología cognitiva',
+            'memoria humana', 'percepción', 'lenguaje', 'gravitación',
+            'relatividad general', 'mecánica cuántica', 'modelo estándar', 'bosón de Higgs',
+            'antimateria', 'CRISPR', 'clonación', 'neuroplasticidad', 'conectoma',
+            'fusión nuclear', 'grafeno', 'metamateriales',
+        ];
 
-<!-- ════════════════════════════
-     INTERFAZ PRINCIPAL (oculta hasta login)
-════════════════════════════ -->
-<div id="app" style="display:none">
+        function mezclarArray(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() *
+                (i + 1));
+            [a[i], a[j]] = [a[j], a[i]]; } return a; }
+        let trainQueue = [];
 
-  <div id="header">
-    <div id="header-inner">
-      <a id="logo" href="#">S<span>F</span> <small>Sin Fronteras</small></a>
-      <div id="header-nav">
-        <span id="user-info"></span>
-        <button class="nav-btn blue" onclick="goHome()">Inicio</button>
-        <button class="nav-btn" onclick="doLogout()">Salir</button>
-      </div>
-    </div>
-  </div>
+        function initTrainQueue() {
+            trainQueue = mezclarArray([...TRAINING_TOPICS]);
+            trainQueue.sort((a, b) => {
+                const aIn = S.autoTrain.trainedTopics.includes(a.toLowerCase()) ? 1 : 0;
+                const bIn = S.autoTrain.trainedTopics.includes(b.toLowerCase()) ? 1 : 0;
+                return aIn - bIn;
+            });
+        }
 
-  <div id="page">
+        // ═══════════════════════════════════════════════
+        // PERSISTENCIA
+        // ═══════════════════════════════════════════════
+        function guardarMemoria() { try { localStorage.setItem('atlas_memoria', JSON.stringify(S.memoria)); } catch (e) {} }
 
-    <div id="sidebar">
-      <div class="widget">
-        <div class="widget-title">Mi Perfil</div>
-        <div id="my-avatar-box">
-          <div id="my-avatar-initial"></div>
-          <div id="my-name"></div>
-          <div id="my-email"></div>
-        </div>
-      </div>
+        function saveInferred() { try { localStorage.setItem('atlas_inferred', JSON.stringify(S.autoTrain
+                .inferredFacts)); } catch (e) {} }
 
-      <div class="widget">
-        <div class="widget-title">Navegación</div>
-        <div class="widget-body" style="padding:8px 6px">
-          <a class="sidebar-link" onclick="goHome()">Inicio</a>
-          <a class="sidebar-link" onclick="goHome()">Mi perfil</a>
-          <a class="sidebar-link" onclick="goHome()">Amigos</a>
-          <a class="sidebar-link" onclick="goHome()">Fotos</a>
-          <a class="sidebar-link" onclick="goHome()">Mensajes</a>
-        </div>
-      </div>
+        function saveCreations() { try { localStorage.setItem('atlas_creations', JSON.stringify(S.autoTrain
+                .creations)); } catch (e) {} }
 
-      <div class="widget">
-        <div class="widget-title">Actividad</div>
-        <div class="widget-body">
-          <div class="sidebar-stats">
-            Publicaciones: <b id="stat-posts">0</b><br>
-            Me gusta dados: <b id="stat-likes">0</b><br>
-            Comentarios: <b id="stat-comments">0</b><br>
-            Miembro desde: <b id="stat-since">—</b>
-          </div>
-        </div>
-      </div>
+        function saveTrainState() {
+            try {
+                localStorage.setItem('atlas_train_total', S.autoTrain.totalTrained);
+                localStorage.setItem('atlas_train_last', S.autoTrain.lastTrain);
+                localStorage.setItem('atlas_trained_topics', JSON.stringify(S.autoTrain.trainedTopics));
+                localStorage.setItem('atlas_reasoning_depth', S.autoTrain.reasoningDepth);
+                localStorage.setItem('atlas_train_log', JSON.stringify(S.autoTrain.trainLog.slice(-80)));
+            } catch (e) {}
+        }
 
-      <!-- Widget de Apariencia (tema oscuro) -->
-      <div class="widget">
-        <div class="widget-title">Apariencia</div>
-        <div class="widget-body">
-          <button id="theme-toggle-btn" onclick="toggleTheme()">
-            <span id="theme-icon">☾</span> Modo oscuro
-          </button>
-        </div>
-      </div>
-    </div>
+        function addTrainLog(entry) {
+            const time = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit',
+            second: '2-digit' });
+            S.autoTrain.trainLog.unshift({ time, entry });
+            if (S.autoTrain.trainLog.length > 80) S.autoTrain.trainLog.pop();
+            saveTrainState();
+            updateMemStats();
+        }
 
-    <div id="main">
-      <div class="welcome-bar" id="welcome-bar" style="display:none">
-        <span>✔️</span>
-        <span id="welcome-msg">¡Bienvenido a SF!</span>
-      </div>
+        function updateMemStats() {
+            const el = document.getElementById('memStats');
+            if (el) {
+                const kb = Object.keys(S.memoria).length;
+                const inf = Object.keys(S.autoTrain.inferredFacts).length;
+                const cr = Object.keys(S.autoTrain.creations).length;
+                el.textContent = `🧠 ${kb}f ${inf}i ${cr}c | d${S.autoTrain.reasoningDepth}`;
+            }
+        }
 
-      <div id="post-box">
-        <div id="post-box-title">¿Qué está pasando?</div>
-        <div id="post-form">
-          <textarea id="post-text" placeholder="Compartí una actualización con tu red..."></textarea>
-          <div class="post-form-row">
-            <label for="photo-input">📎 Adjuntar imagen
-              <input type="file" id="photo-input" accept="image/*" onchange="previewPhoto(this)">
-            </label>
-            <img id="photo-preview" alt="preview">
-            <button class="publish-btn" onclick="publishPost()">Publicar</button>
-          </div>
-        </div>
-      </div>
+        // ═══════════════════════════════════════════════
+        // UTILIDADES DE LOG
+        // ═══════════════════════════════════════════════
+        function ts() { return new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }); }
 
-      <div id="feed"></div>
-    </div>
+        function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
-  </div>
+        function addLine(html, cls = '') {
+            const line = document.createElement('div');
+            line.className = 'line';
+            line.innerHTML = `<span class="ts">${ts()}</span><span class="text ${cls}">${html}</span>`;
+            logEl.appendChild(line);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
 
-  <div id="site-footer">
-    © 2025 <b>SF — Sin Fronteras</b> · <a href="#">Inicio</a> · <a href="#">Privacidad</a> · <a href="#">Términos</a> · <a href="#">Contacto</a>
-    <br>Conectando profesionales sin límites
-  </div>
+        function sysLine(t, cls = 'c-gray') { addLine(t, cls); }
 
-</div>
+        function botLineRaw(t) {
+            addLine(`&lt;<span class="c-cyan" style="font-weight:bold">Atlas</span>&gt; ${t}`);
+        }
 
-<div id="lightbox" onclick="closeLightbox()">
-  <img id="lightbox-img" src="" alt="">
-</div>
+        function userLine(t) {
+            addLine(
+                `&lt;<span class="c-yellow" style="font-weight:bold">${esc(nick)}</span>&gt; ${esc(t)}`);
+        }
 
-<script>
+        function infoLine(t) { addLine(`--- ${t}`, 'c-blue'); }
 
-let DB = {
-  users : JSON.parse(localStorage.getItem('sf_users')  || '[]'),
-  posts : JSON.parse(localStorage.getItem('sf_posts')  || '[]'),
-};
-let currentUser = JSON.parse(localStorage.getItem('sf_session') || 'null');
+        function wikiLine(t) { addLine(`[WIKI] ${t}`, 'c-magenta'); }
 
-function saveDB() {
-  localStorage.setItem('sf_users', JSON.stringify(DB.users));
-  localStorage.setItem('sf_posts', JSON.stringify(DB.posts));
-}
-function saveSession() {
-  localStorage.setItem('sf_session', JSON.stringify(currentUser));
-}
+        function learnLine(t) { addLine(`[LEARN] ${t}`, 'c-green'); }
 
-// Tema oscuro
-function applyTheme(dark) {
-  if (dark) {
-    document.body.classList.add('dark');
-    document.getElementById('theme-icon').textContent = '☀';
-    document.getElementById('theme-toggle-btn').innerHTML = '<span id="theme-icon">☀</span> Modo claro';
-  } else {
-    document.body.classList.remove('dark');
-    document.getElementById('theme-icon').textContent = '☾';
-    document.getElementById('theme-toggle-btn').innerHTML = '<span id="theme-icon">☾</span> Modo oscuro';
-  }
-}
+        function inferLine(t) { addLine(`[INFER] ${t}`, 'c-orange'); }
 
-function toggleTheme() {
-  const isDark = document.body.classList.contains('dark');
-  const newMode = !isDark;
-  localStorage.setItem('sf_dark_mode', newMode ? '1' : '0');
-  applyTheme(newMode);
-}
+        function createLine(t) { addLine(`[CREATE] ${t}`, 'c-magenta'); }
 
-// Cargar preferencia de tema al iniciar
-(function() {
-  const saved = localStorage.getItem('sf_dark_mode');
-  if (saved === '1') {
-    applyTheme(true);
-  } else {
-    applyTheme(false);
-  }
-})();
+        // ═══════════════════════════════════════════════
+        // RESPUESTA ANIMADA (TYPEWRITER)
+        // ═══════════════════════════════════════════════
+        async function botLine(t) {
+            const line = document.createElement('div');
+            line.className = 'line';
+            const tsSpan = `<span class="ts">${ts()}</span>`;
+            const prefix = `&lt;<span class="c-cyan" style="font-weight:bold">Atlas</span>&gt; `;
+            line.innerHTML = tsSpan + `<span class="text">${prefix}</span>`;
+            logEl.appendChild(line);
+            logEl.scrollTop = logEl.scrollHeight;
 
-function switchTab(tab) {
-  document.getElementById('form-login').style.display    = tab === 'login'    ? 'block' : 'none';
-  document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
-  document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
-  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-}
+            const textSpan = line.querySelector('.text');
+            const fullText = t;
+            let i = 0;
+            const speed = 15; // ms por carácter
 
-function doRegister() {
-  const name  = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim().toLowerCase();
-  const pass  = document.getElementById('reg-pass').value;
+            return new Promise(resolve => {
+                function typeChar() {
+                    if (i < fullText.length) {
+                        textSpan.innerHTML = prefix + esc(fullText.substring(0, i + 1));
+                        i++;
+                        logEl.scrollTop = logEl.scrollHeight;
+                        setTimeout(typeChar, speed);
+                    } else {
+                        resolve();
+                    }
+                }
+                typeChar();
+            });
+        }
 
-  document.getElementById('reg-error-email').classList.remove('show');
-  document.getElementById('reg-error-pass').classList.remove('show');
+        function showChat() {
+            document.getElementById('nameScreen').classList.add('hidden');
+            logEl.classList.remove('hidden');
+            document.getElementById('quickbar').classList.remove('hidden');
+            document.getElementById('statusbar').classList.remove('hidden');
+            document.getElementById('inputArea').classList.remove('hidden');
+            updateMemStats();
+        }
 
-  if (!name || !email) { alert('Completá nombre y correo.'); return; }
-  if (pass.length < 6) {
-    document.getElementById('reg-error-pass').classList.add('show');
-    return;
-  }
-  if (DB.users.find(u => u.email === email)) {
-    document.getElementById('reg-error-email').classList.add('show');
-    return;
-  }
+        nameInp.addEventListener('keydown', e => { if (e.key === 'Enter') confirmarNombre(); });
 
-  const newUser = {
-    id      : Date.now(),
-    name    : name,
-    email   : email,
-    pass    : pass,
-    since   : new Date().toLocaleDateString('es-AR'),
-    isNew   : true
-  };
-  DB.users.push(newUser);
-  saveDB();
+        function confirmarNombre() {
+            const n = nameInp.value.trim().replace(/\s+/g, '_');
+            if (!n) return;
+            nick = n;
+            showChat();
+            document.getElementById('promptLabel').textContent = `[${nick}]`;
+            document.getElementById('statusNick').textContent = `[${nick}(+i)] [1:#general]`;
 
-  currentUser = newUser;
-  saveSession();
-  showApp(true);
-}
+            sysLine('--- Atlas v0.3.0 iniciado', 'c-green');
+            sysLine('--- Autoentrenamiento 24/7: ON | Razonamiento: ON', 'c-green');
+            sysLine('--- Inferencia lógica: ON | Creación: ON', 'c-green');
+            sysLine(`--- Tu nick: <span class="c-cyan">${esc(nick)}</span>`, 'c-cyan');
+            infoLine(`Memoria: ${Object.keys(S.memoria).length} hechos | ${Object.keys(S.autoTrain.inferredFacts).length} inferencias | ${Object.keys(S.autoTrain.creations).length} creaciones`);
+            sysLine('--- Comandos: atlas aprende: X = Y | atlas olvida: X | atlas memoria | atlas estado', 'c-gray');
+            setTimeout(async () => {
+                await botLine(
+                    `hola <span class="c-yellow">${esc(nick)}</span>! soy Atlas v0.3.0. entreno 24/7, razono, infiero y creo sin parar. preguntame cualquier cosa.`
+                    );
+            }, 300);
 
-function doLogin() {
-  const email = document.getElementById('login-email').value.trim().toLowerCase();
-  const pass  = document.getElementById('login-pass').value;
-  document.getElementById('login-error').classList.remove('show');
+            // Iniciar entrenamiento 24/7
+            startTraining();
+            trainingCycle();
+        }
 
-  const user = DB.users.find(u => u.email === email && u.pass === pass);
-  if (!user) {
-    document.getElementById('login-error').classList.add('show');
-    return;
-  }
+        // ═══════════════════════════════════════════════
+        // WIKIPEDIA
+        // ═══════════════════════════════════════════════
+        async function fetchWikiSummary(topic) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 8000);
+            try {
+                const res = await fetch(
+                    `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topic)}`, { signal: controller
+                        .signal }
+                );
+                clearTimeout(timeout);
+                if (!res.ok) return null;
+                const data = await res.json();
+                if (data.type === 'disambiguation') return null;
+                const extract = data.extract ? data.extract.split('.')[0] + '.' : null;
+                if (!extract || extract.length < 15) return null;
+                return { title: data.title, extract, topic };
+            } catch (e) {
+                clearTimeout(timeout);
+                return null;
+            }
+        }
 
-  currentUser = user;
-  saveSession();
-  showApp(false);
-}
+        async function buscarWiki(query) {
+            wikiLine(`buscando "<span class="c-white">${esc(query)}</span>"...`);
+            try {
+                const res = await fetch(
+                    `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                if (data.type === 'disambiguation') {
+                    await botLine(`"${esc(query)}" tiene varias acepciones. ¿Podés ser más específico?`);
+                    return;
+                }
+                const resumen = data.extract ? data.extract.split('.')[0] + '.' : null;
+                if (!resumen) throw new Error();
+                wikiLine(`encontrado: <span class="c-white">${esc(data.title)}</span>`);
+                await botLine(esc(resumen));
+                const clave = query.toLowerCase().trim();
+                S.memoria[clave] = resumen;
+                guardarMemoria();
+                learnLine(`aprendí y guardé: "<span class="c-white">${esc(query)}</span>"`);
+                updateMemStats();
+            } catch (e) {
+                await botLine(`no encontré nada sobre "<span class="c-white">${esc(query)}</span>".`);
+                sysLine(`--- enseñame: atlas aprende: ${esc(query)} = tu respuesta`, 'c-yellow');
+            }
+        }
 
-function doLogout() {
-  currentUser = null;
-  localStorage.removeItem('sf_session');
-  document.getElementById('access-screen').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-}
+        // ═══════════════════════════════════════════════
+        // RAZONAMIENTO
+        // ═══════════════════════════════════════════════
+        function reasonAboutKnowledge() {
+            const allFacts = { ...S.memoria, ...S.autoTrain.inferredFacts, ...S.autoTrain.creations };
+            const entries = Object.entries(allFacts);
+            if (entries.length < 2) return null;
 
-function showApp(isNew) {
-  document.getElementById('access-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
+            const shuffled = mezclarArray(entries);
+            const maxAttempts = Math.min(25, shuffled.length);
 
-  document.getElementById('my-avatar-initial').textContent = currentUser.name.charAt(0).toUpperCase();
-  document.getElementById('my-name').textContent  = currentUser.name;
-  document.getElementById('my-email').textContent = currentUser.email;
-  document.getElementById('user-info').textContent = currentUser.name.split(' ')[0];
-  document.getElementById('stat-since').textContent = currentUser.since || '—';
+            // Inferencia transitiva
+            for (let i = 0; i < maxAttempts; i++) {
+                for (let j = i + 1; j < Math.min(i + 5, shuffled.length); j++) {
+                    const [keyA, valA] = shuffled[i];
+                    const [keyB, valB] = shuffled[j];
+                    if (keyA === keyB) continue;
+                    const wordsA = valA.toLowerCase().split(/\s+/).filter(w => w.length > 4);
+                    const wordsB = valB.toLowerCase().split(/\s+/).filter(w => w.length > 4);
+                    const common = wordsA.filter(w => wordsB.includes(w));
+                    if (common.length >= 1) {
+                        const connectionWord = common[0];
+                        const inferenceKey = `${keyA}_${keyB}`.toLowerCase();
+                        if (allFacts[inferenceKey] || S.autoTrain.inferredFacts[inferenceKey]) continue;
+                        const inferenceValue =
+                            `[Inferido] "${keyA}" y "${keyB}" están relacionados a través de "${connectionWord}": ${valA.split('.')[0]} ↔ ${valB.split('.')[0]}.`;
+                        S.autoTrain.inferredFacts[inferenceKey] = inferenceValue;
+                        S.autoTrain.reasoningDepth++;
+                        saveInferred();
+                        saveTrainState();
+                        inferLine(`${keyA} ↔ ${keyB} (via "${connectionWord}")`);
+                        updateMemStats();
+                        return { type: 'inference', key: inferenceKey };
+                    }
+                }
+            }
 
-  const wb = document.getElementById('welcome-bar');
-  const wm = document.getElementById('welcome-msg');
-  if (isNew) {
-    wb.style.display = 'flex';
-    wm.textContent   = `Bienvenido/a a SF, ${currentUser.name.split(' ')[0]}. Tu red profesional está lista.`;
-    setTimeout(() => wb.style.display = 'none', 6000);
-  }
+            // Categorización
+            const wordCount = {};
+            entries.forEach(([key, val]) => {
+                const words = val.toLowerCase().split(/\s+/).filter(w => w.length > 5);
+                [...new Set(words)].forEach(w => { wordCount[w] = (wordCount[w] || 0) + 1; });
+            });
+            const frequentWords = Object.entries(wordCount).filter(([w, c]) => c >= 3 && w.length > 5).sort((a, b) => b[
+                1] - a[1]);
+            if (frequentWords.length > 0) {
+                const [word, count] = frequentWords[0];
+                const relatedKeys = entries.filter(([k, v]) => v.toLowerCase().includes(word)).map(([k]) => k);
+                if (relatedKeys.length >= 3) {
+                    const catKey = `categoria_${word}`.toLowerCase();
+                    if (!S.autoTrain.inferredFacts[catKey]) {
+                        const catValue = `[Categoría] "${word}" conecta: ${relatedKeys.join(', ')}.`;
+                        S.autoTrain.inferredFacts[catKey] = catValue;
+                        S.autoTrain.reasoningDepth++;
+                        saveInferred();
+                        saveTrainState();
+                        inferLine(`Categoría: "${word}" (${relatedKeys.length} temas)`);
+                        updateMemStats();
+                        return { type: 'category', key: catKey };
+                    }
+                }
+            }
+            return null;
+        }
 
-  renderFeed();
-  updateStats();
-}
+        function createNewKnowledge() {
+            const allFacts = { ...S.memoria, ...S.autoTrain.inferredFacts, ...S.autoTrain.creations };
+            const entries = Object.entries(allFacts);
+            if (entries.length < 8) return null;
 
-let pendingPhotoB64 = null;
+            const shuffled = mezclarArray(entries);
+            const take = shuffled.slice(0, Math.min(4, shuffled.length));
+            const keys = take.map(([k]) => k);
 
-function previewPhoto(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    pendingPhotoB64 = e.target.result;
-    const prev = document.getElementById('photo-preview');
-    prev.src    = pendingPhotoB64;
-    prev.style.display = 'inline-block';
-  };
-  reader.readAsDataURL(file);
-}
+            const creationKey = `sintesis_${Date.now().toString(36)}`;
+            const patterns = [
+                `[Creación] Combinando "${keys[0]}", "${keys[1]}" y "${keys[2]}", emerge un nuevo concepto: los principios de ${keys[0]} aplicados al dominio de ${keys[1]} sugieren una relación fundamental con ${keys[2]} a través de patrones subyacentes de organización.`,
+                `[Teoría] A partir del análisis de ${keys.join(', ')}, se postula un principio unificador: la información y la energía se organizan en niveles jerárquicos de complejidad creciente.`,
+                `[Hipótesis] Si ${keys[0]} y ${keys[1]} comparten principios estructurales, existe un marco teórico que unifica ambos dominios: "isomorfismo funcional".`,
+            ];
+            const creationValue = patterns[Math.floor(Math.random() * patterns.length)];
+            S.autoTrain.creations[creationKey] = creationValue;
+            S.autoTrain.reasoningDepth++;
+            saveCreations();
+            saveTrainState();
+            createLine(`Síntesis de ${keys.length} fuentes`);
+            updateMemStats();
+            return { key: creationKey, value: creationValue };
+        }
 
-function publishPost() {
-  const texto = document.getElementById('post-text').value.trim();
-  if (!texto && !pendingPhotoB64) {
-    alert('Escribí un mensaje o adjuntá una imagen antes de publicar.');
-    return;
-  }
+        // ═══════════════════════════════════════════════
+        // CICLO DE ENTRENAMIENTO 24/7
+        // ═══════════════════════════════════════════════
+        async function trainingCycle() {
+            if (!S.autoTrain.running) return;
+            if (S.typing) { scheduleNextTraining(); return; }
 
-  const post = {
-    id       : Date.now(),
-    userId   : currentUser.id,
-    userName : currentUser.name,
-    text     : texto,
-    photo    : pendingPhotoB64 || null,
-    time     : new Date().toLocaleString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
-    likes    : [],
-    comments : []
-  };
+            const online = navigator.onLine;
+            updateTrainIndicators('active', online);
 
-  DB.posts.unshift(post);
-  saveDB();
+            if (trainQueue.length < 3) initTrainQueue();
 
-  document.getElementById('post-text').value  = '';
-  document.getElementById('photo-input').value = '';
-  document.getElementById('photo-preview').style.display = 'none';
-  pendingPhotoB64 = null;
+            // FASE 1: Wikipedia
+            if (online) {
+                const topicsToTry = trainQueue.splice(0, 2);
+                let learned = 0;
+                for (const topic of topicsToTry) {
+                    const key = topic.toLowerCase().trim();
+                    if (S.memoria[key] || S.autoTrain.trainedTopics.includes(key)) continue;
+                    const wikiData = await fetchWikiSummary(topic);
+                    if (wikiData) {
+                        S.memoria[key] = wikiData.extract;
+                        S.autoTrain.trainedTopics.push(key);
+                        S.autoTrain.totalTrained++;
+                        learned++;
+                        guardarMemoria();
+                        learnLine(`autoaprendido: "<span class="c-white">${esc(wikiData.title)}</span>"`);
+                        updateMemStats();
+                    }
+                    await new Promise(r => setTimeout(r, 1200));
+                }
+                if (learned > 0) {
+                    S.autoTrain.lastTrain = new Date().toLocaleString('es-AR');
+                    saveTrainState();
+                }
+            }
 
-  renderFeed();
-  updateStats();
-}
+            // FASE 2: Razonar
+            reasonAboutKnowledge();
 
-function renderFeed() {
-  const feed = document.getElementById('feed');
-  let posts = [...DB.posts];
+            // FASE 3: Crear
+            if (Object.keys({ ...S.memoria, ...S.autoTrain.inferredFacts }).length > 8) {
+                createNewKnowledge();
+            }
 
-  if (!posts.length) {
-    feed.innerHTML = `
-      <div class="empty-feed">
-        <big>📝</big>
-        El feed está vacío. Publicá tu primera actualización.
-      </div>`;
-    return;
-  }
+            // FASE 4: Meta-inferencia
+            const inferredEntries = Object.entries(S.autoTrain.inferredFacts);
+            if (inferredEntries.length >= 3 && Math.random() < 0.35) {
+                const [k1] = inferredEntries[Math.floor(Math.random() * inferredEntries.length)];
+                const [k2] = inferredEntries[Math.floor(Math.random() * inferredEntries.length)];
+                if (k1 !== k2 && !S.autoTrain.inferredFacts[`meta_${k1}_${k2}`]) {
+                    const metaKey = `meta_${k1}_${k2}`.toLowerCase();
+                    const metaValue =
+                        `[Meta-inferencia] Las inferencias sobre "${k1}" y "${k2}" comparten patrones estructurales.`;
+                    S.autoTrain.inferredFacts[metaKey] = metaValue;
+                    S.autoTrain.reasoningDepth++;
+                    saveInferred();
+                    saveTrainState();
+                    inferLine(`Meta-inferencia generada`);
+                    updateMemStats();
+                }
+            }
 
-  feed.innerHTML = posts.map(post => buildPostHTML(post)).join('');
-}
+            updateTrainIndicators('idle', online);
+            scheduleNextTraining();
+        }
 
-function buildPostHTML(post) {
-  const isLiked  = post.likes.includes(currentUser.id);
-  const initial  = post.userName.charAt(0).toUpperCase();
-  const comments = post.comments.map(c => `
-    <div class="comment">
-      <div class="comment-av">${c.userName.charAt(0).toUpperCase()}</div>
-      <div class="comment-bubble">
-        <span class="comment-name">${escHTML(c.userName)}</span>
-        &nbsp;${escHTML(c.text)}
-      </div>
-    </div>`).join('');
+        function updateTrainIndicators(state, online) {
+            const dot = document.getElementById('trainDot');
+            const label = document.getElementById('trainLabel');
+            const statusTrain = document.getElementById('statusTrain');
+            if (dot) {
+                dot.classList.toggle('offline', !online);
+            }
+            if (label) {
+                label.textContent = online ? (state === 'active' ? 'TRAIN' : 'IDLE') : 'OFFLINE';
+                label.classList.toggle('offline', !online);
+            }
+            if (statusTrain) {
+                statusTrain.textContent = online ? (state === 'active' ? '◉ TRAIN' : '○ IDLE') : '◉ OFFLINE';
+                statusTrain.classList.toggle('offline', !online);
+            }
+        }
 
-  return `
-    <div class="post" id="post-${post.id}">
-      <div class="post-header">
-        <div class="post-avatar">${initial}</div>
-        <div class="post-meta">
-          <div class="post-user">${escHTML(post.userName)}</div>
-          <div class="post-time">${post.time}</div>
-        </div>
-      </div>
-      ${post.text  ? `<div class="post-body">${escHTML(post.text)}</div>` : ''}
-      ${post.photo ? `<img class="post-img" src="${post.photo}" onclick="openLightbox(this.src)" alt="imagen">` : ''}
-      <div class="post-actions">
-        <span class="post-action ${isLiked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
-          ${isLiked ? '★' : '☆'} Me gusta
-        </span>
-        <span class="like-count">${post.likes.length > 0 ? post.likes.length : ''}</span>
-        <span class="post-action" onclick="toggleComments(${post.id})">
-          Comentar
-        </span>
-        <span class="comment-count">${post.comments.length > 0 ? post.comments.length : ''}</span>
-        ${post.userId === currentUser.id ? `<span class="post-action" style="color:#c0392b" onclick="deletePost(${post.id})">Eliminar</span>` : ''}
-      </div>
-      <div class="comments-section" id="comments-${post.id}">
-        <div id="comment-list-${post.id}">${comments}</div>
-        <div class="comment-form">
-          <input class="comment-input" id="comment-input-${post.id}"
-            placeholder="Escribí un comentario..."
-            onkeydown="if(event.key==='Enter')addComment(${post.id})">
-          <button class="comment-send" onclick="addComment(${post.id})">Enviar</button>
-        </div>
-      </div>
-    </div>`;
-}
+        function scheduleNextTraining() {
+            if (S.autoTrain.timer) clearTimeout(S.autoTrain.timer);
+            if (!S.autoTrain.running) return;
+            S.autoTrain.timer = setTimeout(trainingCycle, S.autoTrain.interval);
+        }
 
-function toggleLike(postId) {
-  const post = DB.posts.find(p => p.id === postId);
-  if (!post) return;
-  const idx = post.likes.indexOf(currentUser.id);
-  if (idx === -1) {
-    post.likes.push(currentUser.id);
-  } else {
-    post.likes.splice(idx, 1);
-  }
-  saveDB();
-  renderFeed();
-  updateStats();
-}
+        function startTraining() {
+            if (S.autoTrain.running) return;
+            S.autoTrain.running = true;
+            initTrainQueue();
+            updateTrainIndicators('idle', navigator.onLine);
+            addTrainLog('🚀 Entrenamiento 24/7 activado');
+            scheduleNextTraining();
+        }
 
-function toggleComments(postId) {
-  const section = document.getElementById('comments-' + postId);
-  if (!section) return;
-  section.classList.toggle('open');
-  if (section.classList.contains('open')) {
-    document.getElementById('comment-input-' + postId)?.focus();
-  }
-}
+        function stopTraining() {
+            S.autoTrain.running = false;
+            if (S.autoTrain.timer) clearTimeout(S.autoTrain.timer);
+            S.autoTrain.timer = null;
+            updateTrainIndicators('idle', navigator.onLine);
+        }
 
-function addComment(postId) {
-  const input = document.getElementById('comment-input-' + postId);
-  const text  = input?.value.trim();
-  if (!text) return;
-  const post = DB.posts.find(p => p.id === postId);
-  if (!post) return;
-  post.comments.push({
-    userName : currentUser.name,
-    text     : text,
-    time     : new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})
-  });
-  saveDB();
-  const list = document.getElementById('comment-list-' + postId);
-  if (list) {
-    list.innerHTML = post.comments.map(c => `
-      <div class="comment">
-        <div class="comment-av">${c.userName.charAt(0).toUpperCase()}</div>
-        <div class="comment-bubble">
-          <span class="comment-name">${escHTML(c.userName)}</span>
-          &nbsp;${escHTML(c.text)}
-        </div>
-      </div>`).join('');
-  }
-  input.value = '';
-  updateStats();
-}
+        // ═══════════════════════════════════════════════
+        // LÓGICA DE RESPUESTA
+        // ═══════════════════════════════════════════════
+        async function respuesta(msg) {
+            const lower = msg.toLowerCase().trim();
 
-function deletePost(postId) {
-  if (!confirm('¿Eliminar esta publicación definitivamente?')) return;
-  DB.posts = DB.posts.filter(p => p.id !== postId);
-  saveDB();
-  renderFeed();
-  updateStats();
-}
+            const mAprende = lower.match(/^atlas\s+aprende:\s*(.+?)\s*=\s*(.+)$/);
+            if (mAprende) {
+                const clave = mAprende[1].trim();
+                const valor = msg.match(/^atlas\s+aprende:\s*.+?\s*=\s*(.+)$/i)?.[1]?.trim();
+                if (clave && valor) {
+                    S.memoria[clave] = valor;
+                    guardarMemoria();
+                    learnLine(`aprendí: "<span class="c-white">${esc(clave)}</span>" → "<span class="c-white">${esc(valor)}</span>"`);
+                    await botLine(`ok, lo recordaré <span class="c-yellow">${esc(nick)}</span>.`);
+                    updateMemStats();
+                }
+                return;
+            }
 
-function updateStats() {
-  const myPosts    = DB.posts.filter(p => p.userId === currentUser.id).length;
-  const myLikes    = DB.posts.reduce((sum, p) => sum + (p.likes.includes(currentUser.id) ? 1 : 0), 0);
-  const myComments = DB.posts.reduce((sum, p) => sum + p.comments.filter(c => c.userName === currentUser.name).length, 0);
-  document.getElementById('stat-posts').textContent    = myPosts;
-  document.getElementById('stat-likes').textContent    = myLikes;
-  document.getElementById('stat-comments').textContent = myComments;
-}
+            const mOlvida = lower.match(/^atlas\s+olvida:\s*(.+)$/);
+            if (mOlvida) {
+                const clave = mOlvida[1].trim();
+                if (S.memoria[clave]) {
+                    delete S.memoria[clave];
+                    guardarMemoria();
+                    learnLine(`olvidé: "<span class="c-white">${esc(clave)}</span>"`);
+                    await botLine('listo, ya no lo recuerdo.');
+                } else {
+                    await botLine(`no tenía nada sobre "${esc(clave)}".`);
+                }
+                return;
+            }
 
-function openLightbox(src) {
-  document.getElementById('lightbox-img').src = src;
-  document.getElementById('lightbox').classList.add('open');
-}
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-}
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeLightbox();
-});
+            if (lower === 'atlas memoria') {
+                const keys = Object.keys(S.memoria);
+                if (!keys.length) { await botLine('no tengo nada aprendido todavía.'); return; }
+                infoLine(`${keys.length} entradas en memoria:`);
+                keys.slice(-15).forEach(k => sysLine(
+                    `  · ${esc(k)}: ${esc(S.memoria[k].substring(0, 60))}${S.memoria[k].length > 60 ? '...' : ''}`,
+                    'c-gray'));
+                if (keys.length > 15) sysLine(`  ... y ${keys.length - 15} más.`, 'c-gray');
+                return;
+            }
 
-function goHome() {
-  renderFeed();
-  window.scrollTo(0, 0);
-}
+            if (lower === 'atlas estado') {
+                const kb = Object.keys(S.memoria).length;
+                const inf = Object.keys(S.autoTrain.inferredFacts).length;
+                const cr = Object.keys(S.autoTrain.creations).length;
+                const online = navigator.onLine;
+                infoLine(`Estado de Atlas v0.3.0:`);
+                infoLine(`  Online: ${online ? 'SÍ' : 'NO (razonando offline)'}`);
+                infoLine(`  Entrenando: ${S.autoTrain.running ? 'SÍ (24/7)' : 'NO'}`);
+                infoLine(`  Hechos: ${kb} | Inferencias: ${inf} | Creaciones: ${cr}`);
+                infoLine(`  Entrenamientos totales: ${S.autoTrain.totalTrained}`);
+                infoLine(`  Profundidad: ${S.autoTrain.reasoningDepth}`);
+                infoLine(`  Último ciclo: ${S.autoTrain.lastTrain}`);
+                return;
+            }
 
-function escHTML(str) {
-  return (str||'')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/\n/g,'<br>');
-}
+            if (lower === 'hola') {
+                const ops = [
+                    `hola <span class="c-yellow">${esc(nick)}</span>!`,
+                    `hey <span class="c-yellow">${esc(nick)}</span> ¿qué tal?`,
+                    `buenas <span class="c-yellow">${esc(nick)}</span>!`,
+                    `ey <span class="c-yellow">${esc(nick)}</span> ¿cómo andás?`
+                ];
+                await botLine(ops[Math.floor(Math.random() * ops.length)]);
+                return;
+            }
+            if (lower === 'chau') { await botLine(`chau <span class="c-yellow">${esc(nick)}</span>!`); return; }
+            if (lower === 'como estas' || lower === 'cómo estás') { await botLine('todo bien, ¿y vos?'); return; }
+            if (lower === 'bien') { await botLine(
+                `me alegra <span class="c-yellow">${esc(nick)}</span>!`); return; }
 
-if (currentUser) {
-  const still = DB.users.find(u => u.id === currentUser.id);
-  if (still) {
-    currentUser = still;
-    showApp(false);
-  } else {
-    localStorage.removeItem('sf_session');
-  }
-}
+            // buscar en memoria
+            for (const clave of Object.keys(S.memoria)) {
+                if (lower.includes(clave)) { await botLine(esc(S.memoria[clave])); return; }
+            }
+            // buscar en inferencias
+            for (const [k, v] of Object.entries(S.autoTrain.inferredFacts)) {
+                if (lower.includes(k.replace(/_/g, ' '))) { await botLine(esc(v)); return; }
+            }
+            // buscar en creaciones
+            for (const [k, v] of Object.entries(S.autoTrain.creations)) {
+                if (Math.random() < 0.25) { await botLine(esc(v)); return; }
+            }
 
-</script>
+            // Wikipedia
+            const stopwords = ['que es', 'qué es', 'que fue', 'quién es', 'quien es', 'cómo funciona',
+                'como funciona', 'contame sobre', 'hablame de', 'háblame de', 'info sobre',
+                'información sobre', 'sabés algo de', 'sabes algo de'
+            ];
+            let query = lower;
+            for (const sw of stopwords) query = query.replace(sw, '').trim();
+            if (!query) { await botLine('no entendí la pregunta.'); return; }
+            await buscarWiki(query);
+        }
+
+        async function enviar() {
+            const msg = msgInp.value.trim();
+            if (!msg || S.typing) return;
+            userLine(msg);
+            msgInp.value = '';
+            msgInp.disabled = true;
+            S.typing = true;
+            document.getElementById('sendBtn').disabled = true;
+            await respuesta(msg);
+            msgInp.disabled = false;
+            S.typing = false;
+            document.getElementById('sendBtn').disabled = false;
+            msgInp.focus();
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function quick(txt) { msgInp.value = txt;
+            enviar(); }
+
+        msgInp.addEventListener('keydown', e => { if (e.key === 'Enter') enviar(); });
+
+        // reloj
+        function actualizarReloj() {
+            const t = ts();
+            document.getElementById('clockEl').textContent = t;
+            document.getElementById('clockTitle').textContent = t;
+        }
+        actualizarReloj();
+        setInterval(actualizarReloj, 10000);
+
+        // ═══════════════════════════════════════════════
+        // EVENTOS ONLINE/OFFLINE
+        // ═══════════════════════════════════════════════
+        window.addEventListener('online', () => {
+            updateTrainIndicators('idle', true);
+            addTrainLog('🌐 Online - reanudando entrenamiento');
+            if (!S.autoTrain.running) startTraining();
+            scheduleNextTraining();
+        });
+        window.addEventListener('offline', () => {
+            updateTrainIndicators('idle', false);
+            addTrainLog('🔒 Offline - razonando sin internet');
+        });
+
+        // Iniciar entrenamiento automáticamente al cargar (si ya hay nick)
+        if (localStorage.getItem('atlas_user')) {
+            // El usuario ya tiene nick guardado, iniciar entrenamiento en background
+            startTraining();
+            trainingCycle();
+        } else {
+            // Iniciar entrenamiento igual aunque no haya usuario
+            startTraining();
+            trainingCycle();
+        }
+
+        console.log('🧭 Atlas v0.3.0 — IA terminal con autoentrenamiento 24/7');
+    </script>
 </body>
 </html>
