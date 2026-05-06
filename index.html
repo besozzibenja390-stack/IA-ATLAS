@@ -1,1003 +1,412 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Atlas v0.3.0</title>
-    <style>
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Bot · Interfaz Genérica</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        html,
-        body {
-            height: 100%;
-            height: 100dvh;
-            background: #000;
-            color: #aaa;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 1.4;
-            overflow: hidden;
-        }
+    body {
+      background: #e2e8f0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+    }
 
-        .screen {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            height: 100dvh;
-        }
+    /* contenedor principal — super sencillo, sin adornos innecesarios */
+    .bot-interface {
+      max-width: 700px;
+      width: 100%;
+      height: 85vh;
+      background: white;
+      border-radius: 28px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
 
-        /* ── titlebar ── */
-        .titlebar {
-            background: #000080;
-            color: #fff;
-            padding: 6px 8px;
-            font-size: 12px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .title-left {
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .title-right {
-            color: #aaf;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    /* cabecera minimal */
+    .chat-header {
+      background: #f8fafc;
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid #e2edf2;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
 
-        /* ── indicador de entrenamiento en titlebar ── */
-        .train-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #0f0;
-            box-shadow: 0 0 6px #0f0;
-            animation: pulse 1.5s infinite;
-        }
-        .train-dot.offline {
-            background: #fa0;
-            box-shadow: 0 0 6px #fa0;
-            animation: none;
-        }
-        @keyframes pulse {
-            0%,
-            100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.3;
-            }
-        }
-        .train-status {
-            color: #0f0;
-            font-size: 10px;
-            letter-spacing: 1px;
-        }
-        .train-status.offline {
-            color: #fa0;
-        }
+    .header-title {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
 
-        /* ── log ── */
-        .log {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 4px 6px;
-            background: #000;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-        .log::-webkit-scrollbar {
-            display: none;
-        }
+    .bot-name {
+      font-weight: 600;
+      font-size: 1.2rem;
+      letter-spacing: -0.2px;
+      color: #1e293b;
+    }
 
-        .line {
-            display: flex;
-            white-space: pre-wrap;
-            word-break: break-word;
-            padding: 1px 0;
-        }
-        .ts {
-            color: #555;
-            min-width: 45px;
-            flex-shrink: 0;
-            font-size: 10px;
-            padding-top: 1px;
-        }
-        .text {
-            flex: 1;
-            font-size: 13px;
-        }
+    .badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+    }
 
-        .c-green {
-            color: #0f0;
-        }
-        .c-cyan {
-            color: #0ff;
-        }
-        .c-yellow {
-            color: #ff0;
-        }
-        .c-gray {
-            color: #888;
-        }
-        .c-blue {
-            color: #88f;
-        }
-        .c-magenta {
-            color: #f4f;
-        }
-        .c-red {
-            color: #f55;
-        }
-        .c-white {
-            color: #fff;
-        }
-        .c-orange {
-            color: #fa0;
-        }
+    .clear-btn {
+      background: none;
+      border: none;
+      font-size: 0.8rem;
+      color: #5b6e8c;
+      cursor: pointer;
+      padding: 0.3rem 0.8rem;
+      border-radius: 40px;
+      transition: 0.1s;
+      font-weight: 450;
+    }
 
-        /* ── statusbar ── */
-        .statusbar {
-            background: #000080;
-            color: #fff;
-            padding: 3px 6px;
-            font-size: 11px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .status-active {
-            background: #fff;
-            color: #000;
-            padding: 0 4px;
-            border-radius: 2px;
-        }
-        .status-train {
-            background: #0a0;
-            color: #0f0;
-            padding: 0 5px;
-            border-radius: 2px;
-            font-size: 10px;
-            animation: pulse 1.5s infinite;
-        }
-        .status-train.offline {
-            background: #840;
-            color: #fa0;
-            animation: none;
-        }
+    .clear-btn:hover {
+      background: #eef2ff;
+      color: #1e293b;
+    }
 
-        /* ── input area ── */
-        .input-area {
-            background: #0a0a0a;
-            border-top: 1px solid #222;
-            padding: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-shrink: 0;
-        }
+    /* área de mensajes — flexible y genérica */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      background: #ffffff;
+      scroll-behavior: smooth;
+    }
 
-        .prompt {
-            color: #0ff;
-            white-space: nowrap;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
+    /* mensajes individuales: estilo burbuja genérica */
+    .message {
+      max-width: 85%;
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.2s ease;
+      line-height: 1.4;
+    }
 
-        #msg {
-            flex: 1;
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 4px;
-            outline: none;
-            color: #fff;
-            font-family: 'Courier New', monospace;
-            font-size: max(13px, 16px);
-            padding: 6px 8px;
-            caret-color: #fff;
-        }
+    /* mensaje del usuario: alineado a la derecha */
+    .message.user {
+      align-self: flex-end;
+    }
 
-        #sendBtn {
-            background: #000080;
-            border: 1px solid #44f;
-            border-radius: 4px;
-            color: #fff;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            padding: 6px 12px;
-            cursor: pointer;
-            flex-shrink: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-        #sendBtn:active {
-            background: #0000cc;
-        }
+    /* mensaje del bot: alineado a la izquierda */
+    .message.bot {
+      align-self: flex-start;
+    }
 
-        /* ── pantalla de nick ── */
-        .name-screen {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            padding: 2rem 1.5rem;
-            background: #000;
-            text-align: center;
-        }
+    /* burbujas */
+    .bubble {
+      padding: 0.7rem 1rem;
+      border-radius: 22px;
+      font-size: 0.95rem;
+      word-break: break-word;
+      white-space: pre-wrap;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.02);
+    }
 
-        .name-screen .logo {
-            color: #0ff;
-            font-size: 1.6rem;
-            font-weight: bold;
-            letter-spacing: 6px;
-            text-shadow: 0 0 10px #0ff;
-        }
+    .user .bubble {
+      background: #d9f0ec;
+      color: #0f172a;
+      border-bottom-right-radius: 4px;
+      border-top-right-radius: 20px;
+    }
 
-        .name-screen p {
-            color: #888;
-            font-size: 12px;
-            line-height: 1.6;
-        }
+    .bot .bubble {
+      background: #f1f5f9;
+      color: #0f172a;
+      border-bottom-left-radius: 4px;
+      border-top-left-radius: 20px;
+    }
 
-        .name-row {
-            display: flex;
-            gap: 8px;
-            width: 100%;
-            max-width: 300px;
-        }
+    /* pequeño remate de nombre dentro del bubble (opcional pero muy claro) */
+    .sender-name {
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+      letter-spacing: 0.3px;
+      opacity: 0.7;
+      display: inline-block;
+    }
 
-        .name-row input {
-            flex: 1;
-            background: #111;
-            border: 1px solid #44f;
-            border-radius: 4px;
-            outline: none;
-            color: #ff0;
-            font-family: 'Courier New', monospace;
-            font-size: max(13px, 16px);
-            padding: 8px 10px;
-        }
-        .name-row input::placeholder {
-            color: #444;
-        }
+    .user .sender-name {
+      color: #115e59;
+      text-align: right;
+      display: block;
+    }
 
-        .name-row button {
-            background: #000080;
-            border: 1px solid #44f;
-            border-radius: 4px;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            padding: 8px 14px;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .name-row button:active {
-            background: #0000cc;
-        }
+    .bot .sender-name {
+      color: #334155;
+    }
 
-        /* ── quick commands ── */
-        .quickbar {
-            background: #0a0a0a;
-            border-top: 1px solid #1a1a1a;
-            padding: 5px 6px;
-            display: flex;
-            gap: 5px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            flex-shrink: 0;
-        }
-        .quickbar::-webkit-scrollbar {
-            display: none;
-        }
+    .message-text {
+      margin-top: 0.1rem;
+    }
 
-        .qbtn {
-            background: transparent;
-            border: 1px solid #333;
-            border-radius: 3px;
-            color: #888;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-            padding: 3px 8px;
-            cursor: pointer;
-            white-space: nowrap;
-            flex-shrink: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .qbtn:active {
-            border-color: #0ff;
-            color: #0ff;
-            background: rgba(0, 255, 255, 0.05);
-        }
+    /* input area sensilla */
+    .input-area {
+      background: #fefefe;
+      border-top: 1px solid #e9eef3;
+      padding: 0.9rem 1rem;
+      display: flex;
+      gap: 0.7rem;
+      align-items: center;
+    }
 
-        .hidden {
-            display: none !important;
-        }
-    </style>
+    .input-area input {
+      flex: 1;
+      border: 1px solid #cbd5e1;
+      border-radius: 48px;
+      padding: 0.7rem 1.2rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: white;
+      transition: 0.15s;
+      outline: none;
+    }
+
+    .input-area input:focus {
+      border-color: #94a3b8;
+      box-shadow: 0 0 0 2px #e2e8f0;
+    }
+
+    .input-area button {
+      background: #eef2ff;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0.6rem 1.4rem;
+      border-radius: 40px;
+      color: #1e293b;
+      cursor: pointer;
+      transition: 0.1s;
+      font-family: inherit;
+    }
+
+    .input-area button:hover {
+      background: #e0e7ff;
+      transform: scale(0.97);
+    }
+
+    /* scroll invisible pero funcional */
+    .chat-messages::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* responsive extremo */
+    @media (max-width: 500px) {
+      .bot-interface {
+        height: 90vh;
+        border-radius: 24px;
+      }
+      .message {
+        max-width: 92%;
+      }
+      .bubble {
+        padding: 0.6rem 0.9rem;
+        font-size: 0.9rem;
+      }
+      .input-area button {
+        padding: 0.5rem 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="screen">
-
-        <div class="titlebar">
-            <span class="title-left">
-                Atlas v0.3.0 — #general
-                <span class="train-dot" id="trainDot" title="Autoentrenamiento 24/7"></span>
-                <span class="train-status" id="trainLabel">TRAIN</span>
-            </span>
-            <span class="title-right" id="clockTitle">00:00</span>
-        </div>
-
-        <!-- pantalla de nick -->
-        <div class="name-screen" id="nameScreen">
-            <div class="logo">ATLAS</div>
-            <p>Ingresá tu nick para conectarte</p>
-            <div class="name-row">
-                <input type="text" id="nameInput" maxlength="20" autocomplete="off" placeholder="tu_nick" autocorrect="off" autocapitalize="none" />
-                <button onclick="confirmarNombre()">[ OK ]</button>
-            </div>
-        </div>
-
-        <!-- log -->
-        <div class="log hidden" id="log"></div>
-
-        <!-- quick commands -->
-        <div class="quickbar hidden" id="quickbar">
-            <button class="qbtn" onclick="quick('hola')">hola</button>
-            <button class="qbtn" onclick="quick('como estas')">como estas</button>
-            <button class="qbtn" onclick="quick('bien')">bien</button>
-            <button class="qbtn" onclick="quick('chau')">chau</button>
-            <button class="qbtn" onclick="quick('atlas memoria')">memoria</button>
-            <button class="qbtn" onclick="quick('atlas estado')">estado</button>
-        </div>
-
-        <!-- statusbar -->
-        <div class="statusbar hidden" id="statusbar">
-            <span>
-                <span class="status-active" id="clockEl">00:00</span>
-                <span class="status-train" id="statusTrain">◉ TRAIN</span>
-            </span>
-            <span id="statusNick">[nick(+i)] [1:#general]</span>
-            <span id="memStats" style="color:#888;font-size:10px;"></span>
-        </div>
-
-        <!-- input -->
-        <div class="input-area hidden" id="inputArea">
-            <span class="prompt" id="promptLabel">[nick]</span>
-            <input type="text" id="msg" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" placeholder="escribí..." />
-            <button id="sendBtn" onclick="enviar()">▶</button>
-        </div>
-
+<div class="bot-interface">
+  <!-- cabecera sin distracciones -->
+  <div class="chat-header">
+    <div class="header-title">
+      <span class="bot-name">🤖 Bot Genérico</span>
+      <span class="badge">interfaz simple</span>
     </div>
-    <script>
-        const logEl = document.getElementById('log');
-        const msgInp = document.getElementById('msg');
-        const nameInp = document.getElementById('nameInput');
-        let nick = '';
-
-        // ═══════════════════════════════════════════════
-        // ESTADO GLOBAL
-        // ═══════════════════════════════════════════════
-        const S = {
-            typing: false,
-            memoria: {},
-            autoTrain: {
-                interval: 35000,
-                running: false,
-                timer: null,
-                totalTrained: parseInt(localStorage.getItem('atlas_train_total') || '0'),
-                lastTrain: localStorage.getItem('atlas_train_last') || 'nunca',
-                inferredFacts: JSON.parse(localStorage.getItem('atlas_inferred') || '{}'),
-                creations: JSON.parse(localStorage.getItem('atlas_creations') || '{}'),
-                trainedTopics: JSON.parse(localStorage.getItem('atlas_trained_topics') || '[]'),
-                reasoningDepth: parseInt(localStorage.getItem('atlas_reasoning_depth') || '0'),
-            },
-            trainLog: JSON.parse(localStorage.getItem('atlas_train_log') || '[]'),
-        };
-
-        try { S.memoria = JSON.parse(localStorage.getItem('atlas_memoria') || '{}'); } catch (e) {}
-
-        // ── TEMAS DE ENTRENAMIENTO ──
-        const TRAINING_TOPICS = [
-            'fotosíntesis', 'respiración celular', 'mitosis', 'meiosis', 'ADN', 'ARN', 'ribosoma',
-            'evolución biológica', 'selección natural', 'ecosistema', 'biodiversidad', 'célula madre',
-            'neurociencia', 'sinapsis', 'neurotransmisor', 'dopamina', 'serotonina',
-            'sistema solar', 'exoplaneta', 'galaxia', 'agujero negro', 'supernova', 'materia oscura',
-            'energía oscura', 'big bang', 'tabla periódica', 'enlace químico', 'catálisis',
-            'termodinámica', 'entropía', 'electromagnetismo', 'cuántica', 'fotón',
-            'inteligencia artificial', 'machine learning', 'red neuronal', 'algoritmo',
-            'estructura de datos', 'compilador', 'sistema operativo', 'kernel',
-            'blockchain', 'criptografía', 'computación cuántica', 'robot', 'automatización',
-            'estoicismo', 'existencialismo', 'empirismo', 'racionalismo',
-            'ética kantiana', 'utilitarismo', 'democracia', 'derechos humanos',
-            'lingüística', 'semántica', 'lógica formal', 'renacimiento', 'barroco',
-            'impresionismo', 'surrealismo', 'cubismo', 'música clásica', 'jazz',
-            'sistema inmune', 'inflamación', 'antibiótico', 'vacuna', 'genética médica',
-            'epidemiología', 'metabolismo', 'homeostasis', 'cáncer', 'apoptosis',
-            'teoría de conjuntos', 'topología', 'álgebra abstracta', 'estadística',
-            'probabilidad', 'teoría de juegos', 'agricultura sostenible',
-            'energía renovable', 'cambio climático', 'psicología cognitiva',
-            'memoria humana', 'percepción', 'lenguaje', 'gravitación',
-            'relatividad general', 'mecánica cuántica', 'modelo estándar', 'bosón de Higgs',
-            'antimateria', 'CRISPR', 'clonación', 'neuroplasticidad', 'conectoma',
-            'fusión nuclear', 'grafeno', 'metamateriales',
-        ];
-
-        function mezclarArray(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() *
-                (i + 1));
-            [a[i], a[j]] = [a[j], a[i]]; } return a; }
-        let trainQueue = [];
-
-        function initTrainQueue() {
-            trainQueue = mezclarArray([...TRAINING_TOPICS]);
-            trainQueue.sort((a, b) => {
-                const aIn = S.autoTrain.trainedTopics.includes(a.toLowerCase()) ? 1 : 0;
-                const bIn = S.autoTrain.trainedTopics.includes(b.toLowerCase()) ? 1 : 0;
-                return aIn - bIn;
-            });
-        }
-
-        // ═══════════════════════════════════════════════
-        // PERSISTENCIA
-        // ═══════════════════════════════════════════════
-        function guardarMemoria() { try { localStorage.setItem('atlas_memoria', JSON.stringify(S.memoria)); } catch (e) {} }
-
-        function saveInferred() { try { localStorage.setItem('atlas_inferred', JSON.stringify(S.autoTrain
-                .inferredFacts)); } catch (e) {} }
-
-        function saveCreations() { try { localStorage.setItem('atlas_creations', JSON.stringify(S.autoTrain
-                .creations)); } catch (e) {} }
-
-        function saveTrainState() {
-            try {
-                localStorage.setItem('atlas_train_total', S.autoTrain.totalTrained);
-                localStorage.setItem('atlas_train_last', S.autoTrain.lastTrain);
-                localStorage.setItem('atlas_trained_topics', JSON.stringify(S.autoTrain.trainedTopics));
-                localStorage.setItem('atlas_reasoning_depth', S.autoTrain.reasoningDepth);
-                localStorage.setItem('atlas_train_log', JSON.stringify(S.autoTrain.trainLog.slice(-80)));
-            } catch (e) {}
-        }
-
-        function addTrainLog(entry) {
-            const time = new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit',
-            second: '2-digit' });
-            S.autoTrain.trainLog.unshift({ time, entry });
-            if (S.autoTrain.trainLog.length > 80) S.autoTrain.trainLog.pop();
-            saveTrainState();
-            updateMemStats();
-        }
-
-        function updateMemStats() {
-            const el = document.getElementById('memStats');
-            if (el) {
-                const kb = Object.keys(S.memoria).length;
-                const inf = Object.keys(S.autoTrain.inferredFacts).length;
-                const cr = Object.keys(S.autoTrain.creations).length;
-                el.textContent = `🧠 ${kb}f ${inf}i ${cr}c | d${S.autoTrain.reasoningDepth}`;
-            }
-        }
-
-        // ═══════════════════════════════════════════════
-        // UTILIDADES DE LOG
-        // ═══════════════════════════════════════════════
-        function ts() { return new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' }); }
-
-        function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-
-        function addLine(html, cls = '') {
-            const line = document.createElement('div');
-            line.className = 'line';
-            line.innerHTML = `<span class="ts">${ts()}</span><span class="text ${cls}">${html}</span>`;
-            logEl.appendChild(line);
-            logEl.scrollTop = logEl.scrollHeight;
-        }
-
-        function sysLine(t, cls = 'c-gray') { addLine(t, cls); }
-
-        function botLineRaw(t) {
-            addLine(`&lt;<span class="c-cyan" style="font-weight:bold">Atlas</span>&gt; ${t}`);
-        }
-
-        function userLine(t) {
-            addLine(
-                `&lt;<span class="c-yellow" style="font-weight:bold">${esc(nick)}</span>&gt; ${esc(t)}`);
-        }
-
-        function infoLine(t) { addLine(`--- ${t}`, 'c-blue'); }
-
-        function wikiLine(t) { addLine(`[WIKI] ${t}`, 'c-magenta'); }
-
-        function learnLine(t) { addLine(`[LEARN] ${t}`, 'c-green'); }
-
-        function inferLine(t) { addLine(`[INFER] ${t}`, 'c-orange'); }
-
-        function createLine(t) { addLine(`[CREATE] ${t}`, 'c-magenta'); }
-
-        // ═══════════════════════════════════════════════
-        // RESPUESTA ANIMADA (TYPEWRITER)
-        // ═══════════════════════════════════════════════
-        async function botLine(t) {
-            const line = document.createElement('div');
-            line.className = 'line';
-            const tsSpan = `<span class="ts">${ts()}</span>`;
-            const prefix = `&lt;<span class="c-cyan" style="font-weight:bold">Atlas</span>&gt; `;
-            line.innerHTML = tsSpan + `<span class="text">${prefix}</span>`;
-            logEl.appendChild(line);
-            logEl.scrollTop = logEl.scrollHeight;
-
-            const textSpan = line.querySelector('.text');
-            const fullText = t;
-            let i = 0;
-            const speed = 15; // ms por carácter
-
-            return new Promise(resolve => {
-                function typeChar() {
-                    if (i < fullText.length) {
-                        textSpan.innerHTML = prefix + esc(fullText.substring(0, i + 1));
-                        i++;
-                        logEl.scrollTop = logEl.scrollHeight;
-                        setTimeout(typeChar, speed);
-                    } else {
-                        resolve();
-                    }
-                }
-                typeChar();
-            });
-        }
-
-        function showChat() {
-            document.getElementById('nameScreen').classList.add('hidden');
-            logEl.classList.remove('hidden');
-            document.getElementById('quickbar').classList.remove('hidden');
-            document.getElementById('statusbar').classList.remove('hidden');
-            document.getElementById('inputArea').classList.remove('hidden');
-            updateMemStats();
-        }
-
-        nameInp.addEventListener('keydown', e => { if (e.key === 'Enter') confirmarNombre(); });
-
-        function confirmarNombre() {
-            const n = nameInp.value.trim().replace(/\s+/g, '_');
-            if (!n) return;
-            nick = n;
-            showChat();
-            document.getElementById('promptLabel').textContent = `[${nick}]`;
-            document.getElementById('statusNick').textContent = `[${nick}(+i)] [1:#general]`;
-
-            sysLine('--- Atlas v0.3.0 iniciado', 'c-green');
-            sysLine('--- Autoentrenamiento 24/7: ON | Razonamiento: ON', 'c-green');
-            sysLine('--- Inferencia lógica: ON | Creación: ON', 'c-green');
-            sysLine(`--- Tu nick: <span class="c-cyan">${esc(nick)}</span>`, 'c-cyan');
-            infoLine(`Memoria: ${Object.keys(S.memoria).length} hechos | ${Object.keys(S.autoTrain.inferredFacts).length} inferencias | ${Object.keys(S.autoTrain.creations).length} creaciones`);
-            sysLine('--- Comandos: atlas aprende: X = Y | atlas olvida: X | atlas memoria | atlas estado', 'c-gray');
-            setTimeout(async () => {
-                await botLine(
-                    `hola <span class="c-yellow">${esc(nick)}</span>! soy Atlas v0.3.0. entreno 24/7, razono, infiero y creo sin parar. preguntame cualquier cosa.`
-                    );
-            }, 300);
-
-            // Iniciar entrenamiento 24/7
-            startTraining();
-            trainingCycle();
-        }
-
-        // ═══════════════════════════════════════════════
-        // WIKIPEDIA
-        // ═══════════════════════════════════════════════
-        async function fetchWikiSummary(topic) {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 8000);
-            try {
-                const res = await fetch(
-                    `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topic)}`, { signal: controller
-                        .signal }
-                );
-                clearTimeout(timeout);
-                if (!res.ok) return null;
-                const data = await res.json();
-                if (data.type === 'disambiguation') return null;
-                const extract = data.extract ? data.extract.split('.')[0] + '.' : null;
-                if (!extract || extract.length < 15) return null;
-                return { title: data.title, extract, topic };
-            } catch (e) {
-                clearTimeout(timeout);
-                return null;
-            }
-        }
-
-        async function buscarWiki(query) {
-            wikiLine(`buscando "<span class="c-white">${esc(query)}</span>"...`);
-            try {
-                const res = await fetch(
-                    `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
-                if (data.type === 'disambiguation') {
-                    await botLine(`"${esc(query)}" tiene varias acepciones. ¿Podés ser más específico?`);
-                    return;
-                }
-                const resumen = data.extract ? data.extract.split('.')[0] + '.' : null;
-                if (!resumen) throw new Error();
-                wikiLine(`encontrado: <span class="c-white">${esc(data.title)}</span>`);
-                await botLine(esc(resumen));
-                const clave = query.toLowerCase().trim();
-                S.memoria[clave] = resumen;
-                guardarMemoria();
-                learnLine(`aprendí y guardé: "<span class="c-white">${esc(query)}</span>"`);
-                updateMemStats();
-            } catch (e) {
-                await botLine(`no encontré nada sobre "<span class="c-white">${esc(query)}</span>".`);
-                sysLine(`--- enseñame: atlas aprende: ${esc(query)} = tu respuesta`, 'c-yellow');
-            }
-        }
-
-        // ═══════════════════════════════════════════════
-        // RAZONAMIENTO
-        // ═══════════════════════════════════════════════
-        function reasonAboutKnowledge() {
-            const allFacts = { ...S.memoria, ...S.autoTrain.inferredFacts, ...S.autoTrain.creations };
-            const entries = Object.entries(allFacts);
-            if (entries.length < 2) return null;
-
-            const shuffled = mezclarArray(entries);
-            const maxAttempts = Math.min(25, shuffled.length);
-
-            // Inferencia transitiva
-            for (let i = 0; i < maxAttempts; i++) {
-                for (let j = i + 1; j < Math.min(i + 5, shuffled.length); j++) {
-                    const [keyA, valA] = shuffled[i];
-                    const [keyB, valB] = shuffled[j];
-                    if (keyA === keyB) continue;
-                    const wordsA = valA.toLowerCase().split(/\s+/).filter(w => w.length > 4);
-                    const wordsB = valB.toLowerCase().split(/\s+/).filter(w => w.length > 4);
-                    const common = wordsA.filter(w => wordsB.includes(w));
-                    if (common.length >= 1) {
-                        const connectionWord = common[0];
-                        const inferenceKey = `${keyA}_${keyB}`.toLowerCase();
-                        if (allFacts[inferenceKey] || S.autoTrain.inferredFacts[inferenceKey]) continue;
-                        const inferenceValue =
-                            `[Inferido] "${keyA}" y "${keyB}" están relacionados a través de "${connectionWord}": ${valA.split('.')[0]} ↔ ${valB.split('.')[0]}.`;
-                        S.autoTrain.inferredFacts[inferenceKey] = inferenceValue;
-                        S.autoTrain.reasoningDepth++;
-                        saveInferred();
-                        saveTrainState();
-                        inferLine(`${keyA} ↔ ${keyB} (via "${connectionWord}")`);
-                        updateMemStats();
-                        return { type: 'inference', key: inferenceKey };
-                    }
-                }
-            }
-
-            // Categorización
-            const wordCount = {};
-            entries.forEach(([key, val]) => {
-                const words = val.toLowerCase().split(/\s+/).filter(w => w.length > 5);
-                [...new Set(words)].forEach(w => { wordCount[w] = (wordCount[w] || 0) + 1; });
-            });
-            const frequentWords = Object.entries(wordCount).filter(([w, c]) => c >= 3 && w.length > 5).sort((a, b) => b[
-                1] - a[1]);
-            if (frequentWords.length > 0) {
-                const [word, count] = frequentWords[0];
-                const relatedKeys = entries.filter(([k, v]) => v.toLowerCase().includes(word)).map(([k]) => k);
-                if (relatedKeys.length >= 3) {
-                    const catKey = `categoria_${word}`.toLowerCase();
-                    if (!S.autoTrain.inferredFacts[catKey]) {
-                        const catValue = `[Categoría] "${word}" conecta: ${relatedKeys.join(', ')}.`;
-                        S.autoTrain.inferredFacts[catKey] = catValue;
-                        S.autoTrain.reasoningDepth++;
-                        saveInferred();
-                        saveTrainState();
-                        inferLine(`Categoría: "${word}" (${relatedKeys.length} temas)`);
-                        updateMemStats();
-                        return { type: 'category', key: catKey };
-                    }
-                }
-            }
-            return null;
-        }
-
-        function createNewKnowledge() {
-            const allFacts = { ...S.memoria, ...S.autoTrain.inferredFacts, ...S.autoTrain.creations };
-            const entries = Object.entries(allFacts);
-            if (entries.length < 8) return null;
-
-            const shuffled = mezclarArray(entries);
-            const take = shuffled.slice(0, Math.min(4, shuffled.length));
-            const keys = take.map(([k]) => k);
-
-            const creationKey = `sintesis_${Date.now().toString(36)}`;
-            const patterns = [
-                `[Creación] Combinando "${keys[0]}", "${keys[1]}" y "${keys[2]}", emerge un nuevo concepto: los principios de ${keys[0]} aplicados al dominio de ${keys[1]} sugieren una relación fundamental con ${keys[2]} a través de patrones subyacentes de organización.`,
-                `[Teoría] A partir del análisis de ${keys.join(', ')}, se postula un principio unificador: la información y la energía se organizan en niveles jerárquicos de complejidad creciente.`,
-                `[Hipótesis] Si ${keys[0]} y ${keys[1]} comparten principios estructurales, existe un marco teórico que unifica ambos dominios: "isomorfismo funcional".`,
-            ];
-            const creationValue = patterns[Math.floor(Math.random() * patterns.length)];
-            S.autoTrain.creations[creationKey] = creationValue;
-            S.autoTrain.reasoningDepth++;
-            saveCreations();
-            saveTrainState();
-            createLine(`Síntesis de ${keys.length} fuentes`);
-            updateMemStats();
-            return { key: creationKey, value: creationValue };
-        }
-
-        // ═══════════════════════════════════════════════
-        // CICLO DE ENTRENAMIENTO 24/7
-        // ═══════════════════════════════════════════════
-        async function trainingCycle() {
-            if (!S.autoTrain.running) return;
-            if (S.typing) { scheduleNextTraining(); return; }
-
-            const online = navigator.onLine;
-            updateTrainIndicators('active', online);
-
-            if (trainQueue.length < 3) initTrainQueue();
-
-            // FASE 1: Wikipedia
-            if (online) {
-                const topicsToTry = trainQueue.splice(0, 2);
-                let learned = 0;
-                for (const topic of topicsToTry) {
-                    const key = topic.toLowerCase().trim();
-                    if (S.memoria[key] || S.autoTrain.trainedTopics.includes(key)) continue;
-                    const wikiData = await fetchWikiSummary(topic);
-                    if (wikiData) {
-                        S.memoria[key] = wikiData.extract;
-                        S.autoTrain.trainedTopics.push(key);
-                        S.autoTrain.totalTrained++;
-                        learned++;
-                        guardarMemoria();
-                        learnLine(`autoaprendido: "<span class="c-white">${esc(wikiData.title)}</span>"`);
-                        updateMemStats();
-                    }
-                    await new Promise(r => setTimeout(r, 1200));
-                }
-                if (learned > 0) {
-                    S.autoTrain.lastTrain = new Date().toLocaleString('es-AR');
-                    saveTrainState();
-                }
-            }
-
-            // FASE 2: Razonar
-            reasonAboutKnowledge();
-
-            // FASE 3: Crear
-            if (Object.keys({ ...S.memoria, ...S.autoTrain.inferredFacts }).length > 8) {
-                createNewKnowledge();
-            }
-
-            // FASE 4: Meta-inferencia
-            const inferredEntries = Object.entries(S.autoTrain.inferredFacts);
-            if (inferredEntries.length >= 3 && Math.random() < 0.35) {
-                const [k1] = inferredEntries[Math.floor(Math.random() * inferredEntries.length)];
-                const [k2] = inferredEntries[Math.floor(Math.random() * inferredEntries.length)];
-                if (k1 !== k2 && !S.autoTrain.inferredFacts[`meta_${k1}_${k2}`]) {
-                    const metaKey = `meta_${k1}_${k2}`.toLowerCase();
-                    const metaValue =
-                        `[Meta-inferencia] Las inferencias sobre "${k1}" y "${k2}" comparten patrones estructurales.`;
-                    S.autoTrain.inferredFacts[metaKey] = metaValue;
-                    S.autoTrain.reasoningDepth++;
-                    saveInferred();
-                    saveTrainState();
-                    inferLine(`Meta-inferencia generada`);
-                    updateMemStats();
-                }
-            }
-
-            updateTrainIndicators('idle', online);
-            scheduleNextTraining();
-        }
-
-        function updateTrainIndicators(state, online) {
-            const dot = document.getElementById('trainDot');
-            const label = document.getElementById('trainLabel');
-            const statusTrain = document.getElementById('statusTrain');
-            if (dot) {
-                dot.classList.toggle('offline', !online);
-            }
-            if (label) {
-                label.textContent = online ? (state === 'active' ? 'TRAIN' : 'IDLE') : 'OFFLINE';
-                label.classList.toggle('offline', !online);
-            }
-            if (statusTrain) {
-                statusTrain.textContent = online ? (state === 'active' ? '◉ TRAIN' : '○ IDLE') : '◉ OFFLINE';
-                statusTrain.classList.toggle('offline', !online);
-            }
-        }
-
-        function scheduleNextTraining() {
-            if (S.autoTrain.timer) clearTimeout(S.autoTrain.timer);
-            if (!S.autoTrain.running) return;
-            S.autoTrain.timer = setTimeout(trainingCycle, S.autoTrain.interval);
-        }
-
-        function startTraining() {
-            if (S.autoTrain.running) return;
-            S.autoTrain.running = true;
-            initTrainQueue();
-            updateTrainIndicators('idle', navigator.onLine);
-            addTrainLog('🚀 Entrenamiento 24/7 activado');
-            scheduleNextTraining();
-        }
-
-        function stopTraining() {
-            S.autoTrain.running = false;
-            if (S.autoTrain.timer) clearTimeout(S.autoTrain.timer);
-            S.autoTrain.timer = null;
-            updateTrainIndicators('idle', navigator.onLine);
-        }
-
-        // ═══════════════════════════════════════════════
-        // LÓGICA DE RESPUESTA
-        // ═══════════════════════════════════════════════
-        async function respuesta(msg) {
-            const lower = msg.toLowerCase().trim();
-
-            const mAprende = lower.match(/^atlas\s+aprende:\s*(.+?)\s*=\s*(.+)$/);
-            if (mAprende) {
-                const clave = mAprende[1].trim();
-                const valor = msg.match(/^atlas\s+aprende:\s*.+?\s*=\s*(.+)$/i)?.[1]?.trim();
-                if (clave && valor) {
-                    S.memoria[clave] = valor;
-                    guardarMemoria();
-                    learnLine(`aprendí: "<span class="c-white">${esc(clave)}</span>" → "<span class="c-white">${esc(valor)}</span>"`);
-                    await botLine(`ok, lo recordaré <span class="c-yellow">${esc(nick)}</span>.`);
-                    updateMemStats();
-                }
-                return;
-            }
-
-            const mOlvida = lower.match(/^atlas\s+olvida:\s*(.+)$/);
-            if (mOlvida) {
-                const clave = mOlvida[1].trim();
-                if (S.memoria[clave]) {
-                    delete S.memoria[clave];
-                    guardarMemoria();
-                    learnLine(`olvidé: "<span class="c-white">${esc(clave)}</span>"`);
-                    await botLine('listo, ya no lo recuerdo.');
-                } else {
-                    await botLine(`no tenía nada sobre "${esc(clave)}".`);
-                }
-                return;
-            }
-
-            if (lower === 'atlas memoria') {
-                const keys = Object.keys(S.memoria);
-                if (!keys.length) { await botLine('no tengo nada aprendido todavía.'); return; }
-                infoLine(`${keys.length} entradas en memoria:`);
-                keys.slice(-15).forEach(k => sysLine(
-                    `  · ${esc(k)}: ${esc(S.memoria[k].substring(0, 60))}${S.memoria[k].length > 60 ? '...' : ''}`,
-                    'c-gray'));
-                if (keys.length > 15) sysLine(`  ... y ${keys.length - 15} más.`, 'c-gray');
-                return;
-            }
-
-            if (lower === 'atlas estado') {
-                const kb = Object.keys(S.memoria).length;
-                const inf = Object.keys(S.autoTrain.inferredFacts).length;
-                const cr = Object.keys(S.autoTrain.creations).length;
-                const online = navigator.onLine;
-                infoLine(`Estado de Atlas v0.3.0:`);
-                infoLine(`  Online: ${online ? 'SÍ' : 'NO (razonando offline)'}`);
-                infoLine(`  Entrenando: ${S.autoTrain.running ? 'SÍ (24/7)' : 'NO'}`);
-                infoLine(`  Hechos: ${kb} | Inferencias: ${inf} | Creaciones: ${cr}`);
-                infoLine(`  Entrenamientos totales: ${S.autoTrain.totalTrained}`);
-                infoLine(`  Profundidad: ${S.autoTrain.reasoningDepth}`);
-                infoLine(`  Último ciclo: ${S.autoTrain.lastTrain}`);
-                return;
-            }
-
-            if (lower === 'hola') {
-                const ops = [
-                    `hola <span class="c-yellow">${esc(nick)}</span>!`,
-                    `hey <span class="c-yellow">${esc(nick)}</span> ¿qué tal?`,
-                    `buenas <span class="c-yellow">${esc(nick)}</span>!`,
-                    `ey <span class="c-yellow">${esc(nick)}</span> ¿cómo andás?`
-                ];
-                await botLine(ops[Math.floor(Math.random() * ops.length)]);
-                return;
-            }
-            if (lower === 'chau') { await botLine(`chau <span class="c-yellow">${esc(nick)}</span>!`); return; }
-            if (lower === 'como estas' || lower === 'cómo estás') { await botLine('todo bien, ¿y vos?'); return; }
-            if (lower === 'bien') { await botLine(
-                `me alegra <span class="c-yellow">${esc(nick)}</span>!`); return; }
-
-            // buscar en memoria
-            for (const clave of Object.keys(S.memoria)) {
-                if (lower.includes(clave)) { await botLine(esc(S.memoria[clave])); return; }
-            }
-            // buscar en inferencias
-            for (const [k, v] of Object.entries(S.autoTrain.inferredFacts)) {
-                if (lower.includes(k.replace(/_/g, ' '))) { await botLine(esc(v)); return; }
-            }
-            // buscar en creaciones
-            for (const [k, v] of Object.entries(S.autoTrain.creations)) {
-                if (Math.random() < 0.25) { await botLine(esc(v)); return; }
-            }
-
-            // Wikipedia
-            const stopwords = ['que es', 'qué es', 'que fue', 'quién es', 'quien es', 'cómo funciona',
-                'como funciona', 'contame sobre', 'hablame de', 'háblame de', 'info sobre',
-                'información sobre', 'sabés algo de', 'sabes algo de'
-            ];
-            let query = lower;
-            for (const sw of stopwords) query = query.replace(sw, '').trim();
-            if (!query) { await botLine('no entendí la pregunta.'); return; }
-            await buscarWiki(query);
-        }
-
-        async function enviar() {
-            const msg = msgInp.value.trim();
-            if (!msg || S.typing) return;
-            userLine(msg);
-            msgInp.value = '';
-            msgInp.disabled = true;
-            S.typing = true;
-            document.getElementById('sendBtn').disabled = true;
-            await respuesta(msg);
-            msgInp.disabled = false;
-            S.typing = false;
-            document.getElementById('sendBtn').disabled = false;
-            msgInp.focus();
-            logEl.scrollTop = logEl.scrollHeight;
-        }
-
-        function quick(txt) { msgInp.value = txt;
-            enviar(); }
-
-        msgInp.addEventListener('keydown', e => { if (e.key === 'Enter') enviar(); });
-
-        // reloj
-        function actualizarReloj() {
-            const t = ts();
-            document.getElementById('clockEl').textContent = t;
-            document.getElementById('clockTitle').textContent = t;
-        }
-        actualizarReloj();
-        setInterval(actualizarReloj, 10000);
-
-        // ═══════════════════════════════════════════════
-        // EVENTOS ONLINE/OFFLINE
-        // ═══════════════════════════════════════════════
-        window.addEventListener('online', () => {
-            updateTrainIndicators('idle', true);
-            addTrainLog('🌐 Online - reanudando entrenamiento');
-            if (!S.autoTrain.running) startTraining();
-            scheduleNextTraining();
-        });
-        window.addEventListener('offline', () => {
-            updateTrainIndicators('idle', false);
-            addTrainLog('🔒 Offline - razonando sin internet');
-        });
-
-        // Iniciar entrenamiento automáticamente al cargar (si ya hay nick)
-        if (localStorage.getItem('atlas_user')) {
-            // El usuario ya tiene nick guardado, iniciar entrenamiento en background
-            startTraining();
-            trainingCycle();
-        } else {
-            // Iniciar entrenamiento igual aunque no haya usuario
-            startTraining();
-            trainingCycle();
-        }
-
-        console.log('🧭 Atlas v0.3.0 — IA terminal con autoentrenamiento 24/7');
-    </script>
+    <button class="clear-btn" id="clearChatBtn" aria-label="Limpiar conversación">⟳ Limpiar</button>
+  </div>
+
+  <!-- zona de mensajes -->
+  <div class="chat-messages" id="chatMessages">
+    <!-- los mensajes se inyectan dinámicamente -->
+  </div>
+
+  <!-- caja de entrada universal -->
+  <div class="input-area">
+    <input type="text" id="messageInput" placeholder="Escribe tu mensaje..." autocomplete="off" aria-label="Mensaje para el bot">
+    <button id="sendBtn">Enviar</button>
+  </div>
+</div>
+
+<script>
+  // ---------- INTERFAZ GENÉRICA PARA BOT ----------
+  // Solo UI visual y demo de interacción, sin lógica externa ni APIs.
+  // La respuesta del bot es un eco genérico que demuestra el flujo visual.
+  // Representa cualquier "bot" → se puede reemplazar fácilmente.
+  
+  // Elementos del DOM
+  const messagesContainer = document.getElementById('chatMessages');
+  const messageInput = document.getElementById('messageInput');
+  const sendButton = document.getElementById('sendBtn');
+  const clearButton = document.getElementById('clearChatBtn');
+
+  // Función para agregar un mensaje a la interfaz (público: 'user' o 'bot')
+  function addMessage(sender, text) {
+    if (!text || text.trim() === '') return;
+
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', sender);
+
+    // estructura interna: nombre visible + burbuja con texto
+    const bubbleDiv = document.createElement('div');
+    bubbleDiv.classList.add('bubble');
+
+    const nameSpan = document.createElement('span');
+    nameSpan.classList.add('sender-name');
+    // texto de identificador simple y claro
+    if (sender === 'user') {
+      nameSpan.textContent = '👤 Tú';
+    } else {
+      nameSpan.textContent = '⚙️ Bot';
+    }
+
+    const textSpan = document.createElement('div');
+    textSpan.classList.add('message-text');
+    // escape básico para evitar inyección (usando textContent)
+    textSpan.textContent = text;
+
+    bubbleDiv.appendChild(nameSpan);
+    bubbleDiv.appendChild(textSpan);
+    messageDiv.appendChild(bubbleDiv);
+    
+    messagesContainer.appendChild(messageDiv);
+    // auto scroll hacia abajo (siempre visible el mensaje nuevo)
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // mensaje inicial de bienvenida (solo para mostrar interfaz viva)
+  function setInitialMessage() {
+    // limpieza inicial segura
+    messagesContainer.innerHTML = '';
+    addMessage('bot', '¡Hola! 👋 Esta es una interfaz super sencilla y genérica para cualquier bot. Puedes escribir y el bot responderá de forma demostrativa. (Solo front-end visual)');
+    addMessage('bot', '💬 Escribe algo abajo. La respuesta será un eco genérico — ideal para integrar tu propia lógica después.');
+  }
+
+  // respuesta generica del bot: solo para demostrar interfaz,
+  // sin llamadas externas. Es un eco simple que muestra que la UI funciona.
+  // De esta forma el propósito es únicamente visual/interfaz.
+  function genericBotReply(userMessage) {
+    // mensaje genérico de ejemplo, manteniendo la naturaleza "demo de interfaz"
+    // pero mostrando interacción completa. Puedes reemplazar con cualquier API.
+    const demoPrefix = "📟 [respuesta genérica] · ";
+    // opción super simple y genérica: eco + frase estándar
+    // Mantiene el espíritu de solo interfaz, pero el bot conversa de modo placeholder.
+    const replyText = `${demoPrefix}"${userMessage}" — Mensaje recibido. (Bot demo, solo interfaz)`;
+    return replyText;
+  }
+
+  // función que envía el mensaje escrito por el usuario y luego genera respuesta visual del bot
+  function sendUserMessage() {
+    const rawMessage = messageInput.value;
+    if (!rawMessage || rawMessage.trim() === '') return;
+
+    const cleanMessage = rawMessage.trim();
+    // 1. Mostrar mensaje del usuario en la interfaz
+    addMessage('user', cleanMessage);
+    
+    // 2. generar la respuesta genérica del bot (simplemente para que la interfaz se vea dinámica)
+    const botAnswer = genericBotReply(cleanMessage);
+    
+    // pequeño retardo opcional para simular "procesamiento" y dar sensación natural
+    // pero sigue siendo UI pura, sin nada real detrás.
+    setTimeout(() => {
+      addMessage('bot', botAnswer);
+      // auto scroll ya está dentro de addMessage, pero reaseguramos
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 180);
+    
+    // limpiar input y mantener foco
+    messageInput.value = '';
+    messageInput.focus();
+  }
+
+  // Limpiar toda la conversación pero manteniendo un par de mensajes iniciales básicos
+  // para que la interfaz no se quede vacía y se vea coherente.
+  function resetConversation() {
+    messagesContainer.innerHTML = '';
+    // mensajes frescos y genéricos (sin perder la esencia de interfaz)
+    addMessage('bot', '🧹 Conversación reiniciada. Interfaz lista nuevamente.');
+    addMessage('bot', '✨ Bot genérico — solo diseño, sin lógica compleja. Puedes escribir otro mensaje.');
+    addMessage('bot', '💡 Consejo: esta interfaz es completamente independiente; puedes conectar tu propio bot más tarde.');
+    // opcional: pequeño mensaje adicional de contexto
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Eventos
+  sendButton.addEventListener('click', () => {
+    sendUserMessage();
+  });
+  
+  messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendUserMessage();
+    }
+  });
+  
+  clearButton.addEventListener('click', () => {
+    resetConversation();
+  });
+  
+  // Inicializar la interfaz con mensajes de bienvenida claros (sin recurrir a nada externo)
+  setInitialMessage();
+  
+  // Pequeño detalle extra: foco automático al cargar la página
+  window.addEventListener('load', () => {
+    messageInput.focus();
+  });
+</script>
 </body>
 </html>
