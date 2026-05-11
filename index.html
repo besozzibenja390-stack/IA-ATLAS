@@ -46,7 +46,12 @@
     .dot:nth-child(2) { animation-delay: 0.2s; }
     .dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes blink { 0%,80%,100%{opacity:.2;transform:scale(.8);} 40%{opacity:1;transform:scale(1);} }
+      <!-- ... tu estilo ... -->
   </style>
+  <!-- NUEVOS SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+  <!-- FIN NUEVOS -->
 </head>
 <body>
 <div class="container">
@@ -58,13 +63,27 @@
     </div>
   </div>
   <div class="input-area">
+  <!-- NUEVO: input oculto + botón de adjuntar -->
+  <input type="file" id="imageInput" accept="image/*" style="display:none" />
+  <button id="attachBtn" onclick="document.getElementById('imageInput').click()">📎</button>
+  <!-- FIN NUEVO -->
+  <textarea id="input" rows="1" placeholder="Escribe tu mensaje..."></textarea>
+  <button id="sendBtn" onclick="sendMessage()">Enviar</button>
+</div>
     <textarea id="input" rows="1" placeholder="Escribe tu mensaje..."></textarea>
     <button id="sendBtn" onclick="sendMessage()">Enviar</button>
   </div>
 </div>
 
 <script>
-
+// ─────────────────────────────────────────
+// CARGA DEL MODELO DE IMAGEN
+let mobilenetModel = null;
+(async function () {
+  mobilenetModel = await mobilenet.load();
+  console.log("Modelo listo para reconocer imágenes");
+})();
+// ─────────────────────────────────────────
   // ─────────────────────────────────────────
   // RESPUESTAS PRE-PROGRAMADAS
   // Cada tema tiene varias respuestas — se elige una al azar
