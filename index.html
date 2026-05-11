@@ -24,73 +24,20 @@
       flex-direction: column;
       overflow: hidden;
     }
-    .header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #2e2e2e;
-      font-size: 15px;
-      font-weight: 500;
-      color: #e0e0e0;
-    }
-    #messages {
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 16px;
-      scrollbar-width: thin;
-      scrollbar-color: #333 transparent;
-    }
+    .header { padding: 16px 20px; border-bottom: 1px solid #2e2e2e; font-size: 15px; font-weight: 500; color: #e0e0e0; }
+    #messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 16px; scrollbar-width: thin; scrollbar-color: #333 transparent; }
     .msg-wrap { display: flex; flex-direction: column; max-width: 80%; }
     .msg-wrap.user { align-self: flex-end; align-items: flex-end; }
     .msg-wrap.ai   { align-self: flex-start; align-items: flex-start; }
-    .bubble {
-      padding: 10px 14px;
-      border-radius: 14px;
-      font-size: 14px;
-      line-height: 1.5;
-      word-break: break-word;
-      white-space: pre-wrap;
-    }
+    .bubble { padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-break: break-word; white-space: pre-wrap; }
     .bubble.user { background: #2a3a5e; color: #a8c4ff; border: 1px solid #3a4f7a; }
     .bubble.ai   { background: #252525; color: #d4d4d4; border: 1px solid #2e2e2e; }
     .label { font-size: 11px; color: #555; margin-top: 4px; padding: 0 4px; }
-    .input-area {
-      display: flex;
-      gap: 8px;
-      align-items: flex-end;
-      padding: 12px 16px;
-      border-top: 1px solid #2e2e2e;
-      background: #1a1a1a;
-    }
-    textarea {
-      flex: 1;
-      resize: none;
-      border: 1px solid #2e2e2e;
-      border-radius: 10px;
-      font-size: 14px;
-      padding: 10px 12px;
-      line-height: 1.5;
-      max-height: 120px;
-      overflow-y: auto;
-      font-family: inherit;
-      outline: none;
-      background: #111;
-      color: #d4d4d4;
-    }
+    .input-area { display: flex; gap: 8px; align-items: flex-end; padding: 12px 16px; border-top: 1px solid #2e2e2e; background: #1a1a1a; }
+    textarea { flex: 1; resize: none; border: 1px solid #2e2e2e; border-radius: 10px; font-size: 14px; padding: 10px 12px; line-height: 1.5; max-height: 120px; overflow-y: auto; font-family: inherit; outline: none; background: #111; color: #d4d4d4; }
     textarea::placeholder { color: #444; }
     textarea:focus { border-color: #444; }
-    button {
-      height: 40px;
-      padding: 0 18px;
-      border-radius: 10px;
-      border: 1px solid #2e2e2e;
-      background: #252525;
-      color: #d4d4d4;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
+    button { height: 40px; padding: 0 18px; border-radius: 10px; border: 1px solid #2e2e2e; background: #252525; color: #d4d4d4; font-size: 14px; cursor: pointer; transition: background 0.15s; }
     button:hover  { background: #333; }
     button:active { transform: scale(0.97); }
     button:disabled { opacity: 0.4; cursor: default; }
@@ -103,7 +50,7 @@
 </head>
 <body>
 <div class="container">
-  <div class="header">💬 Chat IA</div>
+  <div class="header">💬 IA LOCAL</div>
   <div id="messages">
     <div class="msg-wrap ai">
       <div class="bubble ai">¡Hola! ¿En qué puedo ayudarte hoy?</div>
@@ -120,46 +67,82 @@
 
   // ─────────────────────────────────────────
   // RESPUESTAS PRE-PROGRAMADAS
-  // Agregá o editá bloques acá abajo
+  // Cada tema tiene varias respuestas — se elige una al azar
   // ─────────────────────────────────────────
   const respuestas = [
     {
       claves: ["hola", "buenas", "hey", "saludos", "buenos días", "buenas tardes", "buenas noches"],
-      respuesta: "¡Hola! ¿En qué te puedo ayudar?"
+      respuestas: [
+        "¡Hola! ¿En qué te puedo ayudar?",
+        "¡Hey! Aquí estoy, ¿qué necesitás?",
+        "¡Buenas! ¿Cómo te puedo ayudar hoy?",
+        "¡Hola! Un gusto. ¿En qué andás?"
+      ]
     },
     {
-      claves: ["cómo estás", "como estas", "qué tal", "todo bien"],
-      respuesta: "¡Muy bien, gracias por preguntar! ¿Y vos?"
+      claves: ["cómo estás", "como estas", "qué tal", "todo bien", "cómo andás", "como andas"],
+      respuestas: [
+        "¡Muy bien, gracias por preguntar! ¿Y vos?",
+        "Todo excelente por acá. ¿Cómo estás vos?",
+        "De maravilla. ¿En qué te puedo ayudar?",
+        "¡Bien! Listo para ayudarte."
+      ]
     },
     {
-      claves: ["nombre", "cómo te llamas", "quién eres", "quien eres"],
-      respuesta: "Soy una IA simple. ¡Podés cambiar mi nombre como quieras!"
+      claves: ["nombre", "cómo te llamas", "como te llamas", "quién eres", "quien eres", "quien sos", "quíen sos", "cual es tu nombre"],
+      respuestas: [
+        "Soy tu asistente virtual. ¡Podés cambiar mi nombre en el código!",
+        "Me llaman IA, aunque podés ponerme el nombre que quieras.",
+        "Soy un bot sencillo. Mi nombre lo definís vos."
+      ]
     },
     {
-      claves: ["gracias", "muchas gracias", "te lo agradezco"],
-      respuesta: "¡De nada! Estoy para ayudarte."
+      claves: ["gracias", "muchas gracias", "te lo agradezco", "grax"],
+      respuestas: [
+        "¡De nada! Para eso estoy.",
+        "¡Con gusto! ¿Necesitás algo más?",
+        "No hay de qué. ¡Siempre a disposición!",
+        "¡Fue un placer ayudarte!"
+      ]
     },
     {
-      claves: ["chau", "adiós", "adios", "hasta luego", "nos vemos"],
-      respuesta: "¡Hasta luego! Fue un placer charlar."
+      claves: ["chau", "adiós", "adios", "hasta luego", "nos vemos", "bye"],
+      respuestas: [
+        "¡Hasta luego! Fue un placer.",
+        "¡Chau! Volvé cuando quieras.",
+        "¡Nos vemos! Que te vaya bien.",
+        "¡Hasta pronto!"
+        "¡nos vemos! cuidate"
+      ]
     },
     {
-      claves: ["ayuda", "qué podés hacer", "que podes hacer", "qué hacés", "que haces"],
-      respuesta: "Puedo responder preguntas básicas. ¡Podés agregar más respuestas en el código!"
+      claves: ["ayuda", "qué podés hacer", "que podes hacer", "qué hacés", "que haces", "para qué servís"],
+      respuestas: [
+        "Puedo responder preguntas que tengas programadas. ¡Agregá más en el código!",
+        "Soy un asistente simple con respuestas pre-cargadas. ¡Personalizame!",
+        "Por ahora respondo lo que me enseñaron. Podés ampliarme editando el archivo."
+      ]
     }
-    // Seguí agregando bloques acá...
+    // ─── Agregá más bloques acá ───
   ];
 
-  const fallback = "No entendí bien eso. ¿Podés reformularlo?";
-  // ─────────────────────────────────────────
+  const fallbacks = [
+    "No entendí bien eso. ¿Podés reformularlo?",
+    "Hmm, no tengo una respuesta para eso todavía.",
+    "No estoy seguro de cómo responder eso. ¿Intentás con otra pregunta?",
+    "Eso está fuera de lo que sé por ahora."
+  ];
+
+  function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   function obtenerRespuesta(texto) {
     const t = texto.toLowerCase().trim();
     for (const entrada of respuestas) {
-      if (entrada.claves.some(c => t.includes(c))) return entrada.respuesta;
+      if (entrada.claves.some(c => t.includes(c))) return random(entrada.respuestas);
     }
-    return fallback;
+    return random(fallbacks);
   }
+  // ─────────────────────────────────────────
 
   async function sendMessage() {
     const input = document.getElementById('input');
