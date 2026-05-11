@@ -183,7 +183,6 @@
     msgs.scrollTop = msgs.scrollHeight;
   }
 
-  // NUEVA FUNCIÓN para mostrar imágenes en el chat
   function addImageMessage(imageUrl, role) {
     const wrap = document.createElement('div');
     wrap.className = `msg-wrap ${role}`;
@@ -213,7 +212,7 @@
     return wrap;
   }
 
-  // ─── RECONOCIMIENTO DE IMÁGENES ───
+  // ─── RECONOCIMIENTO DE IMÁGENES (solo gato, perro, planta, humano) ───
   const imageInput = document.getElementById('imageInput');
   imageInput.addEventListener('change', async function () {
     const file = this.files[0];
@@ -222,8 +221,6 @@
     const reader = new FileReader();
     reader.onload = async function (e) {
       const imageUrl = e.target.result;
-
-      // Mostrar imagen del usuario
       addImageMessage(imageUrl, 'user');
 
       if (!mobilenetModel) {
@@ -236,12 +233,34 @@
       imgElement.onload = async function () {
         try {
           const predictions = await mobilenetModel.classify(imgElement);
-          if (predictions.length > 0) {
-            const top = predictions[0];
-            addMessage(`Veo: ${top.className} (${Math.round(top.probability * 100)}% de certeza).`, 'ai');
-          } else {
-            addMessage('No pude reconocer nada en esa imagen.', 'ai');
+          if (predictions.length === 0) {
+            addMessage('No pude reconocer nada en esta imagen.', 'ai');
+            return;
           }
+
+          const top = predictions[0];
+          const className = top.className.toLowerCase();
+          const confianza = Math.round(top.probability * 100);
+          let explicacion = '';
+
+          if (className.includes('cat') || className.includes('gato') || className.includes('felino')) {
+            explicacion = `🐱 **Gato** (${confianza}% de certeza).  
+Tiene silueta felina: orejas puntiagudas, bigotes, cuerpo flexible y ágil. Es un animal doméstico que suele ser independiente y curioso.`;
+          } else if (className.includes('dog') || className.includes('perro') || className.includes('canino') || className.includes('puppy')) {
+            explicacion = `🐶 **Perro** (${confianza}% de certeza).  
+Se reconoce por su hocico, cola, patas y cuerpo robusto. Es un animal doméstico leal y sociable, amigo del humano.`;
+          } else if (className.includes('plant') || className.includes('flor') || className.includes('tree') || className.includes('leaf') || className.includes('vegetal')) {
+            explicacion = `🌿 **Planta** (${confianza}% de certeza).  
+Organismo vivo que tiene hojas, tallo y raíces. Capta la luz solar para alimentarse (fotosíntesis). Puede ser una flor, arbusto o árbol.`;
+          } else if (className.includes('person') || className.includes('human') || className.includes('man') || className.includes('woman') || className.includes('face')) {
+            explicacion = `🧑 **Humano** (${confianza}% de certeza).  
+Silueta de una persona: cabeza, tronco, dos brazos y dos piernas. Es el ser humano, capaz de pensar y comunicarse.`;
+          } else {
+            // ⚠️ Solo se responde si es una de las cuatro categorías.
+            explicacion = 'No reconozco esto como gato, perro, planta o humano. Solo estoy configurado para identificar esas categorías.';
+          }
+
+          addMessage(explicacion, 'ai');
         } catch (err) {
           addMessage('Ocurrió un error al analizar la imagen.', 'ai');
         }
