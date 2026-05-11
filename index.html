@@ -212,7 +212,36 @@
     return wrap;
   }
 
-  // ─── RECONOCIMIENTO DE IMÁGENES (solo gato, perro, planta, humano) ───
+  // ─── EXPLICACIONES VARIADAS PARA CADA CATEGORÍA ───
+  const explicacionesGato = [
+    "🐱 **Gato** – Felino doméstico de cuerpo flexible y orejas puntiagudas. Sus bigotes le sirven para medir espacios y sus garras retráctiles lo ayudan a trepar. Tiene una excelente visión nocturna y un oído muy fino. Suelen ser independientes pero muy cariñosos cuando quieren.",
+    "🐱 **Gato** – Animal de compañía con un esqueleto muy elástico y reflejos rápidos. Posee almohadillas en las patas que le permiten caminar en silencio. Es curioso por naturaleza y disfruta explorar su entorno.",
+    "🐱 **Gato** – Mamífero carnívoro domesticado hace más de 4000 años. Sus ojos pueden dilatar mucho la pupila para ver en la oscuridad. Son conocidos por su ronroneo, que suelen usar para comunicar bienestar.",
+    "🐱 **Gato** – Pequeño felino con un gran sentido del equilibrio gracias a su cola. Es un cazador nato, aunque viva en casa. Le encanta dormir muchas horas al día y asearse constantemente."
+  ];
+
+  const explicacionesPerro = [
+    "🐶 **Perro** – Descendiente del lobo, domesticado por el ser humano. Tiene un olfato hasta 100.000 veces más potente que el nuestro. Es leal, sociable y capaz de entender muchas emociones humanas.",
+    "🐶 **Perro** – Mamífero del orden de los carnívoros, con un hocico largo y una cola que expresa su estado de ánimo. Existen cientos de razas con tamaños y pelajes muy variados. Son grandes compañeros de vida.",
+    "🐶 **Perro** – Animal de manada que disfruta la compañía y el juego. Su ladrido es una forma de comunicación, al igual que el movimiento de las orejas. Se lo considera el primer animal domesticado por el hombre.",
+    "🐶 **Perro** – Fiel amigo de cuatro patas. Su sentido del oído le permite captar sonidos que nosotros no podemos. Respira agitadamente para regular su temperatura, ya que no suda como los humanos."
+  ];
+
+  const explicacionesPlanta = [
+    "🌿 **Planta** – Organismo vivo que fabrica su propio alimento mediante la fotosíntesis. Sus hojas captan la luz solar y las raíces absorben agua y minerales del suelo. Son esenciales para producir oxígeno.",
+    "🌿 **Planta** – Ser vivo del reino vegetal. Posee clorofila, que le da el color verde y le permite transformar la energía del sol en nutrientes. Puede ser un árbol, un arbusto, una flor o un cactus.",
+    "🌿 **Planta** – Además de darnos oxígeno, las plantas son la base de la cadena alimenticia. Tienen ciclos de vida que incluyen germinación, crecimiento, floración y producción de semillas.",
+    "🌿 **Planta** – Gracias a sus raíces, sujetan el suelo y evitan la erosión. Sus flores atraen insectos polinizadores y sus frutos dispersan las semillas. Sin ellas, la vida en la Tierra no sería posible."
+  ];
+
+  const explicacionesHumano = [
+    "🧑 **Humano** – Ser bípedo con un cerebro muy desarrollado, capaz de razonar, crear arte y comunicarse con lenguajes complejos. Su postura erguida libera las manos para fabricar herramientas.",
+    "🧑 **Humano** – Pertenece a la especie *Homo sapiens*. Se distingue por su capacidad de pensar de forma abstracta, planificar y cooperar en grandes grupos. Ha modificado el planeta como ningún otro ser vivo.",
+    "🧑 **Humano** – Cuerpo con dos piernas, dos brazos y un cráneo grande que protege el cerebro. Su piel varía en tonos según la melanina. Gracias al lenguaje, transmite conocimiento de generación en generación.",
+    "🧑 **Humano** – Ser social por naturaleza. Siente empatía, tiene conciencia de sí mismo y es capaz de imaginar escenarios futuros. Su infancia es prolongada comparada con otros mamíferos, lo que permite un largo aprendizaje."
+  ];
+
+  // ─── RECONOCIMIENTO DE IMÁGENES (con respuestas variadas) ───
   const imageInput = document.getElementById('imageInput');
   imageInput.addEventListener('change', async function () {
     const file = this.files[0];
@@ -244,20 +273,23 @@
           let explicacion = '';
 
           if (className.includes('cat') || className.includes('gato') || className.includes('felino')) {
-            explicacion = `🐱 **Gato** (${confianza}% de certeza).  
-Tiene silueta felina: orejas puntiagudas, bigotes, cuerpo flexible y ágil. Es un animal doméstico que suele ser independiente y curioso.`;
+            explicacion = random(explicacionesGato);
           } else if (className.includes('dog') || className.includes('perro') || className.includes('canino') || className.includes('puppy')) {
-            explicacion = `🐶 **Perro** (${confianza}% de certeza).  
-Se reconoce por su hocico, cola, patas y cuerpo robusto. Es un animal doméstico leal y sociable, amigo del humano.`;
+            explicacion = random(explicacionesPerro);
           } else if (className.includes('plant') || className.includes('flor') || className.includes('tree') || className.includes('leaf') || className.includes('vegetal')) {
-            explicacion = `🌿 **Planta** (${confianza}% de certeza).  
-Organismo vivo que tiene hojas, tallo y raíces. Capta la luz solar para alimentarse (fotosíntesis). Puede ser una flor, arbusto o árbol.`;
+            explicacion = random(explicacionesPlanta);
           } else if (className.includes('person') || className.includes('human') || className.includes('man') || className.includes('woman') || className.includes('face')) {
-            explicacion = `🧑 **Humano** (${confianza}% de certeza).  
-Silueta de una persona: cabeza, tronco, dos brazos y dos piernas. Es el ser humano, capaz de pensar y comunicarse.`;
+            explicacion = random(explicacionesHumano);
           } else {
-            // ⚠️ Solo se responde si es una de las cuatro categorías.
             explicacion = 'No reconozco esto como gato, perro, planta o humano. Solo estoy configurado para identificar esas categorías.';
+          }
+
+          // Pequeño detalle: incluimos la confianza en el mensaje si corresponde
+          if (explicacion && explicacion !== 'No reconozco esto como gato, perro, planta o humano. Solo estoy configurado para identificar esas categorías.') {
+            explicacion = explicacion.replace('**', `** (${confianza}% de certeza) **`);
+            // La primera ocurrencia del emoji y nombre ya tiene **, la ajustamos un poco:
+            // Más sencillo: añadir la confianza al inicio
+            explicacion = `${explicacion.slice(0, explicacion.indexOf('**')+2)} ${confianza}% de certeza${explicacion.slice(explicacion.indexOf('**')+2)}`;
           }
 
           addMessage(explicacion, 'ai');
@@ -267,7 +299,7 @@ Silueta de una persona: cabeza, tronco, dos brazos y dos piernas. Es el ser huma
       };
     };
     reader.readAsDataURL(file);
-    this.value = ''; // permite volver a seleccionar el mismo archivo
+    this.value = '';
   });
 
   // Eventos del textarea
