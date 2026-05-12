@@ -144,14 +144,46 @@
 
   function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-  function obtenerRespuesta(texto) {
+  // ─── NUEVA FUNCIÓN: buscar en Wikipedia ───
+  async function buscarEnWikipedia(consulta) {
+    const searchUrl = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(consulta)}&format=json&origin=*`;
+    try {
+      const searchResponse = await fetch(searchUrl);
+      const searchData = await searchResponse.json();
+      const resultados = searchData.query.search;
+      if (resultados.length === 0) return null;
+      const titulo = resultados[0].title;
+      const extractUrl = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=${encodeURIComponent(titulo)}&format=json&origin=*`;
+      const extractResponse = await fetch(extractUrl);
+      const extractData = await extractResponse.json();
+      const page = extractData.query.pages;
+      const pageId = Object.keys(page)[0];
+      if (page[pageId].missing) return null;
+      return page[pageId].extract;
+    } catch (error) {
+      console.error('🌐 Error al conectar con Wikipedia:', error);
+      return null;
+    }
+  }
+
+  // ─── RESPUESTA INTELIGENTE (pre-programada o Wikipedia) ───
+  async function obtenerRespuestaConWikipedia(texto) {
     const t = texto.toLowerCase().trim();
     for (const entrada of respuestas) {
-      if (entrada.claves.some(c => t.includes(c))) return random(entrada.respuestas);
+      if (entrada.claves.some(c => t.includes(c))) {
+        return random(entrada.respuestas);
+      }
+    }
+    const extract = await buscarEnWikipedia(texto);
+    if (extract) {
+      const oraciones = extract.split('. ');
+      const resumenCorto = oraciones.slice(0, 2).join('. ') + (oraciones.length > 2 ? '.' : '');
+      return `📚 Según Wikipedia: ${resumenCorto}`;
     }
     return random(fallbacks);
   }
 
+  // ─── ENVÍO DE MENSAJES (actualizado) ───
   async function sendMessage() {
     const input = document.getElementById('input');
     const text = input.value.trim();
@@ -163,7 +195,10 @@
     const typing = addTyping();
     await new Promise(r => setTimeout(r, 700));
     typing.remove();
-    addMessage(obtenerRespuesta(text), 'ai');
+
+    const respuesta = await obtenerRespuestaConWikipedia(text);
+    addMessage(respuesta, 'ai');
+
     document.getElementById('sendBtn').disabled = false;
   }
 
@@ -212,7 +247,7 @@
     return wrap;
   }
 
-  // ─── EXPLICACIONES VARIADAS (ya con emojis) ───
+  // ─── EXPLICACIONES VARIADAS (con emojis) ───
   const explicacionesGato = [
     "🐱 **Gato** – Felino doméstico de cuerpo flexible y orejas puntiagudas. Sus bigotes le sirven para medir espacios y sus garras retráctiles lo ayudan a trepar. Tiene una excelente visión nocturna y un oído muy fino. Suelen ser independientes pero muy cariñosos cuando quieren.",
     "🐱 **Gato** – Animal de compañía con un esqueleto muy elástico y reflejos rápidos. Posee almohadillas en las patas que le permiten caminar en silencio. Es curioso por naturaleza y disfruta explorar su entorno.",
@@ -241,7 +276,7 @@
     "🧑 **Humano** – Ser social por naturaleza. Siente empatía, tiene conciencia de sí mismo y es capaz de imaginar escenarios futuros. Su infancia es prolongada comparada con otros mamíferos, lo que permite un largo aprendizaje."
   ];
 
-  // ─── RECONOCIMIENTO DE IMÁGENES (con respuestas variadas) ───
+  // ─── RECONOCIMIENTO DE IMÁGENES ───
   const imageInput = document.getElementById('imageInput');
   imageInput.addEventListener('change', async function () {
     const file = this.files[0];
@@ -284,7 +319,6 @@
             explicacion = 'No reconozco esto como gato, perro, planta o humano 🚫. Solo estoy configurado para identificar esas categorías.';
           }
 
-          // Inyectar confianza manteniendo el emoji
           if (explicacion.startsWith('🐱') || explicacion.startsWith('🐶') || explicacion.startsWith('🌿') || explicacion.startsWith('🧑')) {
             const emojiEnd = explicacion.indexOf('**', 3) + 2;
             explicacion = `${explicacion.slice(0, emojiEnd)} (${confianza}% de certeza) ${explicacion.slice(emojiEnd)}`;
