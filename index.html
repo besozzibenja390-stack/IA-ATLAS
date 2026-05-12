@@ -16,6 +16,7 @@
     }
     .container {
       width: 600px;
+      max-width: 100%;
       height: 580px;
       background: #1a1a1a;
       border-radius: 16px;
@@ -37,7 +38,7 @@
     textarea { flex: 1; resize: none; border: 1px solid #2e2e2e; border-radius: 10px; font-size: 14px; padding: 10px 12px; line-height: 1.5; max-height: 120px; overflow-y: auto; font-family: inherit; outline: none; background: #111; color: #d4d4d4; }
     textarea::placeholder { color: #444; }
     textarea:focus { border-color: #444; }
-    button { height: 40px; padding: 0 18px; border-radius: 10px; border: 1px solid #2e2e2e; background: #252525; color: #d4d4d4; font-size: 14px; cursor: pointer; transition: background 0.15s; }
+    button { height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid #2e2e2e; background: #252525; color: #d4d4d4; font-size: 14px; cursor: pointer; transition: background 0.15s; }
     button:hover  { background: #333; }
     button:active { transform: scale(0.97); }
     button:disabled { opacity: 0.4; cursor: default; }
@@ -46,9 +47,49 @@
     .dot:nth-child(2) { animation-delay: 0.2s; }
     .dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes blink { 0%,80%,100%{opacity:.2;transform:scale(.8);} 40%{opacity:1;transform:scale(1);} }
+
+    /* Cámara en vivo */
+    #cameraPanel {
+      display: none;
+      flex-shrink: 0;
+      border-top: 1px solid #2e2e2e;
+      background: #111;
+      padding: 12px;
+    }
+    .camera-view {
+      position: relative;
+      width: 100%;
+      max-height: 220px;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    #video, #overlay {
+      width: 100%;
+      display: block;
+    }
+    #overlay {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+    }
+    .cam-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      gap: 8px;
+    }
+    #liveInfo {
+      color: #aaa;
+      font-size: 13px;
+      margin-top: 6px;
+      min-height: 36px;
+      line-height: 1.4;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 </head>
 <body>
 <div class="container">
@@ -62,18 +103,34 @@
   <div class="input-area">
     <input type="file" id="imageInput" accept="image/*" style="display:none" />
     <button id="attachBtn" onclick="document.getElementById('imageInput').click()">📎</button>
+    <button id="cameraBtn" onclick="toggleCamera()">📷</button>
     <textarea id="input" rows="1" placeholder="Escribe tu mensaje..."></textarea>
     <button id="sendBtn" onclick="sendMessage()">Enviar</button>
+  </div>
+  <!-- Panel de la cámara (oculto por defecto) -->
+  <div id="cameraPanel">
+    <div class="camera-view">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="overlay"></canvas>
+    </div>
+    <div class="cam-controls">
+      <button id="captureBtn" onclick="capturePhoto()">📸 Capturar</button>
+      <button id="closeCameraBtn" onclick="toggleCamera()">❌ Cerrar</button>
+    </div>
+    <div id="liveInfo"></div>
   </div>
 </div>
 
 <script>
   // ─────────────────────────────────────────
-  // CARGA DEL MODELO DE IMAGEN
+  // CARGA DE MODELOS (MobileNet + COCO-SSD)
   let mobilenetModel = null;
+  let cocoModel = null;
   (async function () {
     mobilenetModel = await mobilenet.load();
-    console.log("Modelo listo para reconocer imágenes");
+    console.log("MobileNet listo");
+    cocoModel = await cocoSsd.load();
+    console.log("COCO-SSD listo para detección en vivo");
   })();
   // ─────────────────────────────────────────
 
@@ -212,66 +269,67 @@
     return wrap;
   }
 
-  // ─── EXPLICACIONES VARIADAS PARA CADA CATEGORÍA ───
+  // ─── EXPLICACIONES VARIADAS ───
   const explicacionesGato = [
-    "🐱 **Gato** – Felino doméstico de cuerpo flexible y orejas puntiagudas. Sus bigotes le sirven para medir espacios y sus garras retráctiles lo ayudan a trepar. Tiene una excelente visión nocturna y un oído muy fino. Suelen ser independientes pero muy cariñosos cuando quieren.",
-    "🐱 **Gato** – Animal de compañía con un esqueleto muy elástico y reflejos rápidos. Posee almohadillas en las patas que le permiten caminar en silencio. Es curioso por naturaleza y disfruta explorar su entorno.",
-    "🐱 **Gato** – Mamífero carnívoro domesticado hace más de 4000 años. Sus ojos pueden dilatar mucho la pupila para ver en la oscuridad. Son conocidos por su ronroneo, que suelen usar para comunicar bienestar.",
-    "🐱 **Gato** – Pequeño felino con un gran sentido del equilibrio gracias a su cola. Es un cazador nato, aunque viva en casa. Le encanta dormir muchas horas al día y asearse constantemente."
+    "🐱 **Gato** – Felino doméstico de cuerpo flexible y orejas puntiagudas. Sus bigotes le sirven para medir espacios y sus garras retráctiles lo ayudan a trepar. Tiene una excelente visión nocturna y un oído muy fino.",
+    "🐱 **Gato** – Animal de compañía con un esqueleto muy elástico y reflejos rápidos. Posee almohadillas en las patas que le permiten caminar en silencio. Es curioso por naturaleza.",
+    "🐱 **Gato** – Mamífero carnívoro domesticado hace más de 4000 años. Sus ojos pueden dilatar mucho la pupila para ver en la oscuridad. Ronronean para comunicar bienestar.",
+    "🐱 **Gato** – Pequeño felino con un gran sentido del equilibrio gracias a su cola. Es un cazador nato, aunque viva en casa. Duerme muchas horas y se asea constantemente."
   ];
-
   const explicacionesPerro = [
-    "🐶 **Perro** – Descendiente del lobo, domesticado por el ser humano. Tiene un olfato hasta 100.000 veces más potente que el nuestro. Es leal, sociable y capaz de entender muchas emociones humanas.",
-    "🐶 **Perro** – Mamífero del orden de los carnívoros, con un hocico largo y una cola que expresa su estado de ánimo. Existen cientos de razas con tamaños y pelajes muy variados. Son grandes compañeros de vida.",
-    "🐶 **Perro** – Animal de manada que disfruta la compañía y el juego. Su ladrido es una forma de comunicación, al igual que el movimiento de las orejas. Se lo considera el primer animal domesticado por el hombre.",
-    "🐶 **Perro** – Fiel amigo de cuatro patas. Su sentido del oído le permite captar sonidos que nosotros no podemos. Respira agitadamente para regular su temperatura, ya que no suda como los humanos."
+    "🐶 **Perro** – Descendiente del lobo, domesticado por el humano. Su olfato es hasta 100.000 veces más potente que el nuestro. Leal y sociable, entiende muchas emociones.",
+    "🐶 **Perro** – Mamífero carnívoro con hocico largo y cola expresiva. Existen cientos de razas. Son grandes compañeros de vida.",
+    "🐶 **Perro** – Animal de manada que disfruta la compañía y el juego. Su ladrido y orejas comunican su estado de ánimo. Primer animal domesticado.",
+    "🐶 **Perro** – Fiel amigo de cuatro patas. Su oído capta sonidos que nosotros no. Respira agitadamente para regular su temperatura."
   ];
-
   const explicacionesPlanta = [
-    "🌿 **Planta** – Organismo vivo que fabrica su propio alimento mediante la fotosíntesis. Sus hojas captan la luz solar y las raíces absorben agua y minerales del suelo. Son esenciales para producir oxígeno.",
-    "🌿 **Planta** – Ser vivo del reino vegetal. Posee clorofila, que le da el color verde y le permite transformar la energía del sol en nutrientes. Puede ser un árbol, un arbusto, una flor o un cactus.",
-    "🌿 **Planta** – Además de darnos oxígeno, las plantas son la base de la cadena alimenticia. Tienen ciclos de vida que incluyen germinación, crecimiento, floración y producción de semillas.",
-    "🌿 **Planta** – Gracias a sus raíces, sujetan el suelo y evitan la erosión. Sus flores atraen insectos polinizadores y sus frutos dispersan las semillas. Sin ellas, la vida en la Tierra no sería posible."
+    "🌿 **Planta** – Organismo vivo que fabrica su alimento con fotosíntesis. Hojas captan luz, raíces absorben agua. Esenciales para el oxígeno.",
+    "🌿 **Planta** – Ser del reino vegetal con clorofila verde. Puede ser árbol, arbusto, flor o cactus. Base de la cadena alimenticia.",
+    "🌿 **Planta** – Además de oxígeno, evitan la erosión con sus raíces. Sus flores atraen polinizadores y sus frutos dispersan semillas.",
+    "🌿 **Planta** – Ser vivo con ciclo de germinación, crecimiento, floración y producción de semillas. Sin ellas, la Tierra sería inhabitable."
   ];
-
   const explicacionesHumano = [
-    "🧑 **Humano** – Ser bípedo con un cerebro muy desarrollado, capaz de razonar, crear arte y comunicarse con lenguajes complejos. Su postura erguida libera las manos para fabricar herramientas.",
-    "🧑 **Humano** – Pertenece a la especie *Homo sapiens*. Se distingue por su capacidad de pensar de forma abstracta, planificar y cooperar en grandes grupos. Ha modificado el planeta como ningún otro ser vivo.",
-    "🧑 **Humano** – Cuerpo con dos piernas, dos brazos y un cráneo grande que protege el cerebro. Su piel varía en tonos según la melanina. Gracias al lenguaje, transmite conocimiento de generación en generación.",
-    "🧑 **Humano** – Ser social por naturaleza. Siente empatía, tiene conciencia de sí mismo y es capaz de imaginar escenarios futuros. Su infancia es prolongada comparada con otros mamíferos, lo que permite un largo aprendizaje."
+    "🧑 **Humano** – Ser bípedo con cerebro desarrollado. Capaz de razonar, crear arte y comunicarse con lenguajes complejos. Manos libres para herramientas.",
+    "🧑 **Humano** – *Homo sapiens*: pensamiento abstracto, planificación y cooperación en grandes grupos. Ha modificado el planeta como ningún otro ser.",
+    "🧑 **Humano** – Cuerpo con dos piernas, dos brazos y cráneo grande. Piel variable según melanina. Transmite conocimiento por lenguaje.",
+    "🧑 **Humano** – Ser social con empatía y conciencia de sí mismo. Infancia prolongada para aprender. Imagina escenarios futuros."
   ];
 
-  // ─── RECONOCIMIENTO DE IMÁGENES (con respuestas variadas) ───
+  function obtenerExplicacion(className) {
+    const c = className.toLowerCase();
+    if (c.includes('cat')) return random(explicacionesGato);
+    if (c.includes('dog')) return random(explicacionesPerro);
+    if (c.includes('plant') || c.includes('potted')) return random(explicacionesPlanta);
+    if (c.includes('person')) return random(explicacionesHumano);
+    return null;
+  }
+
+  // ─── RECONOCIMIENTO POR ARCHIVO (MobileNet) ───
   const imageInput = document.getElementById('imageInput');
   imageInput.addEventListener('change', async function () {
     const file = this.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = async function (e) {
       const imageUrl = e.target.result;
       addImageMessage(imageUrl, 'user');
-
       if (!mobilenetModel) {
-        addMessage('El modelo de imagen aún está cargando. Intentá de nuevo en unos segundos.', 'ai');
+        addMessage('El modelo aún está cargando...', 'ai');
         return;
       }
-
       const imgElement = document.createElement('img');
       imgElement.src = imageUrl;
       imgElement.onload = async function () {
         try {
           const predictions = await mobilenetModel.classify(imgElement);
           if (predictions.length === 0) {
-            addMessage('No pude reconocer nada en esta imagen.', 'ai');
+            addMessage('No pude reconocer nada.', 'ai');
             return;
           }
-
           const top = predictions[0];
           const className = top.className.toLowerCase();
           const confianza = Math.round(top.probability * 100);
           let explicacion = '';
-
           if (className.includes('cat') || className.includes('gato') || className.includes('felino')) {
             explicacion = random(explicacionesGato);
           } else if (className.includes('dog') || className.includes('perro') || className.includes('canino') || className.includes('puppy')) {
@@ -281,17 +339,12 @@
           } else if (className.includes('person') || className.includes('human') || className.includes('man') || className.includes('woman') || className.includes('face')) {
             explicacion = random(explicacionesHumano);
           } else {
-            explicacion = 'No reconozco esto como gato, perro, planta o humano. Solo estoy configurado para identificar esas categorías.';
+            explicacion = 'No reconozco esto como gato, perro, planta o humano. Solo identifico esas categorías.';
           }
-
-          // Pequeño detalle: incluimos la confianza en el mensaje si corresponde
-          if (explicacion && explicacion !== 'No reconozco esto como gato, perro, planta o humano. Solo estoy configurado para identificar esas categorías.') {
-            explicacion = explicacion.replace('**', `** (${confianza}% de certeza) **`);
-            // La primera ocurrencia del emoji y nombre ya tiene **, la ajustamos un poco:
-            // Más sencillo: añadir la confianza al inicio
-            explicacion = `${explicacion.slice(0, explicacion.indexOf('**')+2)} ${confianza}% de certeza${explicacion.slice(explicacion.indexOf('**')+2)}`;
+          // Agregar confianza al inicio
+          if (!explicacion.startsWith('No reconozco')) {
+            explicacion = `(${confianza}% certeza) ${explicacion}`;
           }
-
           addMessage(explicacion, 'ai');
         } catch (err) {
           addMessage('Ocurrió un error al analizar la imagen.', 'ai');
@@ -301,6 +354,162 @@
     reader.readAsDataURL(file);
     this.value = '';
   });
+
+  // ─── CÁMARA EN VIVO (COCO-SSD) ───
+  const cameraPanel = document.getElementById('cameraPanel');
+  const video = document.getElementById('video');
+  const overlay = document.getElementById('overlay');
+  const liveInfo = document.getElementById('liveInfo');
+  const ctx = overlay.getContext('2d');
+  let cameraStream = null;
+  let detectionActive = false;
+
+  async function toggleCamera() {
+    if (cameraPanel.style.display === 'none' || cameraPanel.style.display === '') {
+      // Abrir cámara
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        video.srcObject = cameraStream;
+        await video.play();
+        cameraPanel.style.display = 'block';
+        startDetection();
+      } catch (err) {
+        alert('No se pudo acceder a la cámara. Verificá los permisos.');
+        console.error(err);
+      }
+    } else {
+      // Cerrar cámara
+      stopDetection();
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      video.srcObject = null;
+      cameraPanel.style.display = 'none';
+      ctx.clearRect(0, 0, overlay.width, overlay.height);
+      liveInfo.textContent = '';
+    }
+  }
+
+  function startDetection() {
+    if (detectionActive) return;
+    detectionActive = true;
+    detectFrame();
+  }
+
+  function stopDetection() {
+    detectionActive = false;
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+    liveInfo.textContent = '';
+  }
+
+  async function detectFrame() {
+    if (!detectionActive) return;
+    if (!video.videoWidth || !video.videoHeight) {
+      requestAnimationFrame(detectFrame);
+      return;
+    }
+    // Ajustar canvas al tamaño del video
+    overlay.width = video.videoWidth;
+    overlay.height = video.videoHeight;
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+    if (!cocoModel) {
+      liveInfo.textContent = 'Cargando modelo de detección...';
+      requestAnimationFrame(detectFrame);
+      return;
+    }
+
+    try {
+      const predictions = await cocoModel.detect(video);
+      // Filtrar solo las cuatro categorías
+      const relevant = predictions.filter(p =>
+        ['cat', 'dog', 'person', 'potted plant'].includes(p.class)
+      );
+
+      // Dibujar recuadros
+      for (const pred of relevant) {
+        const [x, y, width, height] = pred.bbox;
+        ctx.strokeStyle = '#00ff88';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, width, height);
+        ctx.fillStyle = '#00ff88';
+        ctx.font = '14px system-ui';
+        ctx.fillText(`${pred.class} (${Math.round(pred.score * 100)}%)`, x, y - 5);
+      }
+
+      // Mostrar información explicativa de lo detectado
+      if (relevant.length > 0) {
+        // Tomar la primera detección para dar explicación
+        const first = relevant[0];
+        const explicacion = obtenerExplicacion(first.class);
+        liveInfo.textContent = explicacion || '';
+      } else {
+        liveInfo.textContent = 'No veo gato, perro, planta ni humano.';
+      }
+    } catch (err) {
+      console.error('Error en detección:', err);
+    }
+
+    requestAnimationFrame(detectFrame);
+  }
+
+  // Capturar foto y enviar al chat
+  function capturePhoto() {
+    if (!video.videoWidth || !video.videoHeight) {
+      alert('La cámara aún no está lista.');
+      return;
+    }
+    // Crear un canvas temporal para capturar el frame
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = video.videoWidth;
+    tempCanvas.height = video.videoHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+    const dataUrl = tempCanvas.toDataURL('image/jpeg');
+    addImageMessage(dataUrl, 'user');
+    // Analizar la imagen capturada con MobileNet (como si fuera un archivo)
+    analizarImagenCapturada(dataUrl);
+  }
+
+  async function analizarImagenCapturada(imageUrl) {
+    if (!mobilenetModel) {
+      addMessage('El modelo aún no está listo.', 'ai');
+      return;
+    }
+    const imgElement = document.createElement('img');
+    imgElement.src = imageUrl;
+    imgElement.onload = async function () {
+      try {
+        const predictions = await mobilenetModel.classify(imgElement);
+        if (predictions.length === 0) {
+          addMessage('No pude reconocer nada.', 'ai');
+          return;
+        }
+        const top = predictions[0];
+        const className = top.className.toLowerCase();
+        const confianza = Math.round(top.probability * 100);
+        let explicacion = '';
+        if (className.includes('cat') || className.includes('gato') || className.includes('felino')) {
+          explicacion = random(explicacionesGato);
+        } else if (className.includes('dog') || className.includes('perro') || className.includes('canino') || className.includes('puppy')) {
+          explicacion = random(explicacionesPerro);
+        } else if (className.includes('plant') || className.includes('flor') || className.includes('tree') || className.includes('leaf') || className.includes('vegetal')) {
+          explicacion = random(explicacionesPlanta);
+        } else if (className.includes('person') || className.includes('human') || className.includes('man') || className.includes('woman') || className.includes('face')) {
+          explicacion = random(explicacionesHumano);
+        } else {
+          explicacion = 'No reconozco esto como gato, perro, planta o humano. Solo identifico esas categorías.';
+        }
+        if (!explicacion.startsWith('No reconozco')) {
+          explicacion = `(${confianza}% certeza) ${explicacion}`;
+        }
+        addMessage(explicacion, 'ai');
+      } catch (err) {
+        addMessage('Error al analizar la imagen capturada.', 'ai');
+      }
+    };
+  }
 
   // Eventos del textarea
   document.getElementById('input').addEventListener('keydown', e => {
