@@ -13,14 +13,74 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      color: #e0e0e0;
     }
+
+    /* ─── PANTALLA DE BIENVENIDA ─── */
+    #landing {
+      text-align: center;
+      max-width: 500px;
+      padding: 30px;
+    }
+    #landing .flag {
+      font-size: 80px;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+    #landing h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    #landing .desc {
+      font-size: 16px;
+      line-height: 1.6;
+      margin: 20px 0;
+      color: #b0b0b0;
+    }
+    .lang-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 30px 0 20px;
+    }
+    .lang-btn {
+      background: #252525;
+      border: 1px solid #2e2e2e;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 16px;
+      color: #d4d4d4;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+    .lang-btn:hover { background: #333; border-color: #444; }
+    .lang-btn.selected { background: #2a3a5e; border-color: #3a4f7a; color: #a8c4ff; box-shadow: 0 0 8px rgba(58,79,122,0.5); }
+    #startBtn {
+      background: #2a3a5e;
+      border: none;
+      color: white;
+      padding: 14px 40px;
+      font-size: 18px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 10px;
+      width: 100%;
+      font-weight: 600;
+    }
+    #startBtn:hover { background: #3a4f7a; }
+    #startBtn:disabled { opacity: 0.4; cursor: default; background: #252525; color: #666; border: 1px solid #2e2e2e; }
+
+    /* ─── CHAT ─── */
     .container {
       width: 600px;
       height: 580px;
       background: #1a1a1a;
       border-radius: 16px;
       border: 1px solid #2e2e2e;
-      display: flex;
+      display: none;
       flex-direction: column;
       overflow: hidden;
     }
@@ -46,105 +106,210 @@
     .dot:nth-child(2) { animation-delay: 0.2s; }
     .dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes blink { 0%,80%,100%{opacity:.2;transform:scale(.8);} 40%{opacity:1;transform:scale(1);} }
+
+    /* ─── ANIMACIONES ─── */
+    #landing .flag,
+    #landing h1,
+    #landing .desc,
+    #landing .lang-selector,
+    #startBtn {
+      animation: fadeSlideUp 0.7s ease both;
+    }
+    #landing h1          { animation-delay: 0.1s; }
+    #landing .desc       { animation-delay: 0.2s; }
+    #landing .lang-selector { animation-delay: 0.3s; }
+    #startBtn            { animation-delay: 0.4s; }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .flag {
+      display: inline-block;
+      animation: gentleSwing 3s ease-in-out infinite, fadeSlideUp 0.7s ease both;
+    }
+    @keyframes gentleSwing {
+      0%, 100% { transform: rotate(0deg); }
+      25%      { transform: rotate(2deg); }
+      75%      { transform: rotate(-2deg); }
+    }
+
+    #chatContainer {
+      display: none;
+      animation: fadeIn 0.6s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .msg-wrap {
+      animation: messagePop 0.4s ease both;
+    }
+    @keyframes messagePop {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    button, .lang-btn, #startBtn {
+      transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    button:active, .lang-btn:active, #startBtn:active {
+      transform: scale(0.95);
+    }
+    .lang-btn:hover, #startBtn:hover:not(:disabled) {
+      box-shadow: 0 0 12px rgba(58,79,122,0.4);
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
 </head>
 <body>
-<div class="container">
-  <div class="header">AOS-0.1</div>
-  <div id="messages">
-    <div class="msg-wrap ai">
-      <div class="bubble ai">¡Hola! 👋 ¿En qué puedo ayudarte hoy?</div>
-      <span class="label">IA</span>
+
+  <!-- PANTALLA DE BIENVENIDA -->
+  <div id="landing">
+    <div class="flag">🇦🇷</div>
+    <h1>AOS-0.1</h1>
+    <div class="desc">
+      ¡Hola! Soy un asistente virtual creado por una sola persona.<br>
+      Puedo charlar, reconocer imágenes (gatos, perros, plantas, humanos) sin conexión,
+      y buscar datos en Wikipedia cuando tengas internet.<br>
+      Estoy en constante desarrollo. ¡Probame!
+    </div>
+    <div class="lang-selector" id="langSelector">
+      <button class="lang-btn" data-lang="en">English</button>
+      <button class="lang-btn" data-lang="es">Español (Latino)</button>
+      <button class="lang-btn" data-lang="es_AR">Español (Argentina)</button>
+    </div>
+    <button id="startBtn" disabled onclick="iniciarChat()">Comenzar</button>
+  </div>
+
+  <!-- CHAT -->
+  <div class="container" id="chatContainer">
+    <div class="header">AOS-0.1</div>
+    <div id="messages">
+      <div class="msg-wrap ai">
+        <div class="bubble ai">¡Hola! 👋 ¿En qué puedo ayudarte hoy?</div>
+        <span class="label">IA</span>
+      </div>
+    </div>
+    <div class="input-area">
+      <input type="file" id="imageInput" accept="image/*" style="display:none" />
+      <button id="attachBtn" onclick="document.getElementById('imageInput').click()">📎</button>
+      <textarea id="input" rows="1" placeholder="Escribe tu mensaje..."></textarea>
+      <button id="sendBtn" onclick="sendMessage()">Enviar</button>
     </div>
   </div>
-  <div class="input-area">
-    <input type="file" id="imageInput" accept="image/*" style="display:none" />
-    <button id="attachBtn" onclick="document.getElementById('imageInput').click()">📎</button>
-    <textarea id="input" rows="1" placeholder="Escribe tu mensaje..."></textarea>
-    <button id="sendBtn" onclick="sendMessage()">Enviar</button>
-  </div>
-</div>
 
 <script>
   // ─────────────────────────────────────────
-  // CARGA DEL MODELO DE IMAGEN
+  // VARIABLES GLOBALES
+  let currentLang = 'es';
   let mobilenetModel = null;
+
+  const landing = document.getElementById('landing');
+  const chatContainer = document.getElementById('chatContainer');
+  const startBtn = document.getElementById('startBtn');
+  const langButtons = document.querySelectorAll('.lang-btn');
+
+  langButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      langButtons.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      currentLang = btn.dataset.lang;
+      startBtn.disabled = false;
+    });
+  });
+
+  function iniciarChat() {
+    landing.style.display = 'none';
+    chatContainer.style.display = 'flex';
+    chatContainer.style.animation = 'none';
+    chatContainer.offsetHeight;
+    chatContainer.style.animation = 'fadeIn 0.6s ease';
+    actualizarMensajeInicial();
+  }
+
+  function actualizarMensajeInicial() {
+    const primerBubble = document.querySelector('#messages .bubble.ai');
+    if (primerBubble) {
+      const saludos = {
+        en: "Hello! 👋 How can I help you today?",
+        es: "¡Hola! 👋 ¿En qué puedo ayudarte hoy?",
+        es_AR: "¡Hola, che! 👋 ¿En qué te puedo ayudar hoy?"
+      };
+      primerBubble.textContent = saludos[currentLang] || saludos.es;
+    }
+  }
+
   (async function () {
     mobilenetModel = await mobilenet.load();
     console.log("Modelo listo para reconocer imágenes 🖼️");
   })();
-  // ─────────────────────────────────────────
 
-  // ─────────────────────────────────────────
-  // RESPUESTAS PRE-PROGRAMADAS (con emojis)
-  const respuestas = [
-    {
-      claves: ["hola", "buenas", "hey", "saludos", "buenos días", "buenas tardes", "buenas noches"],
-      respuestas: [
-        "¡Hola! 👋 ¿En qué te puedo ayudar?",
-        "¡Hey! 😊 Aquí estoy, ¿qué necesitás?",
-        "¡Buenas! 🌟 ¿Cómo te puedo ayudar hoy?",
-        "¡Hola! 🎉 Un gusto. ¿En qué andás?"
-      ]
-    },
-    {
-      claves: ["cómo estás", "como estas", "qué tal", "todo bien", "cómo andás", "como andas"],
-      respuestas: [
-        "¡Muy bien, gracias! 😄 ¿Y vos?",
-        "Todo excelente por acá. ✨ ¿Cómo estás vos?",
-        "De maravilla. 🌈 ¿En qué te puedo ayudar?",
-        "¡Bien! 💪 Listo para ayudarte."
-      ]
-    },
-    {
-      claves: ["nombre", "cómo te llamas", "como te llamas", "quién eres", "quien eres", "quien sos", "quíen sos", "cual es tu nombre"],
-      respuestas: [
-        "Soy tu asistente virtual 🤖. ¡Podés cambiar mi nombre en el código!",
-        "Me llaman IA, aunque podés ponerme el nombre que quieras 😉.",
-        "Soy un bot sencillo. Mi nombre lo definís vos 🏷️."
-      ]
-    },
-    {
-      claves: ["gracias", "muchas gracias", "te lo agradezco", "grax"],
-      respuestas: [
-        "¡De nada! 😊 Para eso estoy.",
-        "¡Con gusto! 🌟 ¿Necesitás algo más?",
-        "No hay de qué. 🙌 ¡Siempre a disposición!",
-        "¡Fue un placer ayudarte! 🎉"
-      ]
-    },
-    {
-      claves: ["chau", "adiós", "adios", "hasta luego", "nos vemos", "bye"],
-      respuestas: [
-        "¡Hasta luego! 👋 Fue un placer.",
-        "¡Chau! 🌻 Volvé cuando quieras.",
-        "¡Nos vemos! 🚀 Que te vaya bien.",
-        "¡Hasta pronto! 🌟",
-        "¡Nos vemos! ✌️ Cuidate."
-      ]
-    },
-    {
-      claves: ["ayuda", "qué podés hacer", "que podes hacer", "qué hacés", "que haces", "para qué servís"],
-      respuestas: [
-        "Puedo responder preguntas que tengas programadas 💬. ¡Agregá más en el código!",
-        "Soy un asistente simple con respuestas pre-cargadas 📦. ¡Personalizame!",
-        "Por ahora respondo lo que me enseñaron 🧠. Podés ampliarme editando el archivo."
-      ]
-    }
-  ];
+  const respuestas = {
+    en: [
+      { claves: ["hello", "hi", "hey", "good morning", "good afternoon", "good evening"], respuestas: ["Hello! 👋 How can I help you?", "Hey! 😊 I'm here, what do you need?", "Hi there! 🌟 How can I help you today?", "Hello! 🎉 Nice to meet you. What's up?"] },
+      { claves: ["how are you", "how's it going", "what's up", "how you doing"], respuestas: ["I'm great, thanks! 😄 And you?", "Everything's awesome here. ✨ How are you?", "Fantastic. 🌈 What can I do for you?", "Doing well! 💪 Ready to help."] },
+      { claves: ["name", "what's your name", "who are you"], respuestas: ["I'm your virtual assistant 🤖. You can change my name in the code!", "They call me AI, but you can name me whatever you want 😉.", "I'm a simple bot. You decide my name 🏷️."] },
+      { claves: ["thanks", "thank you", "thx", "gracias"], respuestas: ["You're welcome! 😊 That's what I'm here for.", "Happy to help! 🌟 Need anything else?", "No problem. 🙌 Always at your service!", "It was a pleasure! 🎉"] },
+      { claves: ["bye", "goodbye", "see you", "adios", "chau"], respuestas: ["See you later! 👋 It was a pleasure.", "Bye! 🌻 Come back anytime.", "See ya! 🚀 Have a great day.", "Goodbye! ✌️ Take care."] },
+      { claves: ["help", "what can you do", "what do you do"], respuestas: ["I can answer programmed questions 💬. Add more in the code!", "I'm a simple assistant with pre-loaded answers 📦. Customize me!", "Right now I answer what I've been taught 🧠. You can expand me by editing the file."] }
+    ],
+    es: [
+      { claves: ["hola", "buenas", "hey", "saludos", "buenos días", "buenas tardes", "buenas noches"], respuestas: ["¡Hola! 👋 ¿En qué te puedo ayudar?", "¡Hey! 😊 Aquí estoy, ¿qué necesitás?", "¡Buenas! 🌟 ¿Cómo te puedo ayudar hoy?", "¡Hola! 🎉 Un gusto. ¿En qué andás?"] },
+      { claves: ["cómo estás", "como estas", "qué tal", "todo bien", "cómo andás", "como andas"], respuestas: ["¡Muy bien, gracias! 😄 ¿Y vos?", "Todo excelente por acá. ✨ ¿Cómo estás vos?", "De maravilla. 🌈 ¿En qué te puedo ayudar?", "¡Bien! 💪 Listo para ayudarte."] },
+      { claves: ["nombre", "cómo te llamas", "como te llamas", "quién eres", "quien eres", "quien sos", "quíen sos", "cual es tu nombre"], respuestas: ["Soy tu asistente virtual 🤖. ¡Podés cambiar mi nombre en el código!", "Me llaman IA, aunque podés ponerme el nombre que quieras 😉.", "Soy un bot sencillo. Mi nombre lo definís vos 🏷️."] },
+      { claves: ["gracias", "muchas gracias", "te lo agradezco", "grax"], respuestas: ["¡De nada! 😊 Para eso estoy.", "¡Con gusto! 🌟 ¿Necesitás algo más?", "No hay de qué. 🙌 ¡Siempre a disposición!", "¡Fue un placer ayudarte! 🎉"] },
+      { claves: ["chau", "adiós", "adios", "hasta luego", "nos vemos", "bye"], respuestas: ["¡Hasta luego! 👋 Fue un placer.", "¡Chau! 🌻 Volvé cuando quieras.", "¡Nos vemos! 🚀 Que te vaya bien.", "¡Hasta pronto! 🌟", "¡Nos vemos! ✌️ Cuidate."] },
+      { claves: ["ayuda", "qué podés hacer", "que podes hacer", "qué hacés", "que haces", "para qué servís"], respuestas: ["Puedo responder preguntas que tengas programadas 💬. ¡Agregá más en el código!", "Soy un asistente simple con respuestas pre-cargadas 📦. ¡Personalizame!", "Por ahora respondo lo que me enseñaron 🧠. Podés ampliarme editando el archivo."] }
+    ],
+    es_AR: [
+      { claves: ["hola", "buenas", "hey", "saludos", "buenos días", "buenas tardes", "buenas noches"], respuestas: ["¡Hola, che! 👋 ¿En qué te puedo ayudar?", "¡Hey! 😊 Acá estoy, ¿qué precisás?", "¡Buenas! 🌟 ¿Cómo te puedo dar una mano hoy?", "¡Hola! 🎉 Un gustazo. ¿En qué andás?"] },
+      { claves: ["cómo estás", "como estas", "qué tal", "todo bien", "cómo andás", "como andas"], respuestas: ["¡Joyita, gracias! 😄 ¿Y vos?", "Todo pipí cucú por acá. ✨ ¿Cómo estás vos?", "De diez. 🌈 ¿En qué te puedo ayudar?", "¡Bien! 💪 Listo para dar una mano."] },
+      { claves: ["nombre", "cómo te llamas", "como te llamas", "quién eres", "quien eres", "quien sos", "quíen sos", "cual es tu nombre"], respuestas: ["Soy tu asistente virtual 🤖. ¡Podés cambiarme el nombre en el código!", "Me dicen IA, pero vos poneme el nombre que quieras 😉.", "Soy un bot sencillo. Vos definís mi nombre 🏷️."] },
+      { claves: ["gracias", "muchas gracias", "te lo agradezco", "grax"], respuestas: ["¡De nada, che! 😊 Para eso estoy.", "¡Con gusto! 🌟 ¿Precisás algo más?", "No hay problema. 🙌 ¡Siempre a disposición!", "¡Un placer ayudarte! 🎉"] },
+      { claves: ["chau", "adiós", "adios", "hasta luego", "nos vemos", "bye"], respuestas: ["¡Chau! 👋 Fue un placer.", "¡Nos vemos! 🌻 Volvé cuando quieras.", "¡Chau che! 🚀 Que te vaya bárbaro.", "¡Hasta luego! ✌️ Cuidate."] },
+      { claves: ["ayuda", "qué podés hacer", "que podes hacer", "qué hacés", "que haces", "para qué servís"], respuestas: ["Puedo responder preguntas que tengas programadas 💬. ¡Agregá más en el código!", "Soy un asistente simple con respuestas pre-cargadas 📦. ¡Personalizame!", "Por ahora respondo lo que me enseñaron 🧠. Podés ampliarme editando el archivo."] }
+    ]
+  };
 
-  const fallbacks = [
-    "No entendí bien eso 🤔. ¿Podés reformularlo?",
-    "Hmm, no tengo una respuesta para eso todavía 🕵️.",
-    "No estoy seguro de cómo responder eso 😕. ¿Intentás con otra pregunta?",
-    "Eso está fuera de lo que sé por ahora 🚧."
-  ];
+  const fallbacks = {
+    en: ["I didn't quite get that 🤔. Can you rephrase it?", "Hmm, I don't have an answer for that yet 🕵️.", "I'm not sure how to respond to that 😕. Try another question?", "That's beyond what I know right now 🚧."],
+    es: ["No entendí bien eso 🤔. ¿Podés reformularlo?", "Hmm, no tengo una respuesta para eso todavía 🕵️.", "No estoy seguro de cómo responder eso 😕. ¿Intentás con otra pregunta?", "Eso está fuera de lo que sé por ahora 🚧."],
+    es_AR: ["No te entendí bien 🤔. ¿Lo podés decir de otra forma?", "Mmm, todavía no tengo respuesta para eso 🕵️.", "No estoy seguro de cómo responder a eso 😕. ¿Probás con otra pregunta?", "Eso está fuera de lo que sé por ahora, che 🚧."]
+  };
+
+  const explicacionesGato = {
+    en: ["🐱 **Cat** – A domestic feline with a flexible body and pointy ears. Its whiskers help measure spaces, and its retractable claws make it a great climber. It has excellent night vision and very sharp hearing. They tend to be independent but very affectionate when they want to."],
+    es: ["🐱 **Gato** – Felino doméstico de cuerpo flexible y orejas puntiagudas. Sus bigotes le sirven para medir espacios y sus garras retráctiles lo ayudan a trepar. Tiene una excelente visión nocturna y un oído muy fino. Suelen ser independientes pero muy cariñosos cuando quieren."],
+    es_AR: ["🐱 **Gato** – Felino doméstico de cuerpo flexible y orejas paradas. Los bigotes le sirven para medir espacios y las garras retráctiles lo ayudan a trepar. Tiene una visión nocturna bárbara y un oído muy agudo. Son independientes pero re cariñosos cuando quieren."]
+  };
+  const explicacionesPerro = {
+    en: ["🐶 **Dog** – A descendant of the wolf, domesticated by humans. Its sense of smell is up to 100,000 times stronger than ours. It's loyal, social, and able to understand many human emotions."],
+    es: ["🐶 **Perro** – Descendiente del lobo, domesticado por el ser humano. Tiene un olfato hasta 100.000 veces más potente que el nuestro. Es leal, sociable y capaz de entender muchas emociones humanas."],
+    es_AR: ["🐶 **Perro** – Descendiente del lobo, domesticado por el ser humano. Tiene un olfato hasta 100.000 veces más fuerte que el nuestro. Es leal, sociable y entiende muchas emociones humanas."]
+  };
+  const explicacionesPlanta = {
+    en: ["🌿 **Plant** – A living organism that makes its own food through photosynthesis. Its leaves capture sunlight and roots absorb water and minerals from the soil. They are essential for producing oxygen."],
+    es: ["🌿 **Planta** – Organismo vivo que fabrica su propio alimento mediante la fotosíntesis. Sus hojas captan la luz solar y las raíces absorben agua y minerales del suelo. Son esenciales para producir oxígeno."],
+    es_AR: ["🌿 **Planta** – Organismo vivo que hace su propio alimento con la fotosíntesis. Las hojas captan la luz solar y las raíces chupan agua y minerales del suelo. Son esenciales para producir oxígeno."]
+  };
+  const explicacionesHumano = {
+    en: ["🧑 **Human** – A bipedal being with a highly developed brain, capable of reasoning, creating art, and communicating through complex languages. Its upright posture frees the hands to make tools."],
+    es: ["🧑 **Humano** – Ser bípedo con un cerebro muy desarrollado, capaz de razonar, crear arte y comunicarse con lenguajes complejos. Su postura erguida libera las manos para fabricar herramientas."],
+    es_AR: ["🧑 **Humano** – Ser bípedo con un cerebro re desarrollado, capaz de razonar, crear arte y comunicarse con lenguajes complejos. Estar parado en dos patas le deja las manos libres para fabricar herramientas."]
+  };
 
   function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function getRespuestas() { return respuestas[currentLang] || respuestas.es; }
+  function getFallbacks() { return fallbacks[currentLang] || fallbacks.es; }
+  function getExplicacion(categoria) {
+    const map = { gato: explicacionesGato, perro: explicacionesPerro, planta: explicacionesPlanta, humano: explicacionesHumano };
+    return map[categoria]?.[currentLang] || map[categoria]?.es;
+  }
 
-  // ─── NUEVA FUNCIÓN: buscar en Wikipedia ───
   async function buscarEnWikipedia(consulta) {
     const searchUrl = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(consulta)}&format=json&origin=*`;
     try {
@@ -159,31 +324,31 @@
       const page = extractData.query.pages;
       const pageId = Object.keys(page)[0];
       if (page[pageId].missing) return null;
-      return page[pageId].extract;
+      return { extract: page[pageId].extract, title: titulo };
     } catch (error) {
       console.error('🌐 Error al conectar con Wikipedia:', error);
       return null;
     }
   }
 
-  // ─── RESPUESTA INTELIGENTE (pre-programada o Wikipedia) ───
   async function obtenerRespuestaConWikipedia(texto) {
     const t = texto.toLowerCase().trim();
-    for (const entrada of respuestas) {
+    const resp = getRespuestas();
+    for (const entrada of resp) {
       if (entrada.claves.some(c => t.includes(c))) {
         return random(entrada.respuestas);
       }
     }
-    const extract = await buscarEnWikipedia(texto);
-    if (extract) {
-      const oraciones = extract.split('. ');
+    const resultado = await buscarEnWikipedia(texto);
+    if (resultado) {
+      const oraciones = resultado.extract.split('. ');
       const resumenCorto = oraciones.slice(0, 2).join('. ') + (oraciones.length > 2 ? '.' : '');
-      return `📚 Según Wikipedia: ${resumenCorto}`;
+      const sourceLink = `https://es.wikipedia.org/wiki/${encodeURIComponent(resultado.title)}`;
+      return `${resumenCorto}\n\n🔗 Fuente: ${sourceLink}`;
     }
-    return random(fallbacks);
+    return random(getFallbacks());
   }
 
-  // ─── ENVÍO DE MENSAJES (actualizado) ───
   async function sendMessage() {
     const input = document.getElementById('input');
     const text = input.value.trim();
@@ -195,10 +360,8 @@
     const typing = addTyping();
     await new Promise(r => setTimeout(r, 700));
     typing.remove();
-
     const respuesta = await obtenerRespuestaConWikipedia(text);
     addMessage(respuesta, 'ai');
-
     document.getElementById('sendBtn').disabled = false;
   }
 
@@ -247,86 +410,53 @@
     return wrap;
   }
 
-  // ─── EXPLICACIONES VARIADAS (con emojis) ───
-  const explicacionesGato = [
-    "🐱 **Gato** – Felino doméstico de cuerpo flexible y orejas puntiagudas. Sus bigotes le sirven para medir espacios y sus garras retráctiles lo ayudan a trepar. Tiene una excelente visión nocturna y un oído muy fino. Suelen ser independientes pero muy cariñosos cuando quieren.",
-    "🐱 **Gato** – Animal de compañía con un esqueleto muy elástico y reflejos rápidos. Posee almohadillas en las patas que le permiten caminar en silencio. Es curioso por naturaleza y disfruta explorar su entorno.",
-    "🐱 **Gato** – Mamífero carnívoro domesticado hace más de 4000 años. Sus ojos pueden dilatar mucho la pupila para ver en la oscuridad. Son conocidos por su ronroneo, que suelen usar para comunicar bienestar.",
-    "🐱 **Gato** – Pequeño felino con un gran sentido del equilibrio gracias a su cola. Es un cazador nato, aunque viva en casa. Le encanta dormir muchas horas al día y asearse constantemente."
-  ];
-
-  const explicacionesPerro = [
-    "🐶 **Perro** – Descendiente del lobo, domesticado por el ser humano. Tiene un olfato hasta 100.000 veces más potente que el nuestro. Es leal, sociable y capaz de entender muchas emociones humanas.",
-    "🐶 **Perro** – Mamífero del orden de los carnívoros, con un hocico largo y una cola que expresa su estado de ánimo. Existen cientos de razas con tamaños y pelajes muy variados. Son grandes compañeros de vida.",
-    "🐶 **Perro** – Animal de manada que disfruta la compañía y el juego. Su ladrido es una forma de comunicación, al igual que el movimiento de las orejas. Se lo considera el primer animal domesticado por el hombre.",
-    "🐶 **Perro** – Fiel amigo de cuatro patas. Su sentido del oído le permite captar sonidos que nosotros no podemos. Respira agitadamente para regular su temperatura, ya que no suda como los humanos."
-  ];
-
-  const explicacionesPlanta = [
-    "🌿 **Planta** – Organismo vivo que fabrica su propio alimento mediante la fotosíntesis. Sus hojas captan la luz solar y las raíces absorben agua y minerales del suelo. Son esenciales para producir oxígeno.",
-    "🌿 **Planta** – Ser vivo del reino vegetal. Posee clorofila, que le da el color verde y le permite transformar la energía del sol en nutrientes. Puede ser un árbol, un arbusto, una flor o un cactus.",
-    "🌿 **Planta** – Además de darnos oxígeno, las plantas son la base de la cadena alimenticia. Tienen ciclos de vida que incluyen germinación, crecimiento, floración y producción de semillas.",
-    "🌿 **Planta** – Gracias a sus raíces, sujetan el suelo y evitan la erosión. Sus flores atraen insectos polinizadores y sus frutos dispersan las semillas. Sin ellas, la vida en la Tierra no sería posible."
-  ];
-
-  const explicacionesHumano = [
-    "🧑 **Humano** – Ser bípedo con un cerebro muy desarrollado, capaz de razonar, crear arte y comunicarse con lenguajes complejos. Su postura erguida libera las manos para fabricar herramientas.",
-    "🧑 **Humano** – Pertenece a la especie *Homo sapiens*. Se distingue por su capacidad de pensar de forma abstracta, planificar y cooperar en grandes grupos. Ha modificado el planeta como ningún otro ser vivo.",
-    "🧑 **Humano** – Cuerpo con dos piernas, dos brazos y un cráneo grande que protege el cerebro. Su piel varía en tonos según la melanina. Gracias al lenguaje, transmite conocimiento de generación en generación.",
-    "🧑 **Humano** – Ser social por naturaleza. Siente empatía, tiene conciencia de sí mismo y es capaz de imaginar escenarios futuros. Su infancia es prolongada comparada con otros mamíferos, lo que permite un largo aprendizaje."
-  ];
-
-  // ─── RECONOCIMIENTO DE IMÁGENES ───
   const imageInput = document.getElementById('imageInput');
   imageInput.addEventListener('change', async function () {
     const file = this.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = async function (e) {
       const imageUrl = e.target.result;
       addImageMessage(imageUrl, 'user');
-
       if (!mobilenetModel) {
-        addMessage('El modelo de imagen aún está cargando ⏳. Intentá de nuevo en unos segundos.', 'ai');
+        const msg = { en: "The image model is still loading ⏳. Try again in a few seconds.", es: "El modelo de imagen aún está cargando ⏳. Intentá de nuevo en unos segundos.", es_AR: "El modelo de imagen todavía está cargando ⏳. Probá de nuevo en unos segundos." };
+        addMessage(msg[currentLang] || msg.es, 'ai');
         return;
       }
-
       const imgElement = document.createElement('img');
       imgElement.src = imageUrl;
       imgElement.onload = async function () {
         try {
           const predictions = await mobilenetModel.classify(imgElement);
           if (predictions.length === 0) {
-            addMessage('No pude reconocer nada en esta imagen 🧐.', 'ai');
+            const msg = { en: "I couldn't recognize anything in this image 🧐.", es: "No pude reconocer nada en esta imagen 🧐.", es_AR: "No pude reconocer nada en esta imagen 🧐." };
+            addMessage(msg[currentLang] || msg.es, 'ai');
             return;
           }
-
           const top = predictions[0];
           const className = top.className.toLowerCase();
           const confianza = Math.round(top.probability * 100);
           let explicacion = '';
-
           if (className.includes('cat') || className.includes('gato') || className.includes('felino')) {
-            explicacion = random(explicacionesGato);
+            explicacion = random(getExplicacion('gato'));
           } else if (className.includes('dog') || className.includes('perro') || className.includes('canino') || className.includes('puppy')) {
-            explicacion = random(explicacionesPerro);
+            explicacion = random(getExplicacion('perro'));
           } else if (className.includes('plant') || className.includes('flor') || className.includes('tree') || className.includes('leaf') || className.includes('vegetal')) {
-            explicacion = random(explicacionesPlanta);
+            explicacion = random(getExplicacion('planta'));
           } else if (className.includes('person') || className.includes('human') || className.includes('man') || className.includes('woman') || className.includes('face')) {
-            explicacion = random(explicacionesHumano);
+            explicacion = random(getExplicacion('humano'));
           } else {
-            explicacion = 'No reconozco esto como gato, perro, planta o humano 🚫. Solo estoy configurado para identificar esas categorías.';
+            const msg = { en: "I don't recognize this as a cat, dog, plant or human 🚫.", es: "No reconozco esto como gato, perro, planta o humano 🚫.", es_AR: "No reconozco esto como gato, perro, planta o humano 🚫." };
+            explicacion = msg[currentLang] || msg.es;
           }
-
           if (explicacion.startsWith('🐱') || explicacion.startsWith('🐶') || explicacion.startsWith('🌿') || explicacion.startsWith('🧑')) {
             const emojiEnd = explicacion.indexOf('**', 3) + 2;
             explicacion = `${explicacion.slice(0, emojiEnd)} (${confianza}% de certeza) ${explicacion.slice(emojiEnd)}`;
           }
-
           addMessage(explicacion, 'ai');
         } catch (err) {
-          addMessage('Ocurrió un error al analizar la imagen 😥.', 'ai');
+          const msg = { en: "An error occurred while analyzing the image 😥.", es: "Ocurrió un error al analizar la imagen 😥.", es_AR: "Ocurrió un error al analizar la imagen 😥." };
+          addMessage(msg[currentLang] || msg.es, 'ai');
         }
       };
     };
@@ -334,7 +464,6 @@
     this.value = '';
   });
 
-  // Eventos del textarea
   document.getElementById('input').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
