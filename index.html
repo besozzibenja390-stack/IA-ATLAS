@@ -4,16 +4,75 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AOS-0.1</title>
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css">
+  <!-- TensorFlow.js + MobileNet -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ─── VARIABLES DE TEMA ─── */
+    :root {
+      --font-sans: system-ui, -apple-system, sans-serif;
+      --border-radius-sm: 6px;
+      --border-radius-md: 8px;
+      --border-radius-lg: 16px;
+    }
+
+    /* Tema oscuro (por defecto) */
+    body.theme-dark {
+      --color-background-primary: #0f0f0f;
+      --color-background-secondary: #1c1c1c;
+      --color-background-tertiary: #151515;
+      --color-border-primary: #555;
+      --color-border-secondary: #3a3a3a;
+      --color-border-tertiary: #2e2e2e;
+      --color-text-primary: #e0e0e0;
+      --color-text-secondary: #a0a0a0;
+      --color-text-tertiary: #666;
+      --color-text-info: #a8c4ff;
+      --color-background-info: #2a3a5e;
+    }
+
+    /* Tema gris */
+    body.theme-gray {
+      --color-background-primary: #1e1e1e;
+      --color-background-secondary: #2c2c2c;
+      --color-background-tertiary: #262626;
+      --color-border-primary: #666;
+      --color-border-secondary: #4a4a4a;
+      --color-border-tertiary: #3a3a3a;
+      --color-text-primary: #f0f0f0;
+      --color-text-secondary: #b0b0b0;
+      --color-text-tertiary: #888;
+      --color-text-info: #c0d0ff;
+      --color-background-info: #3a4a6a;
+    }
+
+    /* Tema claro (corregido: texto oscuro, fondos claros) */
+    body.theme-light {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f2f2f2;
+      --color-background-tertiary: #e8e8e8;
+      --color-border-primary: #888;
+      --color-border-secondary: #ccc;
+      --color-border-tertiary: #ddd;
+      --color-text-primary: #1a1a1a;
+      --color-text-secondary: #444;
+      --color-text-tertiary: #777;
+      --color-text-info: #1d4ed8;
+      --color-background-info: #dbeafe;
+    }
+
     body {
-      font-family: system-ui, sans-serif;
-      background: #0f0f0f;
+      font-family: var(--font-sans);
+      background: #000;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      color: #e0e0e0;
+      margin: 0;
     }
 
     /* ─── PANTALLA DE BIENVENIDA ─── */
@@ -21,6 +80,7 @@
       text-align: center;
       max-width: 500px;
       padding: 30px;
+      color: #e0e0e0;
     }
     #landing .flag {
       font-size: 80px;
@@ -73,39 +133,171 @@
     #startBtn:hover { background: #3a4f7a; }
     #startBtn:disabled { opacity: 0.4; cursor: default; background: #252525; color: #666; border: 1px solid #2e2e2e; }
 
-    /* ─── CHAT ─── */
-    .container {
-      width: 600px;
-      height: 580px;
-      background: #1a1a1a;
-      border-radius: 16px;
-      border: 1px solid #2e2e2e;
+    /* ─── APLICACIÓN (CHAT) ─── */
+    #app {
       display: none;
-      flex-direction: column;
+      width: 900px;
+      height: 650px;
+      background: var(--color-background-primary);
+      border: 0.5px solid var(--color-border-tertiary);
+      border-radius: var(--border-radius-lg);
       overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     }
-    .header { padding: 16px 20px; border-bottom: 1px solid #2e2e2e; font-size: 15px; font-weight: 500; color: #e0e0e0; }
-    #messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 16px; scrollbar-width: thin; scrollbar-color: #333 transparent; }
-    .msg-wrap { display: flex; flex-direction: column; max-width: 80%; }
-    .msg-wrap.user { align-self: flex-end; align-items: flex-end; }
-    .msg-wrap.ai   { align-self: flex-start; align-items: flex-start; }
-    .bubble { padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-break: break-word; white-space: pre-wrap; }
-    .bubble.user { background: #2a3a5e; color: #a8c4ff; border: 1px solid #3a4f7a; }
-    .bubble.ai   { background: #252525; color: #d4d4d4; border: 1px solid #2e2e2e; }
-    .label { font-size: 11px; color: #555; margin-top: 4px; padding: 0 4px; }
-    .input-area { display: flex; gap: 8px; align-items: flex-end; padding: 12px 16px; border-top: 1px solid #2e2e2e; background: #1a1a1a; }
-    textarea { flex: 1; resize: none; border: 1px solid #2e2e2e; border-radius: 10px; font-size: 14px; padding: 10px 12px; line-height: 1.5; max-height: 120px; overflow-y: auto; font-family: inherit; outline: none; background: #111; color: #d4d4d4; }
-    textarea::placeholder { color: #444; }
-    textarea:focus { border-color: #444; }
-    button { height: 40px; padding: 0 18px; border-radius: 10px; border: 1px solid #2e2e2e; background: #252525; color: #d4d4d4; font-size: 14px; cursor: pointer; transition: background 0.15s; }
-    button:hover  { background: #333; }
-    button:active { transform: scale(0.97); }
-    button:disabled { opacity: 0.4; cursor: default; }
-    .dots { display: flex; gap: 5px; align-items: center; padding: 4px 0; }
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: #555; animation: blink 1.2s infinite; }
-    .dot:nth-child(2) { animation-delay: 0.2s; }
-    .dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes blink { 0%,80%,100%{opacity:.2;transform:scale(.8);} 40%{opacity:1;transform:scale(1);} }
+
+    /* Sidebar */
+    #sidebar {
+      width: 260px; min-width: 260px;
+      background: var(--color-background-tertiary);
+      display: flex; flex-direction: column;
+      border-right: 0.5px solid var(--color-border-tertiary);
+    }
+    #sidebar-header {
+      padding: 12px; display: flex; align-items: center; justify-content: space-between;
+    }
+    #sidebar-header .logo { font-size: 15px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
+    .icon-btn {
+      background: none; border: none; cursor: pointer; color: var(--color-text-secondary);
+      padding: 6px; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center;
+    }
+    .icon-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+
+    .new-chat-btn {
+      margin: 4px 12px 8px; padding: 8px 12px; background: none;
+      border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md);
+      cursor: pointer; color: var(--color-text-primary); font-size: 13px;
+      display: flex; align-items: center; gap: 8px; width: calc(100% - 24px);
+      text-align: left; transition: background 0.15s;
+    }
+    .new-chat-btn:hover { background: var(--color-background-secondary); }
+
+    .sidebar-section {
+      padding: 4px 12px; font-size: 11px; font-weight: 500;
+      color: var(--color-text-tertiary); letter-spacing: 0.05em;
+      text-transform: uppercase; margin-top: 8px;
+    }
+
+    .chat-item {
+      padding: 8px 12px; cursor: pointer; border-radius: var(--border-radius-md);
+      margin: 1px 8px; font-size: 13px; color: var(--color-text-secondary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: background 0.12s;
+    }
+    .chat-item:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+    .chat-item.active { background: var(--color-background-secondary); color: var(--color-text-primary); }
+
+    .sidebar-footer {
+      margin-top: auto; padding: 12px;
+      border-top: 0.5px solid var(--color-border-tertiary);
+    }
+    .user-row {
+      display: flex; align-items: center; gap: 10px; padding: 8px;
+      border-radius: var(--border-radius-md); cursor: pointer;
+    }
+    .user-row:hover { background: var(--color-background-secondary); }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--color-background-info); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--color-text-info); flex-shrink: 0; }
+    .user-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+
+    /* Main area */
+    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    #topbar {
+      padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 0.5px solid var(--color-border-tertiary);
+    }
+    #model-selector {
+      display: flex; align-items: center; gap: 6px; padding: 6px 10px;
+      border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md);
+      cursor: pointer; font-size: 13px; font-weight: 500; color: var(--color-text-primary);
+      background: none;
+    }
+    #model-selector:hover { background: var(--color-background-secondary); }
+    .topbar-actions { display: flex; gap: 4px; }
+
+    /* Messages */
+    #messages {
+      flex: 1; overflow-y: auto; padding: 20px 0; scroll-behavior: smooth;
+      display: none;
+    }
+    #messages::-webkit-scrollbar { width: 4px; }
+    #messages::-webkit-scrollbar-thumb { background: var(--color-border-secondary); border-radius: 4px; }
+
+    .msg-row { padding: 4px 0; display: flex; animation: messagePop 0.3s ease both; }
+    .msg-row.user { justify-content: flex-end; }
+    .msg-row.assistant { justify-content: flex-start; }
+
+    .msg-content { max-width: 72%; }
+    .msg-row.assistant .msg-content { display: flex; gap: 10px; align-items: flex-start; padding: 0 16px; }
+
+    .assistant-icon {
+      width: 28px; height: 28px; min-width: 28px; border-radius: 50%;
+      background: var(--color-background-tertiary); border: 0.5px solid var(--color-border-secondary);
+      display: flex; align-items: center; justify-content: center; margin-top: 2px;
+    }
+    .assistant-icon i { font-size: 14px; color: var(--color-text-secondary); }
+
+    .bubble {
+      padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.6;
+      color: var(--color-text-primary);
+    }
+    .msg-row.user .bubble {
+      background: var(--color-background-secondary);
+      border: 0.5px solid var(--color-border-tertiary);
+      border-radius: 18px 18px 4px 18px; margin-right: 16px;
+    }
+    .msg-row.assistant .bubble { background: none; padding: 2px 0; border-radius: 0; border: none; }
+
+    /* Empty state */
+    #empty-state {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 24px; padding: 40px 20px;
+    }
+    #empty-state h2 { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+    .suggestions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; max-width: 480px; }
+    .suggestion-card {
+      padding: 12px 14px; border: 0.5px solid var(--color-border-tertiary);
+      border-radius: var(--border-radius-md); cursor: pointer; font-size: 13px;
+      color: var(--color-text-secondary); transition: all 0.15s; background: none;
+      text-align: left; line-height: 1.4;
+    }
+    .suggestion-card:hover {
+      background: var(--color-background-secondary); color: var(--color-text-primary);
+      border-color: var(--color-border-secondary);
+    }
+    .suggestion-card strong { display: block; color: var(--color-text-primary); font-weight: 500; margin-bottom: 2px; font-size: 13px; }
+
+    /* Input area */
+    #input-area { padding: 12px 16px 16px; }
+    #input-box {
+      border: 0.5px solid var(--color-border-secondary); border-radius: 16px;
+      background: var(--color-background-secondary); display: flex; flex-direction: column; gap: 0;
+      overflow: hidden; transition: border-color 0.15s;
+    }
+    #input-box:focus-within { border-color: var(--color-border-primary); }
+    #textarea {
+      width: 100%; background: none; border: none; outline: none; resize: none;
+      font-size: 14px; color: var(--color-text-primary); padding: 12px 14px 4px;
+      font-family: var(--font-sans); line-height: 1.6; min-height: 44px; max-height: 160px;
+      overflow-y: auto;
+    }
+    #textarea::placeholder { color: var(--color-text-tertiary); }
+    .input-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 8px; }
+    .input-tools { display: flex; gap: 2px; }
+    .input-tool-btn {
+      background: none; border: none; cursor: pointer; color: var(--color-text-tertiary);
+      padding: 6px; border-radius: 8px; display: flex; align-items: center;
+    }
+    .input-tool-btn:hover { color: var(--color-text-secondary); background: var(--color-background-primary); }
+    .input-tool-btn i { font-size: 16px; }
+    #send-btn {
+      width: 32px; height: 32px; border-radius: 50%; background: var(--color-text-primary);
+      border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    #send-btn:hover { opacity: 0.85; }
+    #send-btn:active { transform: scale(0.94); }
+    #send-btn i { font-size: 14px; color: var(--color-background-primary); }
+    #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .disclaimer { text-align: center; font-size: 11px; color: var(--color-text-tertiary); margin-top: 8px; }
 
     /* ─── ANIMACIONES ─── */
     #landing .flag,
@@ -135,18 +327,11 @@
       75%      { transform: rotate(-2deg); }
     }
 
-    #chatContainer {
-      display: none;
-      animation: fadeIn 0.6s ease;
-    }
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.97); }
       to   { opacity: 1; transform: scale(1); }
     }
 
-    .msg-wrap {
-      animation: messagePop 0.4s ease both;
-    }
     @keyframes messagePop {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -155,19 +340,19 @@
     button, .lang-btn, #startBtn {
       transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
-    button:active, .lang-btn:active, #startBtn:active {
-      transform: scale(0.95);
-    }
-    .lang-btn:hover, #startBtn:hover:not(:disabled) {
-      box-shadow: 0 0 12px rgba(58,79,122,0.4);
-    }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
-</head>
-<body>
+    button:active, .lang-btn:active, #startBtn:active { transform: scale(0.95); }
+    .lang-btn:hover, #startBtn:hover:not(:disabled) { box-shadow: 0 0 12px rgba(58,79,122,0.4); }
 
-  <!-- PANTALLA DE BIENVENIDA -->
+    /* Typing indicator */
+    .typing-indicator { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-tertiary); animation: bounce 1.2s infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+  </style>
+</head>
+<body class="theme-dark">
+  <!-- Pantalla de bienvenida -->
   <div id="landing">
     <div class="flag">🇦🇷</div>
     <h1>AOS-0.1</h1>
@@ -185,20 +370,72 @@
     <button id="startBtn" disabled onclick="iniciarChat()">Comenzar</button>
   </div>
 
-  <!-- CHAT -->
-  <div class="container" id="chatContainer">
-    <div class="header">AOS-0.1</div>
-    <div id="messages">
-      <div class="msg-wrap ai">
-        <div class="bubble ai">¡Hola! 👋 ¿En qué puedo ayudarte hoy?</div>
-        <span class="label">IA</span>
+  <!-- Aplicación de chat (oculta al inicio) -->
+  <div id="app">
+    <div id="sidebar">
+      <div id="sidebar-header">
+        <div class="logo"><i class="ti ti-message-chatbot"></i> AOS-0.1</div>
+        <button class="icon-btn" title="Nueva conversación" onclick="newChat()"><i class="ti ti-edit"></i></button>
+      </div>
+      <button class="new-chat-btn" onclick="newChat()">
+        <i class="ti ti-plus"></i> Nueva conversación
+      </button>
+      <div class="sidebar-section">Conversaciones</div>
+      <div id="chat-list"></div>
+      <div class="sidebar-footer">
+        <div class="user-row">
+          <div class="avatar">U</div>
+          <div class="user-name">Usuario</div>
+          <button class="icon-btn" style="margin-left:auto" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-palette"></i></button>
+        </div>
       </div>
     </div>
-    <div class="input-area">
-      <input type="file" id="imageInput" accept="image/*" style="display:none" />
-      <button id="attachBtn" onclick="document.getElementById('imageInput').click()">📎</button>
-      <textarea id="input" rows="1" placeholder="Escribe tu mensaje..."></textarea>
-      <button id="sendBtn" onclick="sendMessage()">Enviar</button>
+
+    <div id="main">
+      <div id="topbar">
+        <button id="model-selector">
+          AOS-0.1 <i class="ti ti-chevron-down" style="font-size:12px;"></i>
+        </button>
+        <div class="topbar-actions">
+          <button class="icon-btn" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-sun-moon"></i></button>
+        </div>
+      </div>
+
+      <div id="empty-state">
+        <h2>¿En qué puedo ayudarte?</h2>
+        <div class="suggestions">
+          <button class="suggestion-card" onclick="useSuggestion(this)">
+            <strong>Explícame algo</strong>¿Cómo funciona la inteligencia artificial?
+          </button>
+          <button class="suggestion-card" onclick="useSuggestion(this)">
+            <strong>Escribe código</strong>Crea una función en Python para ordenar listas
+          </button>
+          <button class="suggestion-card" onclick="useSuggestion(this)">
+            <strong>Ayúdame a redactar</strong>Un correo profesional de presentación
+          </button>
+          <button class="suggestion-card" onclick="useSuggestion(this)">
+            <strong>Analiza esto</strong>Las ventajas y desventajas del trabajo remoto
+          </button>
+        </div>
+      </div>
+
+      <div id="messages"></div>
+
+      <div id="input-area">
+        <div id="input-box">
+          <textarea id="textarea" placeholder="Escribe un mensaje..." rows="1"></textarea>
+          <div class="input-toolbar">
+            <div class="input-tools">
+              <input type="file" id="imageInput" accept="image/*" style="display:none" />
+              <button class="input-tool-btn" title="Adjuntar imagen" onclick="document.getElementById('imageInput').click()"><i class="ti ti-photo"></i></button>
+            </div>
+            <button id="send-btn" disabled onclick="sendMessage()" title="Enviar">
+              <i class="ti ti-arrow-up"></i>
+            </button>
+          </div>
+        </div>
+        <p class="disclaimer">La IA puede cometer errores. Considera verificar la información importante.</p>
+      </div>
     </div>
   </div>
 
@@ -207,12 +444,25 @@
   // VARIABLES GLOBALES
   let currentLang = 'es';
   let mobilenetModel = null;
+  let isTyping = false;
+  let currentTheme = 'dark';
 
+  const textarea = document.getElementById('textarea');
+  const sendBtn = document.getElementById('send-btn');
+  const messagesEl = document.getElementById('messages');
+  const emptyState = document.getElementById('empty-state');
   const landing = document.getElementById('landing');
-  const chatContainer = document.getElementById('chatContainer');
+  const app = document.getElementById('app');
   const startBtn = document.getElementById('startBtn');
   const langButtons = document.querySelectorAll('.lang-btn');
 
+  // ─── CARGA DEL MODELO ───
+  (async function () {
+    mobilenetModel = await mobilenet.load();
+    console.log("Modelo listo para reconocer imágenes 🖼️");
+  })();
+
+  // ─── LANDING: selección de idioma ───
   langButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       langButtons.forEach(b => b.classList.remove('selected'));
@@ -224,61 +474,50 @@
 
   function iniciarChat() {
     landing.style.display = 'none';
-    chatContainer.style.display = 'flex';
-    chatContainer.style.animation = 'none';
-    chatContainer.offsetHeight;
-    chatContainer.style.animation = 'fadeIn 0.6s ease';
-    actualizarMensajeInicial();
+    app.style.display = 'flex';
+    app.style.animation = 'fadeIn 0.6s ease';
   }
 
-  function actualizarMensajeInicial() {
-    const primerBubble = document.querySelector('#messages .bubble.ai');
-    if (primerBubble) {
-      const saludos = {
-        en: "Hello! 👋 How can I help you today?",
-        es: "¡Hola! 👋 ¿En qué puedo ayudarte hoy?",
-        es_AR: "¡Hola, che! 👋 ¿En qué te puedo ayudar hoy?"
-      };
-      primerBubble.textContent = saludos[currentLang] || saludos.es;
-    }
+  // ─── CAMBIO DE TEMA ───
+  function cambiarTema() {
+    const themes = ['dark', 'gray', 'light'];
+    const currentIdx = themes.indexOf(currentTheme);
+    currentTheme = themes[(currentIdx + 1) % themes.length];
+    document.body.className = `theme-${currentTheme}`;
   }
 
-  (async function () {
-    mobilenetModel = await mobilenet.load();
-    console.log("Modelo listo para reconocer imágenes 🖼️");
-  })();
-
+  // ─── RESPUESTAS MULTILINGÜES ───
   const respuestas = {
     en: [
-      { claves: ["hello", "hi", "hey", "good morning", "good afternoon", "good evening"], respuestas: ["Hello! 👋 How can I help you?", "Hey! 😊 I'm here, what do you need?", "Hi there! 🌟 How can I help you today?", "Hello! 🎉 Nice to meet you. What's up?"] },
-      { claves: ["how are you", "how's it going", "what's up", "how you doing"], respuestas: ["I'm great, thanks! 😄 And you?", "Everything's awesome here. ✨ How are you?", "Fantastic. 🌈 What can I do for you?", "Doing well! 💪 Ready to help."] },
-      { claves: ["name", "what's your name", "who are you"], respuestas: ["I'm your virtual assistant 🤖. You can change my name in the code!", "They call me AI, but you can name me whatever you want 😉.", "I'm a simple bot. You decide my name 🏷️."] },
-      { claves: ["thanks", "thank you", "thx", "gracias"], respuestas: ["You're welcome! 😊 That's what I'm here for.", "Happy to help! 🌟 Need anything else?", "No problem. 🙌 Always at your service!", "It was a pleasure! 🎉"] },
-      { claves: ["bye", "goodbye", "see you", "adios", "chau"], respuestas: ["See you later! 👋 It was a pleasure.", "Bye! 🌻 Come back anytime.", "See ya! 🚀 Have a great day.", "Goodbye! ✌️ Take care."] },
-      { claves: ["help", "what can you do", "what do you do"], respuestas: ["I can answer programmed questions 💬. Add more in the code!", "I'm a simple assistant with pre-loaded answers 📦. Customize me!", "Right now I answer what I've been taught 🧠. You can expand me by editing the file."] }
+      { claves: ["hello","hi","hey","good morning","good afternoon","good evening"], respuestas: ["Hello! 👋 How can I help you?","Hey! 😊 I'm here, what do you need?","Hi there! 🌟 How can I help you today?","Hello! 🎉 Nice to meet you. What's up?"] },
+      { claves: ["how are you","how's it going","what's up","how you doing"], respuestas: ["I'm great, thanks! 😄 And you?","Everything's awesome here. ✨ How are you?","Fantastic. 🌈 What can I do for you?","Doing well! 💪 Ready to help."] },
+      { claves: ["name","what's your name","who are you"], respuestas: ["I'm your virtual assistant 🤖. You can change my name in the code!","They call me AI, but you can name me whatever you want 😉.","I'm a simple bot. You decide my name 🏷️."] },
+      { claves: ["thanks","thank you","thx","gracias"], respuestas: ["You're welcome! 😊 That's what I'm here for.","Happy to help! 🌟 Need anything else?","No problem. 🙌 Always at your service!","It was a pleasure! 🎉"] },
+      { claves: ["bye","goodbye","see you","adios","chau"], respuestas: ["See you later! 👋 It was a pleasure.","Bye! 🌻 Come back anytime.","See ya! 🚀 Have a great day.","Goodbye! ✌️ Take care."] },
+      { claves: ["help","what can you do","what do you do"], respuestas: ["I can answer programmed questions 💬. Add more in the code!","I'm a simple assistant with pre-loaded answers 📦. Customize me!","Right now I answer what I've been taught 🧠. You can expand me by editing the file."] }
     ],
     es: [
-      { claves: ["hola", "buenas", "hey", "saludos", "buenos días", "buenas tardes", "buenas noches"], respuestas: ["¡Hola! 👋 ¿En qué te puedo ayudar?", "¡Hey! 😊 Aquí estoy, ¿qué necesitás?", "¡Buenas! 🌟 ¿Cómo te puedo ayudar hoy?", "¡Hola! 🎉 Un gusto. ¿En qué andás?"] },
-      { claves: ["cómo estás", "como estas", "qué tal", "todo bien", "cómo andás", "como andas"], respuestas: ["¡Muy bien, gracias! 😄 ¿Y vos?", "Todo excelente por acá. ✨ ¿Cómo estás vos?", "De maravilla. 🌈 ¿En qué te puedo ayudar?", "¡Bien! 💪 Listo para ayudarte."] },
-      { claves: ["nombre", "cómo te llamas", "como te llamas", "quién eres", "quien eres", "quien sos", "quíen sos", "cual es tu nombre"], respuestas: ["Soy tu asistente virtual 🤖. ¡Podés cambiar mi nombre en el código!", "Me llaman IA, aunque podés ponerme el nombre que quieras 😉.", "Soy un bot sencillo. Mi nombre lo definís vos 🏷️."] },
-      { claves: ["gracias", "muchas gracias", "te lo agradezco", "grax"], respuestas: ["¡De nada! 😊 Para eso estoy.", "¡Con gusto! 🌟 ¿Necesitás algo más?", "No hay de qué. 🙌 ¡Siempre a disposición!", "¡Fue un placer ayudarte! 🎉"] },
-      { claves: ["chau", "adiós", "adios", "hasta luego", "nos vemos", "bye"], respuestas: ["¡Hasta luego! 👋 Fue un placer.", "¡Chau! 🌻 Volvé cuando quieras.", "¡Nos vemos! 🚀 Que te vaya bien.", "¡Hasta pronto! 🌟", "¡Nos vemos! ✌️ Cuidate."] },
-      { claves: ["ayuda", "qué podés hacer", "que podes hacer", "qué hacés", "que haces", "para qué servís"], respuestas: ["Puedo responder preguntas que tengas programadas 💬. ¡Agregá más en el código!", "Soy un asistente simple con respuestas pre-cargadas 📦. ¡Personalizame!", "Por ahora respondo lo que me enseñaron 🧠. Podés ampliarme editando el archivo."] }
+      { claves: ["hola","buenas","hey","saludos","buenos días","buenas tardes","buenas noches"], respuestas: ["¡Hola! 👋 ¿En qué te puedo ayudar?","¡Hey! 😊 Aquí estoy, ¿qué necesitás?","¡Buenas! 🌟 ¿Cómo te puedo ayudar hoy?","¡Hola! 🎉 Un gusto. ¿En qué andás?"] },
+      { claves: ["cómo estás","como estas","qué tal","todo bien","cómo andás","como andas"], respuestas: ["¡Muy bien, gracias! 😄 ¿Y vos?","Todo excelente por acá. ✨ ¿Cómo estás vos?","De maravilla. 🌈 ¿En qué te puedo ayudar?","¡Bien! 💪 Listo para ayudarte."] },
+      { claves: ["nombre","cómo te llamas","como te llamas","quién eres","quien eres","quien sos","quíen sos","cual es tu nombre"], respuestas: ["Soy tu asistente virtual 🤖. ¡Podés cambiar mi nombre en el código!","Me llaman IA, aunque podés ponerme el nombre que quieras 😉.","Soy un bot sencillo. Mi nombre lo definís vos 🏷️."] },
+      { claves: ["gracias","muchas gracias","te lo agradezco","grax"], respuestas: ["¡De nada! 😊 Para eso estoy.","¡Con gusto! 🌟 ¿Necesitás algo más?","No hay de qué. 🙌 ¡Siempre a disposición!","¡Fue un placer ayudarte! 🎉"] },
+      { claves: ["chau","adiós","adios","hasta luego","nos vemos","bye"], respuestas: ["¡Hasta luego! 👋 Fue un placer.","¡Chau! 🌻 Volvé cuando quieras.","¡Nos vemos! 🚀 Que te vaya bien.","¡Hasta pronto! 🌟","¡Nos vemos! ✌️ Cuidate."] },
+      { claves: ["ayuda","qué podés hacer","que podes hacer","qué hacés","que haces","para qué servís"], respuestas: ["Puedo responder preguntas que tengas programadas 💬. ¡Agregá más en el código!","Soy un asistente simple con respuestas pre-cargadas 📦. ¡Personalizame!","Por ahora respondo lo que me enseñaron 🧠. Podés ampliarme editando el archivo."] }
     ],
     es_AR: [
-      { claves: ["hola", "buenas", "hey", "saludos", "buenos días", "buenas tardes", "buenas noches"], respuestas: ["¡Hola, che! 👋 ¿En qué te puedo ayudar?", "¡Hey! 😊 Acá estoy, ¿qué precisás?", "¡Buenas! 🌟 ¿Cómo te puedo dar una mano hoy?", "¡Hola! 🎉 Un gustazo. ¿En qué andás?"] },
-      { claves: ["cómo estás", "como estas", "qué tal", "todo bien", "cómo andás", "como andas"], respuestas: ["¡Joyita, gracias! 😄 ¿Y vos?", "Todo pipí cucú por acá. ✨ ¿Cómo estás vos?", "De diez. 🌈 ¿En qué te puedo ayudar?", "¡Bien! 💪 Listo para dar una mano."] },
-      { claves: ["nombre", "cómo te llamas", "como te llamas", "quién eres", "quien eres", "quien sos", "quíen sos", "cual es tu nombre"], respuestas: ["Soy tu asistente virtual 🤖. ¡Podés cambiarme el nombre en el código!", "Me dicen IA, pero vos poneme el nombre que quieras 😉.", "Soy un bot sencillo. Vos definís mi nombre 🏷️."] },
-      { claves: ["gracias", "muchas gracias", "te lo agradezco", "grax"], respuestas: ["¡De nada, che! 😊 Para eso estoy.", "¡Con gusto! 🌟 ¿Precisás algo más?", "No hay problema. 🙌 ¡Siempre a disposición!", "¡Un placer ayudarte! 🎉"] },
-      { claves: ["chau", "adiós", "adios", "hasta luego", "nos vemos", "bye"], respuestas: ["¡Chau! 👋 Fue un placer.", "¡Nos vemos! 🌻 Volvé cuando quieras.", "¡Chau che! 🚀 Que te vaya bárbaro.", "¡Hasta luego! ✌️ Cuidate."] },
-      { claves: ["ayuda", "qué podés hacer", "que podes hacer", "qué hacés", "que haces", "para qué servís"], respuestas: ["Puedo responder preguntas que tengas programadas 💬. ¡Agregá más en el código!", "Soy un asistente simple con respuestas pre-cargadas 📦. ¡Personalizame!", "Por ahora respondo lo que me enseñaron 🧠. Podés ampliarme editando el archivo."] }
+      { claves: ["hola","buenas","hey","saludos","buenos días","buenas tardes","buenas noches"], respuestas: ["¡Hola, che! 👋 ¿En qué te puedo ayudar?","¡Hey! 😊 Acá estoy, ¿qué precisás?","¡Buenas! 🌟 ¿Cómo te puedo dar una mano hoy?","¡Hola! 🎉 Un gustazo. ¿En qué andás?"] },
+      { claves: ["cómo estás","como estas","qué tal","todo bien","cómo andás","como andas"], respuestas: ["¡Joyita, gracias! 😄 ¿Y vos?","Todo pipí cucú por acá. ✨ ¿Cómo estás vos?","De diez. 🌈 ¿En qué te puedo ayudar?","¡Bien! 💪 Listo para dar una mano."] },
+      { claves: ["nombre","cómo te llamas","como te llamas","quién eres","quien eres","quien sos","quíen sos","cual es tu nombre"], respuestas: ["Soy tu asistente virtual 🤖. ¡Podés cambiarme el nombre en el código!","Me dicen IA, pero vos poneme el nombre que quieras 😉.","Soy un bot sencillo. Vos definís mi nombre 🏷️."] },
+      { claves: ["gracias","muchas gracias","te lo agradezco","grax"], respuestas: ["¡De nada, che! 😊 Para eso estoy.","¡Con gusto! 🌟 ¿Precisás algo más?","No hay problema. 🙌 ¡Siempre a disposición!","¡Un placer ayudarte! 🎉"] },
+      { claves: ["chau","adiós","adios","hasta luego","nos vemos","bye"], respuestas: ["¡Chau! 👋 Fue un placer.","¡Nos vemos! 🌻 Volvé cuando quieras.","¡Chau che! 🚀 Que te vaya bárbaro.","¡Hasta luego! ✌️ Cuidate."] },
+      { claves: ["ayuda","qué podés hacer","que podes hacer","qué hacés","que haces","para qué servís"], respuestas: ["Puedo responder preguntas que tengas programadas 💬. ¡Agregá más en el código!","Soy un asistente simple con respuestas pre-cargadas 📦. ¡Personalizame!","Por ahora respondo lo que me enseñaron 🧠. Podés ampliarme editando el archivo."] }
     ]
   };
 
   const fallbacks = {
-    en: ["I didn't quite get that 🤔. Can you rephrase it?", "Hmm, I don't have an answer for that yet 🕵️.", "I'm not sure how to respond to that 😕. Try another question?", "That's beyond what I know right now 🚧."],
-    es: ["No entendí bien eso 🤔. ¿Podés reformularlo?", "Hmm, no tengo una respuesta para eso todavía 🕵️.", "No estoy seguro de cómo responder eso 😕. ¿Intentás con otra pregunta?", "Eso está fuera de lo que sé por ahora 🚧."],
-    es_AR: ["No te entendí bien 🤔. ¿Lo podés decir de otra forma?", "Mmm, todavía no tengo respuesta para eso 🕵️.", "No estoy seguro de cómo responder a eso 😕. ¿Probás con otra pregunta?", "Eso está fuera de lo que sé por ahora, che 🚧."]
+    en: ["I didn't quite get that 🤔. Can you rephrase it?","Hmm, I don't have an answer for that yet 🕵️.","I'm not sure how to respond to that 😕. Try another question?","That's beyond what I know right now 🚧."],
+    es: ["No entendí bien eso 🤔. ¿Podés reformularlo?","Hmm, no tengo una respuesta para eso todavía 🕵️.","No estoy seguro de cómo responder eso 😕. ¿Intentás con otra pregunta?","Eso está fuera de lo que sé por ahora 🚧."],
+    es_AR: ["No te entendí bien 🤔. ¿Lo podés decir de otra forma?","Mmm, todavía no tengo respuesta para eso 🕵️.","No estoy seguro de cómo responder a eso 😕. ¿Probás con otra pregunta?","Eso está fuera de lo que sé por ahora, che 🚧."]
   };
 
   const explicacionesGato = {
@@ -310,6 +549,7 @@
     return map[categoria]?.[currentLang] || map[categoria]?.es;
   }
 
+  // ─── BÚSQUEDA EN WIKIPEDIA ───
   async function buscarEnWikipedia(consulta) {
     const searchUrl = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(consulta)}&format=json&origin=*`;
     try {
@@ -331,7 +571,7 @@
     }
   }
 
-  async function obtenerRespuestaConWikipedia(texto) {
+  async function obtenerRespuesta(texto) {
     const t = texto.toLowerCase().trim();
     const resp = getRespuestas();
     for (const entrada of resp) {
@@ -349,67 +589,84 @@
     return random(getFallbacks());
   }
 
-  async function sendMessage() {
-    const input = document.getElementById('input');
-    const text = input.value.trim();
-    if (!text) return;
-    addMessage(text, 'user');
-    input.value = '';
-    input.style.height = 'auto';
-    document.getElementById('sendBtn').disabled = true;
-    const typing = addTyping();
-    await new Promise(r => setTimeout(r, 700));
-    typing.remove();
-    const respuesta = await obtenerRespuestaConWikipedia(text);
-    addMessage(respuesta, 'ai');
-    document.getElementById('sendBtn').disabled = false;
+  // ─── GESTIÓN DE MENSAJES ───
+  function showMessages() {
+    emptyState.style.display = 'none';
+    messagesEl.style.display = 'block';
   }
 
   function addMessage(text, role) {
-    const wrap = document.createElement('div');
-    wrap.className = `msg-wrap ${role}`;
-    const bubble = document.createElement('div');
-    bubble.className = `bubble ${role}`;
-    bubble.textContent = text;
-    const label = document.createElement('span');
-    label.className = 'label';
-    label.textContent = role === 'user' ? 'Tú' : 'IA';
-    wrap.appendChild(bubble);
-    wrap.appendChild(label);
-    const msgs = document.getElementById('messages');
-    msgs.appendChild(wrap);
-    msgs.scrollTop = msgs.scrollHeight;
+    const row = document.createElement('div');
+    row.className = `msg-row ${role}`;
+    if (role === 'user') {
+      row.innerHTML = `<div class="msg-content"><div class="bubble">${text.replace(/\n/g,'<br>')}</div></div>`;
+    } else {
+      row.innerHTML = `<div class="msg-content"><div class="assistant-icon"><i class="ti ti-robot"></i></div><div><div class="bubble">${text.replace(/\n/g,'<br>')}</div></div></div>`;
+    }
+    messagesEl.appendChild(row);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
   function addImageMessage(imageUrl, role) {
-    const wrap = document.createElement('div');
-    wrap.className = `msg-wrap ${role}`;
-    const bubble = document.createElement('div');
-    bubble.className = `bubble ${role}`;
-    const img = document.createElement('img');
-    img.src = imageUrl;
-    img.style.maxWidth = '200px';
-    img.style.borderRadius = '10px';
-    bubble.appendChild(img);
-    const label = document.createElement('span');
-    label.className = 'label';
-    label.textContent = role === 'user' ? 'Tú' : 'IA';
-    wrap.appendChild(bubble);
-    wrap.appendChild(label);
-    const msgs = document.getElementById('messages');
-    msgs.appendChild(wrap);
-    msgs.scrollTop = msgs.scrollHeight;
+    const row = document.createElement('div');
+    row.className = `msg-row ${role}`;
+    row.innerHTML = `<div class="msg-content"><div class="bubble"><img src="${imageUrl}" style="max-width:200px;border-radius:10px;" /></div></div>`;
+    messagesEl.appendChild(row);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
   function addTyping() {
-    const wrap = document.createElement('div');
-    wrap.className = 'msg-wrap ai';
-    wrap.innerHTML = `<div class="bubble ai"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
-    document.getElementById('messages').appendChild(wrap);
-    document.getElementById('messages').scrollTop = 9999;
-    return wrap;
+    const row = document.createElement('div');
+    row.className = 'msg-row assistant';
+    row.id = 'typing-row';
+    row.innerHTML = `<div class="msg-content"><div class="assistant-icon"><i class="ti ti-robot"></i></div><div><div class="bubble"><div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div></div></div>`;
+    messagesEl.appendChild(row);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
   }
 
+  async function sendMessage(msgText) {
+    const text = msgText || textarea.value.trim();
+    if (!text || isTyping) return;
+    showMessages();
+    addMessage(text, 'user');
+    textarea.value = '';
+    textarea.style.height = 'auto';
+    sendBtn.disabled = true;
+    isTyping = true;
+    addTyping();
+    const respuesta = await obtenerRespuesta(text);
+    const typingRow = document.getElementById('typing-row');
+    if (typingRow) typingRow.remove();
+    addMessage(respuesta, 'assistant');
+    isTyping = false;
+    sendBtn.disabled = (textarea.value.trim() === '');
+  }
+
+  function useSuggestion(btn) {
+    const text = btn.textContent.replace(btn.querySelector('strong').textContent, '').trim();
+    sendMessage(text);
+  }
+
+  function newChat() {
+    messagesEl.innerHTML = '';
+    messagesEl.style.display = 'none';
+    emptyState.style.display = 'flex';
+    textarea.value = '';
+    sendBtn.disabled = true;
+    isTyping = false;
+  }
+
+  // Eventos del textarea
+  textarea.addEventListener('input', () => {
+    sendBtn.disabled = textarea.value.trim() === '' || isTyping;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 160) + 'px';
+  });
+  textarea.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) sendMessage(); }
+  });
+
+  // ─── RECONOCIMIENTO DE IMÁGENES ───
   const imageInput = document.getElementById('imageInput');
   imageInput.addEventListener('change', async function () {
     const file = this.files[0];
@@ -417,10 +674,11 @@
     const reader = new FileReader();
     reader.onload = async function (e) {
       const imageUrl = e.target.result;
+      showMessages();
       addImageMessage(imageUrl, 'user');
       if (!mobilenetModel) {
         const msg = { en: "The image model is still loading ⏳. Try again in a few seconds.", es: "El modelo de imagen aún está cargando ⏳. Intentá de nuevo en unos segundos.", es_AR: "El modelo de imagen todavía está cargando ⏳. Probá de nuevo en unos segundos." };
-        addMessage(msg[currentLang] || msg.es, 'ai');
+        addMessage(msg[currentLang] || msg.es, 'assistant');
         return;
       }
       const imgElement = document.createElement('img');
@@ -430,7 +688,7 @@
           const predictions = await mobilenetModel.classify(imgElement);
           if (predictions.length === 0) {
             const msg = { en: "I couldn't recognize anything in this image 🧐.", es: "No pude reconocer nada en esta imagen 🧐.", es_AR: "No pude reconocer nada en esta imagen 🧐." };
-            addMessage(msg[currentLang] || msg.es, 'ai');
+            addMessage(msg[currentLang] || msg.es, 'assistant');
             return;
           }
           const top = predictions[0];
@@ -453,23 +711,15 @@
             const emojiEnd = explicacion.indexOf('**', 3) + 2;
             explicacion = `${explicacion.slice(0, emojiEnd)} (${confianza}% de certeza) ${explicacion.slice(emojiEnd)}`;
           }
-          addMessage(explicacion, 'ai');
+          addMessage(explicacion, 'assistant');
         } catch (err) {
           const msg = { en: "An error occurred while analyzing the image 😥.", es: "Ocurrió un error al analizar la imagen 😥.", es_AR: "Ocurrió un error al analizar la imagen 😥." };
-          addMessage(msg[currentLang] || msg.es, 'ai');
+          addMessage(msg[currentLang] || msg.es, 'assistant');
         }
       };
     };
     reader.readAsDataURL(file);
     this.value = '';
-  });
-
-  document.getElementById('input').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-  });
-  document.getElementById('input').addEventListener('input', function () {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
   });
 </script>
 </body>
