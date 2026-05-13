@@ -285,6 +285,7 @@
     let currentTheme = 'dark';
     let recognition = null;
     let isRecording = false;
+    let conversationContext = []; // Memoria de las últimas 5 interacciones
 
     const textarea = document.getElementById('textarea');
     const sendBtn = document.getElementById('send-btn');
@@ -393,6 +394,26 @@
       micBtn.classList.remove('recording');
     }
 
+    // ========== CONTEXTO CONVERSACIONAL ==========
+    function updateContext(userText, assistantText) {
+      conversationContext.push({ user: userText, assistant: assistantText });
+      if (conversationContext.length > 5) conversationContext.shift(); // mantener últimas 5 interacciones
+    }
+
+    function getContextualQuery(text) {
+      const lower = text.toLowerCase().trim();
+      const ambiguousWords = ['eso', 'ese', 'esa', 'lo', 'la', 'esto', 'más', 'explícame', 'cómo', 'y', 'por qué'];
+      if (ambiguousWords.some(w => lower.includes(w)) && conversationContext.length > 0) {
+        // Buscar el último tema relevante
+        const last = conversationContext[conversationContext.length - 1];
+        const lastUser = last.user;
+        // Intentar extraer tema principal (primeras 4 palabras significativas)
+        const topicWords = lastUser.replace(/[?¿.,]/g, '').split(' ').slice(0, 4).join(' ');
+        return `${topicWords} ${text}`;
+      }
+      return text;
+    }
+
     // ========== CONOCIMIENTO (PROGRAMACIÓN Y MATEMÁTICAS) ==========
     const codeKnowledge = {
       calculadora: [
@@ -498,9 +519,13 @@
       return map[categoria]?.[currentLang] || map[categoria]?.es;
     }
 
-    // Wikipedia
-    async function buscarEnWikipedia(consulta) {
-      const searchUrl = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(consulta)}&format=json&origin=*`;
+    // Wikipedia con contexto conversacional
+    async function buscarEnWikipedia(consulta, usarContexto = false) {
+      let query = consulta;
+      if (usarContexto) {
+        query = getContextualQuery(consulta);
+      }
+      const searchUrl = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
       try {
         const searchResponse = await fetch(searchUrl);
         const searchData = await searchResponse.json();
@@ -519,20 +544,35 @@
 
     async function obtenerRespuesta(texto) {
       const t = texto.toLowerCase().trim();
+      // 1. Saludos y frases predefinidas
       const resp = getRespuestas();
       for (const entrada of resp) {
-        if (entrada.claves.some(c => t.includes(c))) return random(entrada.respuestas);
+        if (entrada.claves.some(c => t.includes(c))) {
+          const respuesta = random(entrada.respuestas);
+          updateContext(texto, respuesta);
+          return respuesta;
+        }
       }
+      // 2. Conocimiento preprogramado
       const codeAnswer = obtenerDeConocimiento(t);
-      if (codeAnswer) return codeAnswer;
-      const resultado = await buscarEnWikipedia(texto);
+      if (codeAnswer) {
+        updateContext(texto, codeAnswer);
+        return codeAnswer;
+      }
+      // 3. Wikipedia con posible contexto
+      const resultado = await buscarEnWikipedia(texto, true);
       if (resultado) {
         const oraciones = resultado.extract.split('. ');
         const resumenCorto = oraciones.slice(0, 2).join('. ') + (oraciones.length > 2 ? '.' : '');
         const sourceLink = `https://es.wikipedia.org/wiki/${encodeURIComponent(resultado.title)}`;
-        return `${resumenCorto}\n\n🔗 Fuente: ${sourceLink}`;
+        const respuesta = `${resumenCorto}\n\n🔗 Fuente: ${sourceLink}`;
+        updateContext(texto, respuesta);
+        return respuesta;
       }
-      return random(getFallbacks());
+      // 4. Fallback
+      const fallback = random(getFallbacks());
+      updateContext(texto, fallback);
+      return fallback;
     }
 
     // ========== PROCESAMIENTO DE CÓDIGO ==========
@@ -653,6 +693,7 @@
       textarea.value = '';
       sendBtn.disabled = true;
       isTyping = false;
+      conversationContext = []; // limpiar contexto al empezar nueva conversación
       if (window.innerWidth < 769) toggleSidebar();
     }
 
@@ -689,7 +730,8 @@
     window.openFeedback = openFeedback;
     window.closeFeedback = closeFeedback;
     window.enviarFeedback = enviarFeedback;
-    window.toggleVoice = toggleVoice;
+    window.toggleVoice = toggleVoice;  // <-- ¡Agregada!
+
     textarea.addEventListener('input', () => {
       sendBtn.disabled = textarea.value.trim() === '' || isTyping;
       textarea.style.height = 'auto';
@@ -734,6 +776,7 @@
               explicacion = `${explicacion.slice(0, emojiEnd)} (${confianza}% certeza) ${explicacion.slice(emojiEnd)}`;
             }
             addMessage(explicacion, 'assistant');
+            updateContext('imagen', explicacion);
           } catch (err) { addMessage('Error al analizar 😥', 'assistant'); }
         };
       };
