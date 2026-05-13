@@ -94,27 +94,13 @@
     }
     /* App */
     #app {
-      display: none;
-      width: 100%;
-      height: 100vh;
-      max-width: 100%;
-      background: var(--color-background-primary);
-      border: 0.5px solid var(--color-border-tertiary);
-      border-radius: 0;
-      overflow: hidden;
-      position: relative;
+      display: none; width: 100%; height: 100vh; max-width: 100%;
+      background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary);
+      border-radius: 0; overflow: hidden; position: relative;
     }
     @media (min-width: 769px) {
-      #app {
-        width: 95vw;
-        height: 90vh;
-        max-width: 1200px;
-        border-radius: var(--border-radius-lg);
-        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      }
-      body {
-        align-items: center;
-      }
+      #app { width: 95vw; height: 90vh; max-width: 1200px; border-radius: var(--border-radius-lg); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+      body { align-items: center; }
     }
     /* Sidebar */
     #sidebar {
@@ -153,27 +139,11 @@
     #model-selector:hover { background: var(--color-background-secondary); }
     .topbar-actions { display: flex; gap: 4px; }
     /* Messages */
-    #messages {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 20px 12px;
-      scroll-behavior: smooth;
-      display: none;
-      word-break: break-word;
-    }
-    @media (min-width: 769px) {
-      #messages {
-        padding: 20px 24px;
-      }
-    }
+    #messages { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 12px; scroll-behavior: smooth; display: none; word-break: break-word; }
+    @media (min-width: 769px) { #messages { padding: 20px 24px; } }
     .msg-row { padding: 4px 0; display: flex; animation: messagePop 0.3s ease both; }
     .msg-row.user { justify-content: flex-end; } .msg-row.assistant { justify-content: flex-start; }
-    .msg-content {
-      max-width: 92%;
-      word-break: break-word;
-      overflow-wrap: anywhere;
-    }
+    .msg-content { max-width: 92%; word-break: break-word; overflow-wrap: anywhere; }
     @media (min-width: 769px) { .msg-content { max-width: 75%; } }
     .msg-row.assistant .msg-content { display: flex; gap: 8px; align-items: flex-start; padding: 0 4px; }
     @media (min-width: 769px) { .msg-row.assistant .msg-content { padding: 0 8px; } }
@@ -206,8 +176,7 @@
     .suggestion-card:hover { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-secondary); }
     .suggestion-card strong { display: block; color: var(--color-text-primary); font-weight: 500; margin-bottom: 2px; font-size: 13px; }
     /* Input */
-    #input-area { padding: 8px 8px 12px; }
-    @media (min-width: 769px) { #input-area { padding: 12px 16px 16px; } }
+    #input-area { padding: 8px 8px 12px; } @media (min-width: 769px) { #input-area { padding: 12px 16px 16px; } }
     #input-box { border: 0.5px solid var(--color-border-secondary); border-radius: 16px; background: var(--color-background-secondary); display: flex; flex-direction: column; gap: 0; overflow: hidden; transition: border-color 0.15s; }
     #input-box:focus-within { border-color: var(--color-border-primary); }
     #textarea { width: 100%; background: none; border: none; outline: none; resize: none; font-size: 14px; color: var(--color-text-primary); padding: 10px 12px 4px; font-family: var(--font-sans); line-height: 1.6; min-height: 40px; max-height: 120px; overflow-y: auto; }
@@ -218,6 +187,8 @@
     .input-tool-btn { background: none; border: none; cursor: pointer; color: var(--color-text-tertiary); padding: 6px; border-radius: 8px; display: flex; align-items: center; }
     .input-tool-btn:hover { color: var(--color-text-secondary); background: var(--color-background-primary); }
     .input-tool-btn i { font-size: 16px; }
+    #mic-btn.recording { color: #ff3b30; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     #send-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--color-text-primary); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.15s, transform 0.1s; }
     #send-btn:hover { opacity: 0.85; } #send-btn:active { transform: scale(0.94); }
     #send-btn i { font-size: 14px; color: var(--color-background-primary); }
@@ -279,6 +250,7 @@
             <div class="input-tools">
               <input type="file" id="imageInput" accept="image/*" style="display:none" />
               <button class="input-tool-btn" title="Adjuntar imagen" onclick="document.getElementById('imageInput').click()"><i class="ti ti-photo"></i></button>
+              <button class="input-tool-btn" id="mic-btn" title="Hablar" onclick="toggleVoice()"><i class="ti ti-microphone"></i></button>
             </div>
             <button id="send-btn" disabled onclick="sendMessage()" title="Enviar"><i class="ti ti-arrow-up"></i></button>
           </div>
@@ -306,10 +278,13 @@
 
 <script>
   (function() {
+    // ========== VARIABLES GLOBALES ==========
     let currentLang = 'es';
     let mobilenetModel = null;
     let isTyping = false;
     let currentTheme = 'dark';
+    let recognition = null;
+    let isRecording = false;
 
     const textarea = document.getElementById('textarea');
     const sendBtn = document.getElementById('send-btn');
@@ -321,12 +296,15 @@
     const langButtons = document.querySelectorAll('.lang-btn');
     const sidebar = document.getElementById('sidebar');
     const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+    const micBtn = document.getElementById('mic-btn');
 
+    // Carga modelo
     (async function () { mobilenetModel = await mobilenet.load(); console.log("Modelo listo 🖼️"); })();
 
     function toggleSidebar() { sidebar.classList.toggle('open'); sidebarBackdrop.classList.toggle('show'); }
     sidebarBackdrop.addEventListener('click', toggleSidebar);
 
+    // Landing: selección de idioma
     langButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         langButtons.forEach(b => b.classList.remove('selected'));
@@ -349,6 +327,73 @@
       document.body.className = `theme-${currentTheme}`;
     }
 
+    // ========== RECONOCIMIENTO DE VOZ ==========
+    function toggleVoice() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('El reconocimiento de voz no está soportado en este navegador. Prueba con Chrome.');
+        return;
+      }
+      if (isRecording) {
+        stopVoice();
+      } else {
+        startVoice();
+      }
+    }
+
+    function startVoice() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
+      recognition.interimResults = true;
+      recognition.continuous = false;
+
+      recognition.onstart = function() {
+        isRecording = true;
+        micBtn.classList.add('recording');
+        textarea.value = '';
+        textarea.focus();
+      };
+
+      recognition.onresult = function(event) {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            interim += event.results[i][0].transcript;
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+        textarea.value = interim;
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+      };
+
+      recognition.onerror = function(event) {
+        stopVoice();
+      };
+
+      recognition.onend = function() {
+        if (isRecording) {
+          stopVoice();
+          if (textarea.value.trim()) {
+            sendMessage(textarea.value.trim());
+          }
+        }
+      };
+
+      recognition.start();
+    }
+
+    function stopVoice() {
+      if (recognition) {
+        recognition.stop();
+        recognition = null;
+      }
+      isRecording = false;
+      micBtn.classList.remove('recording');
+    }
+
+    // ========== CONOCIMIENTO (PROGRAMACIÓN Y MATEMÁTICAS) ==========
     const codeKnowledge = {
       calculadora: [
         `¡Perfecto pedido! Acá va una calculadora completa en un solo archivo HTML:\n\`\`\`html\n<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Calculadora</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}.calc{background:#16213e;border-radius:20px;padding:20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.display{background:#0f3460;border-radius:12px;padding:20px;text-align:right;margin-bottom:15px}.expr{color:#aaa;font-size:.85rem;min-height:20px}.result{color:#e94560;font-size:2rem;font-weight:700;word-break:break-all}.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}button{padding:18px;border:none;border-radius:12px;font-size:1rem;cursor:pointer;transition:transform .1s;font-weight:600}button:active{transform:scale(.92)}.n{background:#1a1a2e;color:#fff}.o{background:#e94560;color:#fff}.e{background:#0f3460;color:#e94560;grid-column:span 2}.c{background:#533483;color:#fff}.z{grid-column:span 2}</style></head><body><div class="calc"><div class="display"><div class="expr" id="expr"></div><div class="result" id="res">0</div></div><div class="buttons"><button class="c" onclick="limpiar()">C</button><button class="c" onclick="borrar()">⌫</button><button class="c" onclick="agregar('%')">%</button><button class="o" onclick="agregar('/')">÷</button><button class="n" onclick="agregar('7')">7</button><button class="n" onclick="agregar('8')">8</button><button class="n" onclick="agregar('9')">9</button><button class="o" onclick="agregar('*')">×</button><button class="n" onclick="agregar('4')">4</button><button class="n" onclick="agregar('5')">5</button><button class="n" onclick="agregar('6')">6</button><button class="o" onclick="agregar('-')">−</button><button class="n" onclick="agregar('1')">1</button><button class="n" onclick="agregar('2')">2</button><button class="n" onclick="agregar('3')">3</button><button class="o" onclick="agregar('+')">+</button><button class="n z" onclick="agregar('0')">0</button><button class="n" onclick="agregar('.')">.</button><button class="e" onclick="calcular()">=</button></div></div><script>let expr='';function agregar(v){expr+=v;document.getElementById('res').textContent=expr}function limpiar(){expr='';document.getElementById('res').textContent='0';document.getElementById('expr').textContent=''}function borrar(){expr=expr.slice(0,-1);document.getElementById('res').textContent=expr||'0'}function calcular(){try{document.getElementById('expr').textContent=expr+' =';let r=Function('"use strict";return('+expr+')')();document.getElementById('res').textContent=parseFloat(r.toFixed(10));expr=String(r)}catch(e){document.getElementById('res').textContent='Error';expr=''}}<\/script></body></html>\n\`\`\`\nGuardalo como "calculadora.html" y abrilo directo en el navegador.`
@@ -361,6 +406,7 @@
       ]
     };
 
+    // Keywords mapping
     const keywordMap = {
       calculadora: 'calculadora', tareas: 'tareas', juego: 'juego', login: 'login', notas: 'notas',
       'color boton': 'colorBoton', 'botón que cambie de color': 'colorBoton', contador: 'contador',
@@ -389,6 +435,7 @@
       return null;
     }
 
+    // ========== RESPUESTAS MULTILINGÜES ==========
     const respuestas = {
       en: [
         { claves: ["hello","hi","hey","good morning","good afternoon","good evening"], respuestas: ["Hello! 👋 How can I help you?","Hey! 😊 I'm here, what do you need?","Hi there! 🌟 How can I help you today?","Hello! 🎉 Nice to meet you. What's up?"] },
@@ -451,6 +498,7 @@
       return map[categoria]?.[currentLang] || map[categoria]?.es;
     }
 
+    // Wikipedia
     async function buscarEnWikipedia(consulta) {
       const searchUrl = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(consulta)}&format=json&origin=*`;
       try {
@@ -487,6 +535,7 @@
       return random(getFallbacks());
     }
 
+    // ========== PROCESAMIENTO DE CÓDIGO ==========
     function processCodeBlocks(text) {
       const codeRegex = /```(\w*)\n([\s\S]*?)```/g;
       let result = text;
@@ -541,6 +590,7 @@
       document.getElementById('run-frame').srcdoc = '';
     };
 
+    // ========== GESTIÓN DE MENSAJES ==========
     function showMessages() { emptyState.style.display = 'none'; messagesEl.style.display = 'block'; }
 
     function addMessage(text, role) {
@@ -606,6 +656,7 @@
       if (window.innerWidth < 769) toggleSidebar();
     }
 
+    // Feedback
     const DEVELOPER_EMAIL = 'supportaos5@gmail.com';
 
     function openFeedback() {
@@ -628,6 +679,7 @@
       closeFeedback();
     }
 
+    // ========== EXPONER FUNCIONES GLOBALES ==========
     window.iniciarChat = iniciarChat;
     window.toggleSidebar = toggleSidebar;
     window.cambiarTema = cambiarTema;
@@ -647,6 +699,7 @@
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) sendMessage(); }
     });
 
+    // Reconocimiento de imágenes
     const imageInput = document.getElementById('imageInput');
     imageInput.addEventListener('change', async function () {
       const file = this.files[0];
