@@ -226,8 +226,10 @@
           <button class="icon-btn" id="menu-toggle" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
           <button id="model-selector">AOS-0.1 <i class="ti ti-chevron-down" style="font-size:12px;"></i></button>
         </div>
-        <div class="topbar-actions"><button class="icon-btn" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-sun-moon"></i></button></div>
-      </div>
+        <div class="topbar-actions">
+  <button class="icon-btn" title="Enviar sugerencia" onclick="openFeedback()"><i class="ti ti-message-report"></i></button>
+  <button class="icon-btn" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-sun-moon"></i></button>
+</div>
       <div id="empty-state"><h2>¿En qué puedo ayudarte?</h2>
         <div class="suggestions">
           <button class="suggestion-card" onclick="useSuggestion(this)"><strong>Explícame algo</strong>¿Cómo funciona la IA?</button>
@@ -567,7 +569,31 @@
       isTyping = false;
       if (window.innerWidth < 769) toggleSidebar();
     }
+        const DEVELOPER_EMAIL = 'supportaos5@gmail.com'; // tu correo
 
+    function openFeedback() {
+      document.getElementById('feedback-modal').style.display = 'flex';
+      document.getElementById('feedback-text').focus();
+    }
+    function closeFeedback() {
+      document.getElementById('feedback-modal').style.display = 'none';
+      document.getElementById('feedback-text').value = '';
+    }
+    function enviarFeedback() {
+      const mensaje = document.getElementById('feedback-text').value.trim();
+      if (!mensaje) {
+        alert('Escribe un mensaje antes de enviar.');
+        return;
+      }
+      const asunto = 'Feedback AOS-0.1';
+      const cuerpo = `Hola,\n\nQuiero comentar lo siguiente sobre AOS-0.1:\n\n${mensaje}\n\nSaludos.`;
+      window.open(`mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`);
+      closeFeedback();
+    }
+
+    window.openFeedback = openFeedback;
+    window.closeFeedback = closeFeedback;
+    window.enviarFeedback = enviarFeedback;
     // ========== EXPONER FUNCIONES GLOBALES ==========
     window.iniciarChat = iniciarChat;
     window.toggleSidebar = toggleSidebar;
@@ -634,6 +660,17 @@
       }
     });
   })();
-</script>
+</script><!-- Modal de feedback -->
+<div id="feedback-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; align-items:center; justify-content:center; padding:20px;" onclick="if(event.target===this)closeFeedback()">
+  <div style="background:var(--color-background-primary); border-radius:16px; padding:2rem; width:100%; max-width:400px; border:0.5px solid var(--color-border-tertiary);">
+    <h3 style="margin-bottom:0.5rem;">✉️ Enviar sugerencia</h3>
+    <p style="color:var(--color-text-secondary); margin-bottom:1rem; font-size:0.9rem;">¿Encontraste un error o tenés una idea? Escribila acá y me llegará a mi correo.</p>
+    <textarea id="feedback-text" rows="5" placeholder="Escribe tu sugerencia o reporte..." style="width:100%; padding:12px; background:var(--color-background-secondary); border:1px solid var(--color-border-secondary); border-radius:12px; color:var(--color-text-primary); font-family:inherit; resize:vertical; margin-bottom:1rem;"></textarea>
+    <div style="display:flex; gap:8px; justify-content:flex-end;">
+      <button onclick="closeFeedback()" style="padding:8px 16px; border-radius:10px; border:1px solid var(--color-border-secondary); background:var(--color-background-secondary); color:var(--color-text-secondary); cursor:pointer;">Cancelar</button>
+      <button onclick="enviarFeedback()" style="padding:8px 16px; border-radius:10px; border:none; background:var(--color-text-info); color:var(--color-background-primary); cursor:pointer; font-weight:600;">Enviar</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
