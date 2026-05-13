@@ -219,7 +219,8 @@
       <button class="new-chat-btn" onclick="newChat()"><i class="ti ti-plus"></i> Nueva conversación</button>
       <div class="sidebar-section">Conversaciones</div><div id="chat-list"></div>
       <div class="sidebar-footer"><div class="user-row"><div class="avatar">U</div><div class="user-name">Usuario</div><button class="icon-btn" style="margin-left:auto" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-palette"></i></button></div></div>
-      <div id="main">
+    </div>
+    <div id="main">
       <div id="topbar">
         <div style="display:flex;align-items:center;gap:8px;">
           <button class="icon-btn" id="menu-toggle" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
@@ -229,9 +230,8 @@
           <button class="icon-btn" title="Enviar sugerencia" onclick="openFeedback()"><i class="ti ti-message-report"></i></button>
           <button class="icon-btn" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-sun-moon"></i></button>
         </div>
-      </div> <!-- ← este cierre es el que faltaba -->
+      </div>
       <div id="empty-state"><h2>¿En qué puedo ayudarte?</h2>
-        ...
         <div class="suggestions">
           <button class="suggestion-card" onclick="useSuggestion(this)"><strong>Explícame algo</strong>¿Cómo funciona la IA?</button>
           <button class="suggestion-card" onclick="useSuggestion(this)"><strong>Programa algo</strong>Una calculadora funcional</button>
@@ -258,6 +258,19 @@
 
   <!-- Modal para ejecutar código -->
   <div id="run-modal"><div id="run-modal-content"><div id="run-modal-header"><span>Ejecutando código</span><button class="icon-btn" onclick="closeRunModal()"><i class="ti ti-x"></i></button></div><iframe id="run-frame" sandbox="allow-scripts allow-same-origin"></iframe></div></div>
+
+  <!-- Modal de feedback -->
+  <div id="feedback-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; align-items:center; justify-content:center; padding:20px;" onclick="if(event.target===this)closeFeedback()">
+    <div style="background:var(--color-background-primary); border-radius:16px; padding:2rem; width:100%; max-width:400px; border:0.5px solid var(--color-border-tertiary);">
+      <h3 style="margin-bottom:0.5rem;">✉️ Enviar sugerencia</h3>
+      <p style="color:var(--color-text-secondary); margin-bottom:1rem; font-size:0.9rem;">¿Encontraste un error o tenés una idea? Escribila acá y me llegará a mi correo.</p>
+      <textarea id="feedback-text" rows="5" placeholder="Escribe tu sugerencia o reporte..." style="width:100%; padding:12px; background:var(--color-background-secondary); border:1px solid var(--color-border-secondary); border-radius:12px; color:var(--color-text-primary); font-family:inherit; resize:vertical; margin-bottom:1rem;"></textarea>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button onclick="closeFeedback()" style="padding:8px 16px; border-radius:10px; border:1px solid var(--color-border-secondary); background:var(--color-background-secondary); color:var(--color-text-secondary); cursor:pointer;">Cancelar</button>
+        <button onclick="enviarFeedback()" style="padding:8px 16px; border-radius:10px; border:none; background:var(--color-text-info); color:var(--color-background-primary); cursor:pointer; font-weight:600;">Enviar</button>
+      </div>
+    </div>
+  </div>
 
 <script>
   (function() {
@@ -318,7 +331,6 @@
       juego: [
         `¡Vamos! Te armo Snake clásico:\n\`\`\`html\n<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Snake</title><style>body{background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;color:#fff}h1{color:#4ade80;letter-spacing:4px;font-size:1.5rem;margin-bottom:8px}#info{color:#888;margin-bottom:12px;font-size:.9rem}canvas{border:2px solid #4ade80;border-radius:8px;box-shadow:0 0 30px rgba(74,222,128,.3)}#score{margin-top:12px;font-size:1.3rem;color:#4ade80}</style></head><body><h1>🐍 SNAKE</h1><div id="info">Usá las flechas para mover</div><canvas id="c" width="400" height="400"></canvas><div id="score">Puntaje: 0</div><script>const c=document.getElementById('c'),ctx=c.getContext('2d');const S=20,C=20,R=20;let snake,dir,food,pts,iv,alive;function init(){snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];dir={x:1,y:0};pts=0;alive=true;newFood();clearInterval(iv);iv=setInterval(loop,130)}function newFood(){do{food={x:Math.floor(Math.random()*C),y:Math.floor(Math.random()*R)}}while(snake.some(s=>s.x===food.x&&s.y===food.y))}function loop(){if(!alive)return;const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};if(h.x<0||h.x>=C||h.y<0||h.y>=R||snake.some(s=>s.x===h.x&&s.y===h.y)){alive=false;clearInterval(iv);alert('Game Over - Puntaje: '+pts);return}snake.unshift(h);if(h.x===food.x&&h.y===food.y){pts+=10;document.getElementById('score').textContent='Puntaje: '+pts;newFood()}else snake.pop();draw()}function draw(){ctx.fillStyle='#0d0d0d';ctx.fillRect(0,0,400,400);ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(food.x*S+S/2,food.y*S+S/2,S/2-2,0,Math.PI*2);ctx.fill();snake.forEach((s,i)=>{ctx.fillStyle=i===0?'#4ade80':'#22c55e';ctx.beginPath();ctx.roundRect(s.x*S+1,s.y*S+1,S-2,S-2,4);ctx.fill()})}document.addEventListener('keydown',e=>{const m={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};const nd=m[e.key];if(nd&&!(nd.x===-dir.x&&nd.y===-dir.y)){dir=nd;e.preventDefault()}});init();<\/script></body></html>\n\`\`\``
       ]
-      // ... (el resto del conocimiento igual que en tu archivo, no lo copio para no alargar)
     };
 
     // Keywords mapping
@@ -570,7 +582,9 @@
       isTyping = false;
       if (window.innerWidth < 769) toggleSidebar();
     }
-        const DEVELOPER_EMAIL = 'supportaos5@gmail.com'; // tu correo
+
+    // Feedback
+    const DEVELOPER_EMAIL = 'supportaos5@gmail.com';
 
     function openFeedback() {
       document.getElementById('feedback-modal').style.display = 'flex';
@@ -592,9 +606,6 @@
       closeFeedback();
     }
 
-    window.openFeedback = openFeedback;
-    window.closeFeedback = closeFeedback;
-    window.enviarFeedback = enviarFeedback;
     // ========== EXPONER FUNCIONES GLOBALES ==========
     window.iniciarChat = iniciarChat;
     window.toggleSidebar = toggleSidebar;
@@ -602,6 +613,9 @@
     window.sendMessage = sendMessage;
     window.useSuggestion = useSuggestion;
     window.newChat = newChat;
+    window.openFeedback = openFeedback;
+    window.closeFeedback = closeFeedback;
+    window.enviarFeedback = enviarFeedback;
 
     textarea.addEventListener('input', () => {
       sendBtn.disabled = textarea.value.trim() === '' || isTyping;
@@ -661,17 +675,6 @@
       }
     });
   })();
-</script><!-- Modal de feedback -->
-<div id="feedback-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; align-items:center; justify-content:center; padding:20px;" onclick="if(event.target===this)closeFeedback()">
-  <div style="background:var(--color-background-primary); border-radius:16px; padding:2rem; width:100%; max-width:400px; border:0.5px solid var(--color-border-tertiary);">
-    <h3 style="margin-bottom:0.5rem;">✉️ Enviar sugerencia</h3>
-    <p style="color:var(--color-text-secondary); margin-bottom:1rem; font-size:0.9rem;">¿Encontraste un error o tenés una idea? Escribila acá y me llegará a mi correo.</p>
-    <textarea id="feedback-text" rows="5" placeholder="Escribe tu sugerencia o reporte..." style="width:100%; padding:12px; background:var(--color-background-secondary); border:1px solid var(--color-border-secondary); border-radius:12px; color:var(--color-text-primary); font-family:inherit; resize:vertical; margin-bottom:1rem;"></textarea>
-    <div style="display:flex; gap:8px; justify-content:flex-end;">
-      <button onclick="closeFeedback()" style="padding:8px 16px; border-radius:10px; border:1px solid var(--color-border-secondary); background:var(--color-background-secondary); color:var(--color-text-secondary); cursor:pointer;">Cancelar</button>
-      <button onclick="enviarFeedback()" style="padding:8px 16px; border-radius:10px; border:none; background:var(--color-text-info); color:var(--color-background-primary); cursor:pointer; font-weight:600;">Enviar</button>
-    </div>
-  </div>
-</div>
+</script>
 </body>
 </html>
