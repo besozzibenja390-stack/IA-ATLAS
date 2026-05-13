@@ -219,18 +219,19 @@
       <button class="new-chat-btn" onclick="newChat()"><i class="ti ti-plus"></i> Nueva conversación</button>
       <div class="sidebar-section">Conversaciones</div><div id="chat-list"></div>
       <div class="sidebar-footer"><div class="user-row"><div class="avatar">U</div><div class="user-name">Usuario</div><button class="icon-btn" style="margin-left:auto" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-palette"></i></button></div></div>
-    </div>
-    <div id="main">
+      <div id="main">
       <div id="topbar">
         <div style="display:flex;align-items:center;gap:8px;">
           <button class="icon-btn" id="menu-toggle" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
           <button id="model-selector">AOS-0.1 <i class="ti ti-chevron-down" style="font-size:12px;"></i></button>
         </div>
         <div class="topbar-actions">
-  <button class="icon-btn" title="Enviar sugerencia" onclick="openFeedback()"><i class="ti ti-message-report"></i></button>
-  <button class="icon-btn" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-sun-moon"></i></button>
-</div>
+          <button class="icon-btn" title="Enviar sugerencia" onclick="openFeedback()"><i class="ti ti-message-report"></i></button>
+          <button class="icon-btn" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-sun-moon"></i></button>
+        </div>
+      </div> <!-- ← este cierre es el que faltaba -->
       <div id="empty-state"><h2>¿En qué puedo ayudarte?</h2>
+        ...
         <div class="suggestions">
           <button class="suggestion-card" onclick="useSuggestion(this)"><strong>Explícame algo</strong>¿Cómo funciona la IA?</button>
           <button class="suggestion-card" onclick="useSuggestion(this)"><strong>Programa algo</strong>Una calculadora funcional</button>
