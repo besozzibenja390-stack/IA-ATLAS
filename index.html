@@ -2,11 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>AOS-0.1</title>
-  <!-- Tabler Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css">
-  <!-- TensorFlow.js + MobileNet -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
   <style>
@@ -16,7 +14,7 @@
       --border-radius-sm: 6px;
       --border-radius-md: 8px;
       --border-radius-lg: 16px;
-      --sidebar-width: 260px;
+      --sidebar-width: min(260px, 80vw);
     }
     body.theme-dark {
       --color-background-primary: #0f0f0f;
@@ -64,44 +62,98 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      min-height: 100dvh;
       margin: 0;
-      overflow-x: hidden;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Bandera argentina */
+    .flag-argentina {
+      display: inline-block;
+      width: min(180px, 40vw);
+      height: min(120px, 27vw);
+      border-radius: 8px;
+      margin-bottom: 20px;
+      background: linear-gradient(to bottom,
+        #74acdf 0%, #74acdf 33.33%,
+        #ffffff 33.33%, #ffffff 66.66%,
+        #74acdf 66.66%, #74acdf 100%);
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .flag-argentina .sun {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(40px, 9vw);
+      height: min(40px, 9vw);
+      background: #f6b40e;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(246,180,14,0.2), 0 0 20px rgba(246,180,14,0.6);
     }
     /* Landing */
-    #landing { text-align: center; max-width: 500px; padding: 30px 20px; color: #e0e0e0; width: 100%; }
-    #landing .flag { font-size: 80px; margin-bottom: 20px; display: inline-block; animation: gentleSwing 3s ease-in-out infinite; }
-    #landing h1 { font-size: 32px; margin-bottom: 10px; font-weight: 600; }
-    #landing .desc { font-size: 16px; line-height: 1.6; margin: 20px 0; color: #b0b0b0; }
-    .lang-selector { display: flex; flex-direction: column; gap: 12px; margin: 30px 0 20px; }
-    .lang-btn { background: #252525; border: 1px solid #2e2e2e; border-radius: 12px; padding: 12px 20px; font-size: 16px; color: #d4d4d4; cursor: pointer; transition: all 0.2s; text-align: left; }
+    #landing {
+      text-align: center;
+      max-width: 500px;
+      padding: clamp(20px, 5vh, 40px) clamp(16px, 4vw, 24px);
+      color: #e0e0e0;
+      width: 100%;
+    }
+    #landing h1 { font-size: clamp(24px, 7vw, 32px); margin-bottom: 8px; font-weight: 600; }
+    #landing .desc { font-size: clamp(14px, 3.5vw, 16px); line-height: 1.6; margin: 16px 0; color: #b0b0b0; }
+    .lang-selector { display: flex; flex-direction: column; gap: 10px; margin: 24px 0 16px; }
+    .lang-btn {
+      background: #252525; border: 1px solid #2e2e2e; border-radius: 12px;
+      padding: 12px 16px; font-size: clamp(14px, 3.5vw, 16px); color: #d4d4d4;
+      cursor: pointer; transition: all 0.2s; text-align: left;
+    }
     .lang-btn:hover { background: #333; border-color: #444; }
     .lang-btn.selected { background: #2a3a5e; border-color: #3a4f7a; color: #a8c4ff; box-shadow: 0 0 8px rgba(58,79,122,0.5); }
-    #name-section { margin-top: 20px; text-align: left; }
-    #name-section label { display: block; margin-bottom: 6px; color: #b0b0b0; font-size: 14px; }
-    #name-input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #2e2e2e; background: #252525; color: #e0e0e0; font-size: 16px; outline: none; }
+    #name-section { margin-top: 16px; text-align: left; }
+    #name-section label { display: block; margin-bottom: 6px; color: #b0b0b0; font-size: clamp(14px, 3.5vw, 16px); }
+    #name-input {
+      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #2e2e2e;
+      background: #252525; color: #e0e0e0; font-size: clamp(14px, 3.5vw, 16px); outline: none;
+    }
     #name-input:focus { border-color: #a8c4ff; }
-    #startBtn { background: #2a3a5e; border: none; color: white; padding: 14px 40px; font-size: 18px; border-radius: 14px; cursor: pointer; transition: background 0.2s; margin-top: 20px; width: 100%; font-weight: 600; }
+    #startBtn {
+      background: #2a3a5e; border: none; color: white; padding: 14px 20px;
+      font-size: clamp(16px, 4.5vw, 18px); border-radius: 14px; cursor: pointer;
+      transition: background 0.2s; margin-top: 16px; width: 100%; font-weight: 600;
+    }
     #startBtn:hover { background: #3a4f7a; }
     #startBtn:disabled { opacity: 0.4; cursor: default; background: #252525; color: #666; border: 1px solid #2e2e2e; }
-    @media (max-width: 600px) {
-      #landing .flag { font-size: 60px; } #landing h1 { font-size: 26px; } #landing .desc { font-size: 14px; }
-      .lang-btn { padding: 10px 16px; font-size: 15px; }
-    }
+
     /* App */
-    #app { display: none; width: 100%; height: 100vh; max-width: 100%; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 0; overflow: hidden; position: relative; }
+    #app {
+      display: none; width: 100%; height: 100vh; height: 100dvh; max-width: 100%;
+      background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary);
+      border-radius: 0; overflow: hidden; position: relative;
+    }
     @media (min-width: 769px) {
-      #app { width: 95vw; height: 90vh; max-width: 1200px; border-radius: var(--border-radius-lg); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+      #app { width: 95vw; height: 90dvh; max-width: 1200px; border-radius: var(--border-radius-lg); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
       body { align-items: center; }
     }
+
     /* Sidebar */
-    #sidebar { width: var(--sidebar-width); min-width: var(--sidebar-width); background: var(--color-background-tertiary); display: flex; flex-direction: column; border-right: 0.5px solid var(--color-border-tertiary); position: absolute; top: 0; left: 0; bottom: 0; z-index: 100; transition: transform 0.3s ease; transform: translateX(-100%); }
+    #sidebar {
+      width: var(--sidebar-width); min-width: 200px;
+      background: var(--color-background-tertiary); display: flex; flex-direction: column;
+      border-right: 0.5px solid var(--color-border-tertiary); position: absolute;
+      top: 0; left: 0; bottom: 0; z-index: 100; transition: transform 0.3s ease;
+      transform: translateX(-100%); padding-top: env(safe-area-inset-top);
+    }
     @media (min-width: 769px) { #sidebar { position: relative; transform: none; } }
     #sidebar.open { transform: translateX(0); }
     #sidebar-backdrop { display: none; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); z-index:99; }
     #sidebar-backdrop.show { display: block; }
     #sidebar-header { padding: 12px; display: flex; align-items: center; justify-content: space-between; }
     #sidebar-header .logo { font-size: 15px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
-    .icon-btn { background: none; border: none; cursor: pointer; color: var(--color-text-secondary); padding: 6px; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; }
+    .icon-btn {
+      background: none; border: none; cursor: pointer; color: var(--color-text-secondary);
+      padding: 8px; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center;
+      min-width: 36px; min-height: 36px; transition: background 0.15s;
+    }
     .icon-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
     .new-chat-btn { margin: 4px 12px 8px; padding: 8px 12px; background: none; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; color: var(--color-text-primary); font-size: 13px; display: flex; align-items: center; gap: 8px; width: calc(100% - 24px); text-align: left; transition: background 0.15s; }
     .new-chat-btn:hover { background: var(--color-background-secondary); }
@@ -109,67 +161,70 @@
     .chat-item { padding: 8px 12px; cursor: pointer; border-radius: var(--border-radius-md); margin: 1px 8px; font-size: 13px; color: var(--color-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: background 0.12s; }
     .chat-item:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
     .chat-item.active { background: var(--color-background-secondary); color: var(--color-text-primary); }
-    .sidebar-footer { margin-top: auto; padding: 12px; border-top: 0.5px solid var(--color-border-tertiary); }
+    .sidebar-footer { margin-top: auto; padding: 12px; border-top: 0.5px solid var(--color-border-tertiary); padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
     .user-row { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: var(--border-radius-md); cursor: pointer; }
     .user-row:hover { background: var(--color-background-secondary); }
     .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--color-background-info); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--color-text-info); flex-shrink: 0; }
     .user-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+
     /* Main */
-    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; }
+    #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; padding-top: env(safe-area-inset-top); }
     #topbar { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--color-border-tertiary); }
     #menu-toggle { display: flex; } @media (min-width: 769px) { #menu-toggle { display: none; } }
     #model-selector { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--color-text-primary); background: none; }
-    #model-selector:hover { background: var(--color-background-secondary); }
     .topbar-actions { display: flex; gap: 4px; }
+
     /* Messages */
-    #messages { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 12px; scroll-behavior: smooth; display: none; word-break: break-word; }
+    #messages { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 12px; scroll-behavior: smooth; display: none; word-break: break-word; }
     @media (min-width: 769px) { #messages { padding: 20px 24px; } }
     .msg-row { padding: 4px 0; display: flex; animation: messagePop 0.3s ease both; }
     .msg-row.user { justify-content: flex-end; } .msg-row.assistant { justify-content: flex-start; }
-    .msg-content { max-width: 92%; word-break: break-word; overflow-wrap: anywhere; }
+    .msg-content { max-width: 90%; word-break: break-word; overflow-wrap: anywhere; }
     @media (min-width: 769px) { .msg-content { max-width: 75%; } }
     .msg-row.assistant .msg-content { display: flex; gap: 8px; align-items: flex-start; padding: 0 4px; }
-    @media (min-width: 769px) { .msg-row.assistant .msg-content { padding: 0 8px; } }
     .assistant-icon { width: 24px; height: 24px; min-width: 24px; border-radius: 50%; background: var(--color-background-tertiary); border: 0.5px solid var(--color-border-secondary); display: flex; align-items: center; justify-content: center; margin-top: 2px; }
     .assistant-icon i { font-size: 12px; color: var(--color-text-secondary); }
-    .bubble { padding: 8px 12px; border-radius: 16px; font-size: 14px; line-height: 1.5; color: var(--color-text-primary); word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap; }
+    .bubble { padding: 8px 12px; border-radius: 16px; font-size: clamp(14px, 3.5vw, 16px); line-height: 1.5; color: var(--color-text-primary); word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap; }
     .msg-row.user .bubble { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 16px 16px 4px 16px; margin-right: 4px; }
     .msg-row.assistant .bubble { background: none; padding: 2px 0; border-radius: 0; border: none; }
-    /* Toggle de voz y privacidad */
-    .toggle-btn { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
+    /* Toggle buttons */
+    .toggle-btn { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
     .toggle-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-text-info); }
+
     /* Code block */
-    .code-container { background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); border-radius: 12px; padding: 12px; margin: 8px 0; position: relative; }
-    .code-container pre { margin: 0; padding: 0; overflow-x: auto; font-size: 13px; font-family: 'Fira Code', monospace; color: var(--color-text-primary); white-space: pre-wrap; word-break: break-word; }
-    .code-toolbar { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
-    .code-btn { padding: 5px 12px; border-radius: 8px; border: 1px solid var(--color-border-secondary); background: var(--color-background-tertiary); color: var(--color-text-secondary); cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
-    .code-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+    .code-container { background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); border-radius: 12px; padding: 12px; margin: 8px 0; position: relative; overflow-x: auto; }
+    .code-container pre { margin: 0; padding: 0; font-size: 13px; font-family: 'Fira Code', monospace; color: var(--color-text-primary); white-space: pre-wrap; word-break: break-word; }
+    .code-toolbar { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; flex-wrap: wrap; }
+    .code-btn { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--color-border-secondary); background: var(--color-background-tertiary); color: var(--color-text-secondary); cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
     .code-btn.run { background: #2a3a5e; color: #a8c4ff; border-color: #3a4f7a; }
-    .code-btn.run:hover { background: #3a4f7a; }
-    #run-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+
+    /* Modals */
+    #run-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease; }
     #run-modal.open { display: flex; }
-    #run-modal-content { background: var(--color-background-primary); border-radius: 16px; width: 100%; max-width: 900px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
+    #run-modal-content { background: var(--color-background-primary); border-radius: 16px; width: 100%; max-width: 900px; height: 80dvh; display: flex; flex-direction: column; overflow: hidden; }
     #run-modal-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border-tertiary); }
-    #run-modal-header span { font-weight: 600; }
     #run-frame { flex: 1; width: 100%; border: none; }
-    #empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 40px 16px; }
-    #empty-state h2 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); text-align: center; }
+
+    #empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px 16px; }
+    #empty-state h2 { font-size: clamp(18px, 5vw, 22px); font-weight: 500; color: var(--color-text-primary); text-align: center; }
     .suggestions { display: grid; grid-template-columns: 1fr; gap: 8px; width: 100%; max-width: 480px; }
     @media (min-width: 500px) { .suggestions { grid-template-columns: 1fr 1fr; } }
-    .suggestion-card { padding: 12px 14px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; font-size: 13px; color: var(--color-text-secondary); transition: all 0.15s; background: none; text-align: left; line-height: 1.4; }
+    .suggestion-card { padding: 12px 14px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; font-size: clamp(11px, 2.8vw, 13px); color: var(--color-text-secondary); transition: all 0.15s; background: none; text-align: left; line-height: 1.4; }
     .suggestion-card:hover { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-secondary); }
-    .suggestion-card strong { display: block; color: var(--color-text-primary); font-weight: 500; margin-bottom: 2px; font-size: 13px; }
-    #input-area { padding: 8px 8px 12px; } @media (min-width: 769px) { #input-area { padding: 12px 16px 16px; } }
+    .suggestion-card strong { display: block; color: var(--color-text-primary); font-weight: 500; margin-bottom: 2px; }
+
+    /* Input area */
+    #input-area { padding: 8px 8px 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+    @media (min-width: 769px) { #input-area { padding: 12px 16px 16px; } }
     #input-box { border: 0.5px solid var(--color-border-secondary); border-radius: 16px; background: var(--color-background-secondary); display: flex; flex-direction: column; gap: 0; overflow: hidden; transition: border-color 0.15s; }
     #input-box:focus-within { border-color: var(--color-border-primary); }
-    #textarea { width: 100%; background: none; border: none; outline: none; resize: none; font-size: 14px; color: var(--color-text-primary); padding: 10px 12px 4px; font-family: var(--font-sans); line-height: 1.6; min-height: 40px; max-height: 120px; overflow-y: auto; }
-    @media (max-width: 768px) { #textarea { font-size: 16px; } }
+    #textarea { width: 100%; background: none; border: none; outline: none; resize: none; font-size: clamp(14px, 3.5vw, 16px); color: var(--color-text-primary); padding: 10px 12px 4px; font-family: var(--font-sans); line-height: 1.6; min-height: 40px; max-height: 120px; overflow-y: auto; }
     #textarea::placeholder { color: var(--color-text-tertiary); }
     .input-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 8px; }
     .input-tools { display: flex; gap: 2px; }
-    .input-tool-btn { background: none; border: none; cursor: pointer; color: var(--color-text-tertiary); padding: 6px; border-radius: 8px; display: flex; align-items: center; }
+    .input-tool-btn { background: none; border: none; cursor: pointer; color: var(--color-text-tertiary); padding: 6px; border-radius: 8px; display: flex; align-items: center; min-width: 36px; min-height: 36px; justify-content: center; transition: background 0.15s; }
     .input-tool-btn:hover { color: var(--color-text-secondary); background: var(--color-background-primary); }
-    .input-tool-btn i { font-size: 16px; }
     #mic-btn.recording { color: #ff3b30; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
     #send-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--color-text-primary); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.15s, transform 0.1s; }
@@ -177,7 +232,7 @@
     #send-btn i { font-size: 14px; color: var(--color-background-primary); }
     #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     .disclaimer { text-align: center; font-size: 10px; color: var(--color-text-tertiary); margin-top: 6px; }
-    @keyframes gentleSwing { 0%,100%{transform:rotate(0deg)} 25%{transform:rotate(2deg)} 75%{transform:rotate(-2deg)} }
+
     @keyframes fadeIn { from { opacity:0; transform:scale(0.97) } to { opacity:1; transform:scale(1) } }
     @keyframes messagePop { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
     .typing-indicator { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
@@ -188,7 +243,10 @@
 </head>
 <body class="theme-dark">
   <div id="landing">
-    <div class="flag">🇦🇷</div><h1>AOS-0.1</h1>
+    <div class="flag-wrapper">
+      <div class="flag-argentina"><div class="sun"></div></div>
+    </div>
+    <h1>AOS-0.1</h1>
     <div class="desc">¡Hola! Soy un asistente virtual creado por una sola persona.<br>Puedo charlar, reconocer imágenes, buscar en Wikipedia, programar y enseñar matemáticas.<br>Estoy en constante desarrollo. ¡Probame!</div>
     <div class="lang-selector" id="langSelector">
       <button class="lang-btn" data-lang="en">English</button>
@@ -215,8 +273,8 @@
           <button class="icon-btn" style="margin-left:auto" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-palette"></i></button>
         </div>
         <div style="display:flex; gap:6px; margin-top:8px;">
-          <button class="toggle-btn" id="tts-toggle" onclick="toggleTTS()" title="Activar voz del asistente">🔊 Voz</button>
-          <button class="toggle-btn" id="privacy-toggle" onclick="togglePrivacy()" title="Modo privado (sin historial)">🕶️ Privado</button>
+          <button class="toggle-btn" id="tts-toggle" onclick="toggleTTS()">🔊 Voz</button>
+          <button class="toggle-btn" id="privacy-toggle" onclick="togglePrivacy()">🕶️ Privado</button>
         </div>
       </div>
     </div>
@@ -257,12 +315,11 @@
     </div>
   </div>
 
-  <!-- Modal para ejecutar código -->
+  <!-- Modales (ejecutar código y feedback) -->
   <div id="run-modal"><div id="run-modal-content"><div id="run-modal-header"><span>Ejecutando código</span><button class="icon-btn" onclick="closeRunModal()"><i class="ti ti-x"></i></button></div><iframe id="run-frame" sandbox="allow-scripts allow-same-origin"></iframe></div></div>
 
-  <!-- Modal de feedback -->
   <div id="feedback-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; align-items:center; justify-content:center; padding:20px;" onclick="if(event.target===this)closeFeedback()">
-    <div style="background:var(--color-background-primary); border-radius:16px; padding:2rem; width:100%; max-width:400px; border:0.5px solid var(--color-border-tertiary);">
+    <div style="background:var(--color-background-primary); border-radius:16px; padding:clamp(1rem,5vw,2rem); width:100%; max-width:400px; border:0.5px solid var(--color-border-tertiary);">
       <h3 style="margin-bottom:0.5rem;">✉️ Enviar sugerencia</h3>
       <p style="color:var(--color-text-secondary); margin-bottom:1rem; font-size:0.9rem;">¿Encontraste un error o tenés una idea? Escribila acá y me llegará a mi correo.</p>
       <textarea id="feedback-text" rows="5" placeholder="Escribe tu sugerencia o reporte..." style="width:100%; padding:12px; background:var(--color-background-secondary); border:1px solid var(--color-border-secondary); border-radius:12px; color:var(--color-text-primary); font-family:inherit; resize:vertical; margin-bottom:1rem;"></textarea>
@@ -275,7 +332,7 @@
 
 <script>
   (function() {
-    // ========== VARIABLES GLOBALES ==========
+    // Variables globales
     let currentLang = 'es';
     let mobilenetModel = null;
     let isTyping = false;
@@ -286,6 +343,7 @@
     let userName = 'Usuario';
     let ttsEnabled = false;
     let privacyMode = false;
+    let touchStartX = 0, touchStartY = 0;
 
     const textarea = document.getElementById('textarea');
     const sendBtn = document.getElementById('send-btn');
@@ -305,12 +363,27 @@
     const privacyToggle = document.getElementById('privacy-toggle');
 
     // Carga modelo
-    (async function () { mobilenetModel = await mobilenet.load(); console.log("Modelo listo 🖼️"); })();
+    (async function () {
+      try { mobilenetModel = await mobilenet.load(); console.log("Modelo listo 🖼️"); } catch(e) { console.warn("Error cargando modelo"); }
+    })();
 
     function toggleSidebar() { sidebar.classList.toggle('open'); sidebarBackdrop.classList.toggle('show'); }
     sidebarBackdrop.addEventListener('click', toggleSidebar);
 
-    // Landing: selección de idioma
+    // Swipe para sidebar
+    document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive: true});
+    document.addEventListener('touchend', e => {
+      if (!touchStartX || !touchStartY) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+        if (dx > 0 && touchStartX < 50 && !sidebar.classList.contains('open')) toggleSidebar();
+        else if (dx < 0 && sidebar.classList.contains('open')) toggleSidebar();
+      }
+      touchStartX = touchStartY = 0;
+    });
+
+    // Landing
     langButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         langButtons.forEach(b => b.classList.remove('selected'));
@@ -322,11 +395,7 @@
       });
     });
 
-    function checkStartButton() {
-      const name = nameInput.value.trim();
-      startBtn.disabled = !name;
-    }
-
+    function checkStartButton() { startBtn.disabled = !nameInput.value.trim(); }
     nameInput.addEventListener('input', checkStartButton);
 
     function iniciarChat() {
@@ -350,439 +419,243 @@
       document.body.className = `theme-${currentTheme}`;
     }
 
-    // ========== TTS (Text-to-Speech) MEJORADO ==========
+    // TTS
     function toggleTTS() {
       ttsEnabled = !ttsEnabled;
       localStorage.setItem('atlas_tts', ttsEnabled);
       updateTTSButton();
       if (ttsEnabled) {
-        // Mensaje de prueba con un pequeño delay
         setTimeout(() => {
-          const utterance = new SpeechSynthesisUtterance("Voz activada");
-          utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
-          utterance.volume = 1;
-          utterance.rate = 1.1;
-          // Truco para Android: reproducir un audio mudo antes para desbloquear el altavoz multimedia
+          const u = new SpeechSynthesisUtterance("Voz activada");
+          u.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
+          u.volume = 1; u.rate = 1.1;
           if (/Android/i.test(navigator.userAgent)) {
-            const dummy = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
-            dummy.play().then(() => {
-              window.speechSynthesis.speak(utterance);
-            }).catch(() => {
-              window.speechSynthesis.speak(utterance);
-            });
-          } else {
-            window.speechSynthesis.speak(utterance);
-          }
+            new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA').play().then(() => speechSynthesis.speak(u)).catch(() => speechSynthesis.speak(u));
+          } else speechSynthesis.speak(u);
         }, 150);
-      } else {
-        window.speechSynthesis.cancel();
-      }
+      } else speechSynthesis.cancel();
     }
-
-    function updateTTSButton() {
-      ttsToggle.classList.toggle('active', ttsEnabled);
-    }
-
+    function updateTTSButton() { ttsToggle.classList.toggle('active', ttsEnabled); }
     function speakText(text) {
       if (!ttsEnabled) return;
-      // Limpiar markdown, emojis y enlaces para que suene más natural
-      const clean = text
-        .replace(/\*\*/g, '')
-        .replace(/🐱|🐶|🌿|🧑|📚|🔗/g, '')
-        .replace(/\[.*?\]\(.*?\)/g, '')
-        .replace(/https?:\/\/\S+/g, '')
-        .replace(/```[\s\S]*?```/g, '')
-        .trim();
+      const clean = text.replace(/\*\*/g, '').replace(/🐱|🐶|🌿|🧑|📚|🔗/g, '').replace(/\[.*?\]\(.*?\)/g, '').replace(/https?:\/\/\S+/g, '').replace(/```[\s\S]*?```/g, '').trim();
       if (!clean) return;
-
-      // Usamos un pequeño timeout para asegurar que el evento de clic haya terminado
       setTimeout(() => {
-        const utterance = new SpeechSynthesisUtterance(clean);
-        utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
-        utterance.volume = 1;
-        utterance.rate = 1.1;
-        // Cancelar cualquier habla anterior para evitar solapamientos
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
+        const u = new SpeechSynthesisUtterance(clean);
+        u.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
+        u.volume = 1; u.rate = 1.1;
+        speechSynthesis.cancel(); speechSynthesis.speak(u);
       }, 100);
     }
 
-    // ========== PRIVACIDAD ==========
-    function togglePrivacy() {
-      privacyMode = !privacyMode;
-      localStorage.setItem('atlas_privacy', privacyMode);
-      updatePrivacyButton();
-      if (privacyMode) {
-        clearPrivateData();
-      }
-    }
+    // Privacidad
+    function togglePrivacy() { privacyMode = !privacyMode; localStorage.setItem('atlas_privacy', privacyMode); updatePrivacyButton(); if (privacyMode) clearPrivateData(); }
+    function updatePrivacyButton() { privacyToggle.classList.toggle('active', privacyMode); }
+    function clearPrivateData() { conversationContext = []; messagesEl.innerHTML = ''; messagesEl.style.display = 'none'; emptyState.style.display = 'flex'; }
 
-    function updatePrivacyButton() {
-      privacyToggle.classList.toggle('active', privacyMode);
-    }
-
-    function clearPrivateData() {
-      conversationContext = [];
-      messagesEl.innerHTML = '';
-      messagesEl.style.display = 'none';
-      emptyState.style.display = 'flex';
-    }
-
-    // ========== RECONOCIMIENTO DE VOZ ==========
+    // Voz
     function toggleVoice() {
-      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert('El reconocimiento de voz no está soportado en este navegador. Prueba con Chrome.');
-        return;
-      }
-      if (isRecording) { stopVoice(); } else { startVoice(); }
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('Reconocimiento de voz no soportado.'); return; }
+      if (isRecording) stopVoice(); else startVoice();
     }
-
     function startVoice() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SR();
       recognition.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
-      recognition.interimResults = true;
-      recognition.continuous = false;
+      recognition.interimResults = true; recognition.continuous = false;
       recognition.onstart = () => { isRecording = true; micBtn.classList.add('recording'); textarea.value = ''; textarea.focus(); };
-      recognition.onresult = (event) => {
-        let interim = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) interim += event.results[i][0].transcript;
-        textarea.value = interim;
-        textarea.style.height = 'auto';
-        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-      };
+      recognition.onresult = e => { let t=''; for(let i=e.resultIndex;i<e.results.length;i++) t+=e.results[i][0].transcript; textarea.value = t; textarea.style.height='auto'; textarea.style.height = Math.min(textarea.scrollHeight,120)+'px'; };
       recognition.onerror = () => stopVoice();
-      recognition.onend = () => {
-        if (isRecording) { stopVoice(); if (textarea.value.trim()) sendMessage(textarea.value.trim()); }
-      };
+      recognition.onend = () => { if(isRecording){ stopVoice(); if(textarea.value.trim()) sendMessage(textarea.value.trim()); } };
       recognition.start();
     }
+    function stopVoice() { if(recognition){ recognition.stop(); recognition=null; } isRecording=false; micBtn.classList.remove('recording'); }
 
-    function stopVoice() {
-      if (recognition) { recognition.stop(); recognition = null; }
-      isRecording = false;
-      micBtn.classList.remove('recording');
+    // Emociones
+    const emociones = {
+      feliz: { en: ["happy","glad","joyful"], es: ["feliz","contento","alegre"], es_AR: ["feliz","contento","alegre","joya"] },
+      triste: { en: ["sad","unhappy","depressed"], es: ["triste","deprimido","bajón"], es_AR: ["triste","deprimido","bajón","hecho mierda"] },
+      enojado: { en: ["angry","mad","furious"], es: ["enojado","furioso","caliente"], es_AR: ["enojado","caliente","bronca","re caliente"] },
+      miedo: { en: ["scared","afraid","fear"], es: ["miedo","asustado","aterrado"], es_AR: ["miedo","cagaso","asustado","re cagado"] },
+      sorpresa: { en: ["surprised","shocked","amazed"], es: ["sorprendido","sorprendente","impactado"], es_AR: ["sorprendido","impactado","no lo puedo creer"] }
+    };
+    const respEmocion = {
+      feliz: {
+        en: ["That's great! 😊","So glad to hear that!"],
+        es: ["¡Qué bueno! 😊","¡Me alegra mucho!"],
+        es_AR: ["¡Qué bien, che! 😊","¡Joyita!"]
+      },
+      triste: {
+        en: ["I'm sorry you feel this way. Want to talk?"],
+        es: ["Lamento que te sientas así. ¿Querés hablar?"],
+        es_AR: ["Uh, qué bajón. ¿Querés hablar?"]
+      },
+      enojado: {
+        en: ["I understand your frustration. Want to vent?"],
+        es: ["Entiendo tu bronca. ¿Querés desahogarte?"],
+        es_AR: ["Te entiendo, la bronca es grande. ¿Querés putear un rato?"]
+      },
+      miedo: {
+        en: ["Fear is normal. What worries you?"],
+        es: ["El miedo es normal. ¿Qué te preocupa?"],
+        es_AR: ["El cagaso es normal. ¿Qué te preocupa?"]
+      },
+      sorpresa: {
+        en: ["What a surprise! Tell me more."],
+        es: ["¡Qué sorpresa! Contame más."],
+        es_AR: ["¡Qué sorpresa, che! Contame más."]
+      }
+    };
+    function detectarEmocion(texto) {
+      const t = texto.toLowerCase().trim();
+      for (const [emocion, claves] of Object.entries(emociones)) {
+        const palabras = claves[currentLang] || claves.es;
+        if (palabras.some(p => t.includes(p))) {
+          return random(respEmocion[emocion][currentLang] || respEmocion[emocion].es);
+        }
+      }
+      return null;
     }
 
-    // ========== CONTEXTO CONVERSACIONAL ==========
+    // Conocimiento
+    const codeKnowledge = {
+      calculadora: [`\`\`\`html\n<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Calculadora</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}.calc{background:#16213e;border-radius:20px;padding:20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.display{background:#0f3460;border-radius:12px;padding:20px;text-align:right;margin-bottom:15px}.expr{color:#aaa;font-size:.85rem;min-height:20px}.result{color:#e94560;font-size:2rem;font-weight:700;word-break:break-all}.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}button{padding:18px;border:none;border-radius:12px;font-size:1rem;cursor:pointer;transition:transform .1s;font-weight:600}button:active{transform:scale(.92)}.n{background:#1a1a2e;color:#fff}.o{background:#e94560;color:#fff}.e{background:#0f3460;color:#e94560;grid-column:span 2}.c{background:#533483;color:#fff}.z{grid-column:span 2}</style></head><body><div class="calc"><div class="display"><div class="expr" id="expr"></div><div class="result" id="res">0</div></div><div class="buttons"><button class="c" onclick="limpiar()">C</button><button class="c" onclick="borrar()">⌫</button><button class="c" onclick="agregar('%')">%</button><button class="o" onclick="agregar('/')">÷</button><button class="n" onclick="agregar('7')">7</button><button class="n" onclick="agregar('8')">8</button><button class="n" onclick="agregar('9')">9</button><button class="o" onclick="agregar('*')">×</button><button class="n" onclick="agregar('4')">4</button><button class="n" onclick="agregar('5')">5</button><button class="n" onclick="agregar('6')">6</button><button class="o" onclick="agregar('-')">−</button><button class="n" onclick="agregar('1')">1</button><button class="n" onclick="agregar('2')">2</button><button class="n" onclick="agregar('3')">3</button><button class="o" onclick="agregar('+')">+</button><button class="n z" onclick="agregar('0')">0</button><button class="n" onclick="agregar('.')">.</button><button class="e" onclick="calcular()">=</button></div></div><script>let expr='';function agregar(v){expr+=v;document.getElementById('res').textContent=expr}function limpiar(){expr='';document.getElementById('res').textContent='0';document.getElementById('expr').textContent=''}function borrar(){expr=expr.slice(0,-1);document.getElementById('res').textContent=expr||'0'}function calcular(){try{document.getElementById('expr').textContent=expr+' =';let r=Function('"use strict";return('+expr+')')();document.getElementById('res').textContent=parseFloat(r.toFixed(10));expr=String(r)}catch(e){document.getElementById('res').textContent='Error';expr=''}}<\/script></body></html>\n\`\`\``]
+    };
+    const keywordMap = { calculadora:'calculadora', tareas:'tareas', juego:'juego' };
+
+    function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function getRespuestas() { return respuestas[currentLang] || respuestas.es; }
+    function getFallbacks() { return fallbacks[currentLang] || fallbacks.es; }
+
+    // Wikipedia y respuesta principal
+    async function buscarEnWikipedia(consulta, usarContexto = false) {
+      let query = consulta;
+      if (usarContexto) query = getContextualQuery(consulta);
+      const url = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
+      try {
+        const resp = await fetch(url); const data = await resp.json();
+        if (!data.query.search.length) return null;
+        const titulo = data.query.search[0].title;
+        const extractUrl = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=${encodeURIComponent(titulo)}&format=json&origin=*`;
+        const extResp = await fetch(extractUrl); const extData = await extResp.json();
+        const page = extData.query.pages; const pageId = Object.keys(page)[0];
+        if (page[pageId].missing) return null;
+        return { extract: page[pageId].extract, title: titulo };
+      } catch(e) { return null; }
+    }
+
+    async function obtenerRespuesta(texto) {
+      const t = texto.toLowerCase().trim();
+      const emocion = detectarEmocion(texto);
+      if (emocion) { updateContext(texto, emocion); return emocion; }
+      const resp = getRespuestas();
+      for (const entrada of resp) {
+        if (entrada.claves.some(c => t.includes(c))) {
+          const r = random(entrada.respuestas); updateContext(texto, r); return r;
+        }
+      }
+      const code = obtenerDeConocimiento(t);
+      if (code) { updateContext(texto, code); return code; }
+      const wiki = await buscarEnWikipedia(texto, true);
+      if (wiki) {
+        const oraciones = wiki.extract.split('. ');
+        const resumen = oraciones.slice(0,2).join('. ')+(oraciones.length>2?'.':'');
+        const link = `https://es.wikipedia.org/wiki/${encodeURIComponent(wiki.title)}`;
+        const respuesta = `${resumen}\n\n🔗 Fuente: ${link}`;
+        updateContext(texto, respuesta); return respuesta;
+      }
+      const fb = random(getFallbacks()); updateContext(texto, fb); return fb;
+    }
+
+    // Contexto conversacional
     function updateContext(userText, assistantText) {
       if (privacyMode) return;
       conversationContext.push({ user: userText, assistant: assistantText });
       if (conversationContext.length > 5) conversationContext.shift();
     }
-
     function getContextualQuery(text) {
       const lower = text.toLowerCase().trim();
-      const ambiguousWords = ['eso', 'ese', 'esa', 'lo', 'la', 'esto', 'más', 'explícame', 'cómo', 'y', 'por qué'];
-      if (ambiguousWords.some(w => lower.includes(w)) && conversationContext.length > 0) {
-        const last = conversationContext[conversationContext.length - 1];
-        const topicWords = last.user.replace(/[?¿.,]/g, '').split(' ').slice(0, 4).join(' ');
-        return `${topicWords} ${text}`;
+      const words = ['eso','ese','esa','lo','la','esto','más','explícame','cómo','y','por qué'];
+      if (words.some(w => lower.includes(w)) && conversationContext.length) {
+        const last = conversationContext[conversationContext.length-1];
+        const topic = last.user.replace(/[?¿.,]/g,'').split(' ').slice(0,4).join(' ');
+        return `${topic} ${text}`;
       }
       return text;
     }
 
-    // ========== CONOCIMIENTO (PROGRAMACIÓN Y MATEMÁTICAS) ==========
-    const codeKnowledge = {
-      calculadora: [
-        `¡Perfecto pedido! Acá va una calculadora completa en un solo archivo HTML:\n\`\`\`html\n<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Calculadora</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}.calc{background:#16213e;border-radius:20px;padding:20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.display{background:#0f3460;border-radius:12px;padding:20px;text-align:right;margin-bottom:15px}.expr{color:#aaa;font-size:.85rem;min-height:20px}.result{color:#e94560;font-size:2rem;font-weight:700;word-break:break-all}.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}button{padding:18px;border:none;border-radius:12px;font-size:1rem;cursor:pointer;transition:transform .1s;font-weight:600}button:active{transform:scale(.92)}.n{background:#1a1a2e;color:#fff}.o{background:#e94560;color:#fff}.e{background:#0f3460;color:#e94560;grid-column:span 2}.c{background:#533483;color:#fff}.z{grid-column:span 2}</style></head><body><div class="calc"><div class="display"><div class="expr" id="expr"></div><div class="result" id="res">0</div></div><div class="buttons"><button class="c" onclick="limpiar()">C</button><button class="c" onclick="borrar()">⌫</button><button class="c" onclick="agregar('%')">%</button><button class="o" onclick="agregar('/')">÷</button><button class="n" onclick="agregar('7')">7</button><button class="n" onclick="agregar('8')">8</button><button class="n" onclick="agregar('9')">9</button><button class="o" onclick="agregar('*')">×</button><button class="n" onclick="agregar('4')">4</button><button class="n" onclick="agregar('5')">5</button><button class="n" onclick="agregar('6')">6</button><button class="o" onclick="agregar('-')">−</button><button class="n" onclick="agregar('1')">1</button><button class="n" onclick="agregar('2')">2</button><button class="n" onclick="agregar('3')">3</button><button class="o" onclick="agregar('+')">+</button><button class="n z" onclick="agregar('0')">0</button><button class="n" onclick="agregar('.')">.</button><button class="e" onclick="calcular()">=</button></div></div><script>let expr='';function agregar(v){expr+=v;document.getElementById('res').textContent=expr}function limpiar(){expr='';document.getElementById('res').textContent='0';document.getElementById('expr').textContent=''}function borrar(){expr=expr.slice(0,-1);document.getElementById('res').textContent=expr||'0'}function calcular(){try{document.getElementById('expr').textContent=expr+' =';let r=Function('"use strict";return('+expr+')')();document.getElementById('res').textContent=parseFloat(r.toFixed(10));expr=String(r)}catch(e){document.getElementById('res').textContent='Error';expr=''}}<\/script></body></html>\n\`\`\`\nGuardalo como "calculadora.html" y abrilo directo en el navegador.`
-      ],
-      tareas: [
-        `¡Dale! Acá va una app de tareas (To-Do) completa con diseño limpio, filtros y persistencia en localStorage:\n\`\`\`html\n<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Mis Tareas</title><style>*{box-sizing:border-box;margin:0;padding:0}body{background:#f0f2f5;font-family:'Segoe UI',sans-serif;min-height:100vh;padding:2rem}.app{max-width:520px;margin:0 auto}h1{font-size:1.8rem;color:#1a1a1a;margin-bottom:.3rem}.sub{color:#888;font-size:.9rem;margin-bottom:1.5rem}.row{display:flex;gap:10px;margin-bottom:1.5rem}.row input{flex:1;padding:14px 18px;border:2px solid #e0e0e0;border-radius:14px;font-size:1rem;outline:none;background:#fff;transition:border .2s}.row input:focus{border-color:#007aff}.add{padding:14px 22px;background:#007aff;color:#fff;border:none;border-radius:14px;cursor:pointer;font-weight:600;transition:background .2s}.add:hover{background:#0051d5}.filtros{display:flex;gap:8px;margin-bottom:1rem}.f{padding:7px 16px;border:1px solid #ddd;border-radius:20px;background:#fff;cursor:pointer;font-size:.85rem;transition:all .2s}.f.on,.f:hover{background:#007aff;color:#fff;border-color:#007aff}.lista{display:flex;flex-direction:column;gap:10px}.item{background:#fff;border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:opacity .2s}.item.done{opacity:.55}.item.done .txt{text-decoration:line-through;color:#aaa}.cb{width:22px;height:22px;border-radius:50%;border:2px solid #007aff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}.cb.on{background:#007aff}.cb.on::after{content:'✓';color:#fff;font-size:13px;font-weight:700}.txt{flex:1;font-size:.95rem}.del{background:none;border:none;color:#ff3b30;cursor:pointer;font-size:1.1rem;padding:4px 8px;border-radius:8px;transition:background .2s}.del:hover{background:#fff0ee}.stats{text-align:center;margin-top:1.5rem;color:#aaa;font-size:.85rem}.vacio{text-align:center;padding:3rem;color:#bbb}</style></head><body><div class="app"><h1>📝 Mis Tareas</h1><p class="sub">Organizá tu día sin complicaciones</p><div class="row"><input id="inp" placeholder="Nueva tarea..." onkeydown="if(event.key==='Enter')add()"><button class="add" onclick="add()">+ Agregar</button></div><div class="filtros"><button class="f on" onclick="setF('all',this)">Todas</button><button class="f" onclick="setF('pen',this)">Pendientes</button><button class="f" onclick="setF('don',this)">Completadas</button></div><div class="lista" id="lista"></div><div class="stats" id="stats"></div></div><script>let T=JSON.parse(localStorage.getItem('atlas_t')||'[]'),filtro='all';const save=()=>localStorage.setItem('atlas_t',JSON.stringify(T));function add(){const v=document.getElementById('inp').value.trim();if(!v)return;T.push({id:Date.now(),v,ok:false});document.getElementById('inp').value='';save();draw()}function tog(id){T=T.map(t=>t.id===id?{...t,ok:!t.ok}:t);save();draw()}function del(id){T=T.filter(t=>t.id!==id);save();draw()}function setF(f,btn){filtro=f;document.querySelectorAll('.f').forEach(b=>b.classList.remove('on'));btn.classList.add('on');draw()}function draw(){let vis=T;if(filtro==='pen')vis=T.filter(t=>!t.ok);if(filtro==='don')vis=T.filter(t=>t.ok);const l=document.getElementById('lista');l.innerHTML=vis.length?vis.map(t=>\`<div class="item\${t.ok?' done':''}"><div class="cb\${t.ok?' on':''}" onclick="tog(\${t.id})"></div><span class="txt">\${t.v}</span><button class="del" onclick="del(\${t.id})">🗑</button></div>\`).join(''):'<div class="vacio">No hay tareas acá 😌</div>';const ok=T.filter(t=>t.ok).length;document.getElementById('stats').textContent=T.length?\`\${ok} de \${T.length} completadas\`:'';}draw();<\/script></body></html>\n\`\`\``
-      ],
-      juego: [
-        `¡Vamos! Te armo Snake clásico:\n\`\`\`html\n<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Snake</title><style>body{background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;color:#fff}h1{color:#4ade80;letter-spacing:4px;font-size:1.5rem;margin-bottom:8px}#info{color:#888;margin-bottom:12px;font-size:.9rem}canvas{border:2px solid #4ade80;border-radius:8px;box-shadow:0 0 30px rgba(74,222,128,.3)}#score{margin-top:12px;font-size:1.3rem;color:#4ade80}</style></head><body><h1>🐍 SNAKE</h1><div id="info">Usá las flechas para mover</div><canvas id="c" width="400" height="400"></canvas><div id="score">Puntaje: 0</div><script>const c=document.getElementById('c'),ctx=c.getContext('2d');const S=20,C=20,R=20;let snake,dir,food,pts,iv,alive;function init(){snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];dir={x:1,y:0};pts=0;alive=true;newFood();clearInterval(iv);iv=setInterval(loop,130)}function newFood(){do{food={x:Math.floor(Math.random()*C),y:Math.floor(Math.random()*R)}}while(snake.some(s=>s.x===food.x&&s.y===food.y))}function loop(){if(!alive)return;const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};if(h.x<0||h.x>=C||h.y<0||h.y>=R||snake.some(s=>s.x===h.x&&s.y===h.y)){alive=false;clearInterval(iv);alert('Game Over - Puntaje: '+pts);return}snake.unshift(h);if(h.x===food.x&&h.y===food.y){pts+=10;document.getElementById('score').textContent='Puntaje: '+pts;newFood()}else snake.pop();draw()}function draw(){ctx.fillStyle='#0d0d0d';ctx.fillRect(0,0,400,400);ctx.fillStyle='#f87171';ctx.beginPath();ctx.arc(food.x*S+S/2,food.y*S+S/2,S/2-2,0,Math.PI*2);ctx.fill();snake.forEach((s,i)=>{ctx.fillStyle=i===0?'#4ade80':'#22c55e';ctx.beginPath();ctx.roundRect(s.x*S+1,s.y*S+1,S-2,S-2,4);ctx.fill()})}document.addEventListener('keydown',e=>{const m={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};const nd=m[e.key];if(nd&&!(nd.x===-dir.x&&nd.y===-dir.y)){dir=nd;e.preventDefault()}});init();<\/script></body></html>\n\`\`\``
-      ]
-    };
-
-    const keywordMap = {
-      calculadora: 'calculadora', tareas: 'tareas', juego: 'juego', login: 'login', notas: 'notas',
-      'color boton': 'colorBoton', 'botón que cambie de color': 'colorBoton', contador: 'contador',
-      reloj: 'reloj', 'dark mode': 'darkMode', 'modo oscuro': 'darkMode', contraseñas: 'contrasenas',
-      'generador de contraseñas': 'contrasenas', cronometro: 'cronometro', portfolio: 'portfolio',
-      'leer archivos python': 'pythonArchivos', 'python archivos': 'pythonArchivos',
-      imgfuturista: 'imgFuturista', 'imagen futurista': 'imgFuturista',
-      imgcyberpunk: 'imgCyberpunk', cyberpunk: 'imgCyberpunk',
-      imgglass: 'imgGlass', glassmorphism: 'imgGlass',
-      matemática: 'mat_simple', 'operaciones': 'mat_simple', 'orden de operaciones': 'mat_simple',
-      ecuacion: 'ecuacion', derivada: 'derivada', integral: 'integral',
-      funcion: 'funcion', pitagoras: 'pitagoras', matriz: 'matriz', logaritmo: 'logaritmo'
-    };
-
-    function obtenerDeConocimiento(input) {
-      const t = input.toLowerCase().trim();
-      for (const [keyword, category] of Object.entries(keywordMap)) {
-        if (t.includes(keyword)) {
-          const arr = codeKnowledge[category];
-          if (arr) return random(arr);
-        }
-      }
-      if (t.includes('programa') || t.includes('código') || t.includes('html')) {
-        return random([codeKnowledge.calculadora[0], codeKnowledge.tareas[0], codeKnowledge.juego[0]]);
-      }
-      return null;
-    }
-
-    // ========== RESPUESTAS MULTILINGÜES ==========
-    const respuestas = {
-      en: [
-        { claves: ["hello","hi","hey","good morning","good afternoon","good evening"], respuestas: ["Hello! 👋 How can I help you?","Hey! 😊 I'm here, what do you need?","Hi there! 🌟 How can I help you today?","Hello! 🎉 Nice to meet you. What's up?"] },
-        { claves: ["how are you","how's it going","what's up","how you doing"], respuestas: ["I'm great, thanks! 😄 And you?","Everything's awesome here. ✨ How are you?","Fantastic. 🌈 What can I do for you?","Doing well! 💪 Ready to help."] },
-        { claves: ["name","what's your name","who are you"], respuestas: ["I'm your virtual assistant 🤖. You can change my name in the code!","They call me AI, but you can name me whatever you want 😉.","I'm a simple bot. You decide my name 🏷️."] },
-        { claves: ["thanks","thank you","thx","gracias"], respuestas: ["You're welcome! 😊 That's what I'm here for.","Happy to help! 🌟 Need anything else?","No problem. 🙌 Always at your service!","It was a pleasure! 🎉"] },
-        { claves: ["bye","goodbye","see you","adios","chau"], respuestas: ["See you later! 👋 It was a pleasure.","Bye! 🌻 Come back anytime.","See ya! 🚀 Have a great day.","Goodbye! ✌️ Take care."] },
-        { claves: ["help","what can you do","what do you do"], respuestas: ["I can answer questions, show code, teach math, search Wikipedia, and recognize images."] }
-      ],
-      es: [
-        { claves: ["hola","buenas","hey","saludos","buenos días","buenas tardes","buenas noches"], respuestas: ["¡Hola! 👋 ¿En qué te puedo ayudar?","¡Hey! 😊 Aquí estoy, ¿qué necesitás?","¡Buenas! 🌟 ¿Cómo te puedo ayudar hoy?","¡Hola! 🎉 Un gusto. ¿En qué andás?"] },
-        { claves: ["cómo estás","como estas","qué tal","todo bien","cómo andás","como andas"], respuestas: ["¡Muy bien, gracias! 😄 ¿Y vos?","Todo excelente por acá. ✨ ¿Cómo estás vos?","De maravilla. 🌈 ¿En qué te puedo ayudar?","¡Bien! 💪 Listo para ayudarte."] },
-        { claves: ["nombre","cómo te llamas","como te llamas","quién eres","quien eres","quien sos","quíen sos","cual es tu nombre"], respuestas: ["Soy tu asistente virtual 🤖. ¡Podés cambiar mi nombre en el código!","Me llaman IA, aunque podés ponerme el nombre que quieras 😉.","Soy un bot sencillo. Mi nombre lo definís vos 🏷️."] },
-        { claves: ["gracias","muchas gracias","te lo agradezco","grax"], respuestas: ["¡De nada! 😊 Para eso estoy.","¡Con gusto! 🌟 ¿Necesitás algo más?","No hay de qué. 🙌 ¡Siempre a disposición!","¡Fue un placer ayudarte! 🎉"] },
-        { claves: ["chau","adiós","adios","hasta luego","nos vemos","bye"], respuestas: ["¡Hasta luego! 👋 Fue un placer.","¡Chau! 🌻 Volvé cuando quieras.","¡Nos vemos! 🚀 Que te vaya bien.","¡Hasta pronto! 🌟","¡Nos vemos! ✌️ Cuidate."] },
-        { claves: ["ayuda","qué podés hacer","que podes hacer","qué hacés","que haces","para qué servís"], respuestas: ["Puedo responder preguntas, programar, enseñar matemáticas, buscar en Wikipedia y reconocer imágenes."] }
-      ],
-      es_AR: [
-        { claves: ["hola","buenas","hey","saludos","buenos días","buenas tardes","buenas noches"], respuestas: ["¡Hola, che! 👋 ¿En qué te puedo ayudar?","¡Hey! 😊 Acá estoy, ¿qué precisás?","¡Buenas! 🌟 ¿Cómo te puedo dar una mano hoy?","¡Hola! 🎉 Un gustazo. ¿En qué andás?"] },
-        { claves: ["cómo estás","como estas","qué tal","todo bien","cómo andás","como andas"], respuestas: ["¡Joyita, gracias! 😄 ¿Y vos?","Todo pipí cucú por acá. ✨ ¿Cómo estás vos?","De diez. 🌈 ¿En qué te puedo ayudar?","¡Bien! 💪 Listo para dar una mano."] },
-        { claves: ["nombre","cómo te llamas","como te llamas","quién eres","quien eres","quien sos","quíen sos","cual es tu nombre"], respuestas: ["Soy tu asistente virtual 🤖. ¡Podés cambiarme el nombre en el código!","Me dicen IA, pero vos poneme el nombre que quieras 😉.","Soy un bot sencillo. Vos definís mi nombre 🏷️."] },
-        { claves: ["gracias","muchas gracias","te lo agradezco","grax"], respuestas: ["¡De nada, che! 😊 Para eso estoy.","¡Con gusto! 🌟 ¿Precisás algo más?","No hay problema. 🙌 ¡Siempre a disposición!","¡Un placer ayudarte! 🎉"] },
-        { claves: ["chau","adiós","adios","hasta luego","nos vemos","bye"], respuestas: ["¡Chau! 👋 Fue un placer.","¡Nos vemos! 🌻 Volvé cuando quieras.","¡Chau che! 🚀 Que te vaya bárbaro.","¡Hasta luego! ✌️ Cuidate."] },
-        { claves: ["ayuda","qué podés hacer","que podes hacer","qué hacés","que haces","para qué servís"], respuestas: ["Puedo responder preguntas, programar, enseñar matemáticas, buscar en Wikipedia y reconocer imágenes."] }
-        //EMOCIONES
-        { claves: ["feliz," "triste," "enojado," "miedo," "asco"  "sorpresa," "sorprendido" "alergia"
-      ]
-    };
-
-    const fallbacks = {
-      en: ["I didn't quite get that 🤔. Can you rephrase it?","Hmm, I don't have an answer for that yet 🕵️."],
-      es: ["No entendí bien eso 🤔. ¿Podés reformularlo?","Hmm, no tengo una respuesta para eso todavía 🕵️."],
-      es_AR: ["No te entendí bien 🤔. ¿Lo podés decir de otra forma?","Mmm, todavía no tengo respuesta para eso 🕵️," "nose che no te entiedo, ¿lo podes decir de otra forma?," "che no te enteido, intenta decirlo de otra manera,"La PTM no te entiendo ¿podrias decirlo de otra forma?" ]
-    };
-
-    const explicacionesGato = {
-      en: ["🐱 **Cat** – A domestic feline with flexible body, retractable claws, excellent night vision."],
-      es: ["🐱 **Gato** – Felino doméstico de cuerpo flexible, garras retráctiles, gran visión nocturna."],
-      es_AR: ["🐱 **Gato** – Felino doméstico, cuerpo flexible, garras retráctiles, visión nocturna bárbara."]
-    };
-    const explicacionesPerro = {
-      en: ["🐶 **Dog** – Descendant of the wolf, loyal, with an extraordinary sense of smell."],
-      es: ["🐶 **Perro** – Descendiente del lobo, leal, con un olfato extraordinario."],
-      es_AR: ["🐶 **Perro** – Descendiente del lobo, leal, con un olfato impresionante."]
-    };
-    const explicacionesPlanta = {
-      en: ["🌿 **Plant** – Living organism that performs photosynthesis, essential for oxygen."],
-      es: ["🌿 **Planta** – Organismo vivo que realiza la fotosíntesis, esencial para el oxígeno."],
-      es_AR: ["🌿 **Planta** – Organismo vivo que hace fotosíntesis, clave para el oxígeno."]
-    };
-    const explicacionesHumano = {
-      en: ["🧑 **Human** – Bipedal being with a highly developed brain, capable of abstract thought."],
-      es: ["🧑 **Humano** – Ser bípedo con un cerebro muy desarrollado, capaz de pensamiento abstracto."],
-      es_AR: ["🧑 **Humano** – Ser bípedo con un cerebro re desarrollado, capaz de pensar en abstracto."]
-    };
-
-    function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-    function getRespuestas() { return respuestas[currentLang] || respuestas.es; }
-    function getFallbacks() { return fallbacks[currentLang] || fallbacks.es; }
-    function getExplicacion(categoria) {
-      const map = { gato: explicacionesGato, perro: explicacionesPerro, planta: explicacionesPlanta, humano: explicacionesHumano };
-      return map[categoria]?.[currentLang] || map[categoria]?.es;
-    }
-
-    // Wikipedia con contexto
-    async function buscarEnWikipedia(consulta, usarContexto = false) {
-      let query = consulta;
-      if (usarContexto) query = getContextualQuery(consulta);
-      const searchUrl = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
-      try {
-        const searchResponse = await fetch(searchUrl);
-        const searchData = await searchResponse.json();
-        const resultados = searchData.query.search;
-        if (resultados.length === 0) return null;
-        const titulo = resultados[0].title;
-        const extractUrl = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=${encodeURIComponent(titulo)}&format=json&origin=*`;
-        const extractResponse = await fetch(extractUrl);
-        const extractData = await extractResponse.json();
-        const page = extractData.query.pages;
-        const pageId = Object.keys(page)[0];
-        if (page[pageId].missing) return null;
-        return { extract: page[pageId].extract, title: titulo };
-      } catch (error) { console.error('Wikipedia error:', error); return null; }
-    }
-
-    async function obtenerRespuesta(texto) {
-      const t = texto.toLowerCase().trim();
-      const resp = getRespuestas();
-      for (const entrada of resp) {
-        if (entrada.claves.some(c => t.includes(c))) {
-          const respuesta = random(entrada.respuestas);
-          updateContext(texto, respuesta);
-          return respuesta;
-        }
-      }
-      const codeAnswer = obtenerDeConocimiento(t);
-      if (codeAnswer) { updateContext(texto, codeAnswer); return codeAnswer; }
-      const resultado = await buscarEnWikipedia(texto, true);
-      if (resultado) {
-        const oraciones = resultado.extract.split('. ');
-        const resumenCorto = oraciones.slice(0, 2).join('. ') + (oraciones.length > 2 ? '.' : '');
-        const sourceLink = `https://es.wikipedia.org/wiki/${encodeURIComponent(resultado.title)}`;
-        const respuesta = `${resumenCorto}\n\n🔗 Fuente: ${sourceLink}`;
-        updateContext(texto, respuesta);
-        return respuesta;
-      }
-      const fallback = random(getFallbacks());
-      updateContext(texto, fallback);
-      return fallback;
-    }
-
-    // ========== PROCESAMIENTO DE CÓDIGO ==========
-    function processCodeBlocks(text) {
-      const codeRegex = /```(\w*)\n([\s\S]*?)```/g;
-      let result = text;
-      let match;
-      while ((match = codeRegex.exec(text)) !== null) {
-        const lang = match[1] || '';
-        const code = match[2];
-        const isHTML = lang === 'html' || code.includes('<!DOCTYPE html>') || code.includes('<html');
-        const blockId = 'code-' + Math.random().toString(36).substr(2, 8);
-        const escapedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const toolbar = `
-          <div class="code-toolbar">
-            <button class="code-btn" onclick="copyCode('${blockId}')"><i class="ti ti-copy"></i> Copiar</button>
-            <button class="code-btn" onclick="downloadCode('${blockId}', 'archivo${isHTML?'.html':'.txt'}')"><i class="ti ti-download"></i> Descargar</button>
-            ${isHTML ? `<button class="code-btn run" onclick="runCode('${blockId}')"><i class="ti ti-player-play"></i> Ejecutar</button>` : ''}
-          </div>`;
-        const replacement = `<div class="code-container" id="${blockId}"><pre><code>${escapedCode}</code></pre>${toolbar}</div>`;
-        result = result.replace(match[0], replacement);
-      }
-      return result;
-    }
-
-    window.copyCode = function(blockId) {
-      const container = document.getElementById(blockId);
-      const code = container.querySelector('code').textContent;
-      navigator.clipboard.writeText(code).then(() => alert('¡Código copiado!'));
-    };
-
-    window.downloadCode = function(blockId, filename) {
-      const container = document.getElementById(blockId);
-      const code = container.querySelector('code').textContent;
-      const blob = new Blob([code], {type: 'text/plain'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    };
-
-    window.runCode = function(blockId) {
-      const container = document.getElementById(blockId);
-      const code = container.querySelector('code').textContent;
-      const modal = document.getElementById('run-modal');
-      const iframe = document.getElementById('run-frame');
-      iframe.srcdoc = code;
-      modal.classList.add('open');
-    };
-
-    window.closeRunModal = function() {
-      document.getElementById('run-modal').classList.remove('open');
-      document.getElementById('run-frame').srcdoc = '';
-    };
-
-    // ========== GESTIÓN DE MENSAJES ==========
+    // Mensajes
     function showMessages() { emptyState.style.display = 'none'; messagesEl.style.display = 'block'; }
-
     function addMessage(text, role) {
-      const row = document.createElement('div');
-      row.className = `msg-row ${role}`;
-      if (role === 'user') {
-        row.innerHTML = `<div class="msg-content"><div class="bubble">${text}</div></div>`;
-      } else {
+      const row = document.createElement('div'); row.className = `msg-row ${role}`;
+      if (role === 'user') row.innerHTML = `<div class="msg-content"><div class="bubble">${text}</div></div>`;
+      else {
         const processed = processCodeBlocks(text);
         row.innerHTML = `<div class="msg-content"><div class="assistant-icon"><i class="ti ti-robot"></i></div><div><div class="bubble">${processed}</div></div></div>`;
-        // Disparar TTS después de un pequeño delay (importante en móviles)
         setTimeout(() => speakText(text), 200);
       }
-      messagesEl.appendChild(row);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+      messagesEl.appendChild(row); messagesEl.scrollTop = messagesEl.scrollHeight;
     }
-
-    function addImageMessage(imageUrl, role) {
-      const row = document.createElement('div');
-      row.className = `msg-row ${role}`;
-      row.innerHTML = `<div class="msg-content"><div class="bubble"><img src="${imageUrl}" style="max-width:200px;border-radius:10px;width:100%;" /></div></div>`;
-      messagesEl.appendChild(row);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+    function addImageMessage(url, role) {
+      const row = document.createElement('div'); row.className = `msg-row ${role}`;
+      row.innerHTML = `<div class="msg-content"><div class="bubble"><img src="${url}" style="max-width:200px;border-radius:10px;width:100%;" /></div></div>`;
+      messagesEl.appendChild(row); messagesEl.scrollTop = messagesEl.scrollHeight;
     }
-
     function addTyping() {
-      const row = document.createElement('div');
-      row.className = 'msg-row assistant';
-      row.id = 'typing-row';
+      const row = document.createElement('div'); row.className = 'msg-row assistant'; row.id = 'typing-row';
       row.innerHTML = `<div class="msg-content"><div class="assistant-icon"><i class="ti ti-robot"></i></div><div><div class="bubble"><div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div></div></div>`;
-      messagesEl.appendChild(row);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+      messagesEl.appendChild(row); messagesEl.scrollTop = messagesEl.scrollHeight;
     }
-
     async function sendMessage(msgText) {
       const text = msgText || textarea.value.trim();
       if (!text || isTyping) return;
-      showMessages();
-      addMessage(text, 'user');
-      textarea.value = '';
-      textarea.style.height = 'auto';
-      sendBtn.disabled = true;
-      isTyping = true;
+      showMessages(); addMessage(text, 'user');
+      textarea.value = ''; textarea.style.height = 'auto'; sendBtn.disabled = true; isTyping = true;
       addTyping();
       const respuesta = await obtenerRespuesta(text);
-      const typingRow = document.getElementById('typing-row');
-      if (typingRow) typingRow.remove();
+      const typingRow = document.getElementById('typing-row'); if (typingRow) typingRow.remove();
       addMessage(respuesta, 'assistant');
-      isTyping = false;
-      sendBtn.disabled = (textarea.value.trim() === '');
+      isTyping = false; sendBtn.disabled = (textarea.value.trim() === '');
     }
-
     function useSuggestion(btn) {
       const text = btn.textContent.replace(btn.querySelector('strong').textContent, '').trim();
       sendMessage(text);
     }
-
     function newChat() {
-      messagesEl.innerHTML = '';
-      messagesEl.style.display = 'none';
-      emptyState.style.display = 'flex';
-      textarea.value = '';
-      sendBtn.disabled = true;
-      isTyping = false;
-      if (privacyMode) clearPrivateData();
-      else conversationContext = [];
+      messagesEl.innerHTML = ''; messagesEl.style.display = 'none'; emptyState.style.display = 'flex';
+      textarea.value = ''; sendBtn.disabled = true; isTyping = false;
+      if (privacyMode) clearPrivateData(); else conversationContext = [];
       if (window.innerWidth < 769) toggleSidebar();
     }
 
     // Feedback
-    const DEVELOPER_EMAIL = 'supportaos5@gmail.com';
-    function openFeedback() {
-      document.getElementById('feedback-modal').style.display = 'flex';
-      document.getElementById('feedback-text').focus();
-    }
-    function closeFeedback() {
-      document.getElementById('feedback-modal').style.display = 'none';
-      document.getElementById('feedback-text').value = '';
-    }
+    function openFeedback() { document.getElementById('feedback-modal').style.display = 'flex'; document.getElementById('feedback-text').focus(); }
+    function closeFeedback() { document.getElementById('feedback-modal').style.display = 'none'; document.getElementById('feedback-text').value = ''; }
     function enviarFeedback() {
       const mensaje = document.getElementById('feedback-text').value.trim();
-      if (!mensaje) {
-        alert('Escribe un mensaje antes de enviar.');
-        return;
-      }
-      const asunto = 'Feedback AOS-0.1';
-      const cuerpo = `Hola,\n\nQuiero comentar lo siguiente sobre AOS-0.1:\n\n${mensaje}\n\nSaludos.`;
-      window.open(`mailto:${DEVELOPER_EMAIL}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`);
+      if (!mensaje) { alert('Escribe un mensaje'); return; }
+      window.open(`mailto:supportaos5@gmail.com?subject=Feedback AOS-0.1&body=${encodeURIComponent(mensaje)}`);
       closeFeedback();
     }
 
-    // ========== EXPONER FUNCIONES GLOBALES ==========
+    // Procesamiento de código
+    function processCodeBlocks(text) {
+      const regex = /```(\w*)\n([\s\S]*?)```/g; let result = text, match;
+      while ((match = regex.exec(text)) !== null) {
+        const code = match[2]; const isHTML = match[1] === 'html' || code.includes('<!DOCTYPE html>') || code.includes('<html');
+        const blockId = 'code-' + Math.random().toString(36).substr(2,8);
+        const escaped = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const toolbar = `<div class="code-toolbar"><button class="code-btn" onclick="copyCode('${blockId}')"><i class="ti ti-copy"></i> Copiar</button><button class="code-btn" onclick="downloadCode('${blockId}','archivo${isHTML?'.html':'.txt'}')"><i class="ti ti-download"></i> Descargar</button>${isHTML ? `<button class="code-btn run" onclick="runCode('${blockId}')"><i class="ti ti-player-play"></i> Ejecutar</button>` : ''}</div>`;
+        result = result.replace(match[0], `<div class="code-container" id="${blockId}"><pre><code>${escaped}</code></pre>${toolbar}</div>`);
+      }
+      return result;
+    }
+    window.copyCode = (id) => { const code = document.getElementById(id).querySelector('code').textContent; navigator.clipboard.writeText(code).then(() => alert('¡Copiado!')); };
+    window.downloadCode = (id, filename) => { const code = document.getElementById(id).querySelector('code').textContent; const blob = new Blob([code],{type:'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); };
+    window.runCode = (id) => { const code = document.getElementById(id).querySelector('code').textContent; const modal = document.getElementById('run-modal'); document.getElementById('run-frame').srcdoc = code; modal.classList.add('open'); };
+    window.closeRunModal = () => { document.getElementById('run-modal').classList.remove('open'); document.getElementById('run-frame').srcdoc = ''; };
+
+    // Exponer globales
     window.iniciarChat = iniciarChat;
     window.toggleSidebar = toggleSidebar;
     window.cambiarTema = cambiarTema;
@@ -796,71 +669,68 @@
     window.toggleTTS = toggleTTS;
     window.togglePrivacy = togglePrivacy;
 
-    // Restaurar nombre guardado
-    const savedName = localStorage.getItem('atlas_username');
-    if (savedName) {
-      nameInput.value = savedName;
-      nameSection.style.display = 'block';
-      checkStartButton();
-    }
-
+    // Inicialización de eventos
     textarea.addEventListener('input', () => {
       sendBtn.disabled = textarea.value.trim() === '' || isTyping;
-      textarea.style.height = 'auto';
-      textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+      textarea.style.height = 'auto'; textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
     });
-    textarea.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) sendMessage(); }
-    });
+    textarea.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) sendMessage(); } });
 
-    // Reconocimiento de imágenes
+    // Imagen
     const imageInput = document.getElementById('imageInput');
-    imageInput.addEventListener('change', async function () {
-      const file = this.files[0];
-      if (!file) return;
+    imageInput.addEventListener('change', async function() {
+      const file = this.files[0]; if (!file) return;
       const reader = new FileReader();
-      reader.onload = async function (e) {
-        const imageUrl = e.target.result;
-        showMessages();
-        addImageMessage(imageUrl, 'user');
-        if (!mobilenetModel) {
-          const msg = { en: "Model still loading ⏳", es: "Modelo cargando ⏳", es_AR: "Modelo cargando ⏳" };
-          addMessage(msg[currentLang] || msg.es, 'assistant');
-          return;
-        }
-        const imgElement = document.createElement('img');
-        imgElement.src = imageUrl;
-        imgElement.onload = async function () {
+      reader.onload = async (e) => {
+        const url = e.target.result; showMessages(); addImageMessage(url, 'user');
+        if (!mobilenetModel) { addMessage('Modelo cargando...', 'assistant'); return; }
+        const img = new Image(); img.src = url;
+        img.onload = async () => {
           try {
-            const predictions = await mobilenetModel.classify(imgElement);
-            if (predictions.length === 0) { addMessage('No reconocí nada 🧐', 'assistant'); return; }
-            const top = predictions[0];
-            const className = top.className.toLowerCase();
-            const confianza = Math.round(top.probability * 100);
+            const predictions = await mobilenetModel.classify(img);
+            if (!predictions.length) { addMessage('No reconocí nada 🧐', 'assistant'); return; }
+            const top = predictions[0]; const className = top.className.toLowerCase(); const confianza = Math.round(top.probability * 100);
             let explicacion = '';
-            if (className.includes('cat') || className.includes('gato') || className.includes('felino')) explicacion = random(getExplicacion('gato'));
-            else if (className.includes('dog') || className.includes('perro') || className.includes('canino') || className.includes('puppy')) explicacion = random(getExplicacion('perro'));
-            else if (className.includes('plant') || className.includes('flor') || className.includes('tree') || className.includes('leaf') || className.includes('vegetal')) explicacion = random(getExplicacion('planta'));
-            else if (className.includes('person') || className.includes('human') || className.includes('man') || className.includes('woman') || className.includes('face')) explicacion = random(getExplicacion('humano'));
-            else { const msg = { en: "Not recognized 🚫", es: "No reconocido 🚫", es_AR: "No reconocido 🚫" }; explicacion = msg[currentLang] || msg.es; }
-            if (explicacion.startsWith('🐱') || explicacion.startsWith('🐶') || explicacion.startsWith('🌿') || explicacion.startsWith('🧑')) {
-              const emojiEnd = explicacion.indexOf('**', 3) + 2;
-              explicacion = `${explicacion.slice(0, emojiEnd)} (${confianza}% certeza) ${explicacion.slice(emojiEnd)}`;
-            }
-            addMessage(explicacion, 'assistant');
-            updateContext('imagen', explicacion);
-          } catch (err) { addMessage('Error al analizar 😥', 'assistant'); }
+            if (className.includes('cat') || className.includes('gato')) explicacion = random(explicacionesGato[currentLang] || explicacionesGato.es);
+            else if (className.includes('dog') || className.includes('perro')) explicacion = random(explicacionesPerro[currentLang] || explicacionesPerro.es);
+            else if (className.includes('plant') || className.includes('flor')) explicacion = random(explicacionesPlanta[currentLang] || explicacionesPlanta.es);
+            else if (className.includes('person') || className.includes('human')) explicacion = random(explicacionesHumano[currentLang] || explicacionesHumano.es);
+            else explicacion = 'No reconocido 🚫';
+            addMessage(`${explicacion} (${confianza}% certeza)`, 'assistant');
+          } catch { addMessage('Error al analizar 😥', 'assistant'); }
         };
       };
-      reader.readAsDataURL(file);
-      this.value = '';
+      reader.readAsDataURL(file); this.value = '';
     });
 
+    // Respuestas predefinidas (simplificadas)
+    const respuestas = {
+      es: [
+        { claves: ["hola","buenas","hey","saludos"], respuestas: ["¡Hola! 👋 ¿En qué te puedo ayudar?"] }
+      ],
+      en: [
+        { claves: ["hello","hi","hey"], respuestas: ["Hello! 👋 How can I help you?"] }
+      ],
+      es_AR: [
+        { claves: ["hola","buenas","hey"], respuestas: ["¡Hola, che! 👋 ¿En qué te puedo ayudar?"] }
+      ]
+    };
+    const fallbacks = {
+      es: ["No entendí bien eso 🤔"],
+      en: ["I didn't quite get that 🤔"],
+      es_AR: ["No te entendí, che 🤔"]
+    };
+    const explicacionesGato = { es: ["🐱 Gato"], en: ["🐱 Cat"], es_AR: ["🐱 Gato"] };
+    const explicacionesPerro = { es: ["🐶 Perro"], en: ["🐶 Dog"], es_AR: ["🐶 Perro"] };
+    const explicacionesPlanta = { es: ["🌿 Planta"], en: ["🌿 Plant"], es_AR: ["🌿 Planta"] };
+    const explicacionesHumano = { es: ["🧑 Humano"], en: ["🧑 Human"], es_AR: ["🧑 Humano"] };
+
+    // Restaurar nombre
+    const savedName = localStorage.getItem('atlas_username');
+    if (savedName) { nameInput.value = savedName; nameSection.style.display = 'block'; checkStartButton(); }
+
     window.addEventListener('resize', () => {
-      if (window.innerWidth >= 769) {
-        sidebar.classList.remove('open');
-        sidebarBackdrop.classList.remove('show');
-      }
+      if (window.innerWidth >= 769) { sidebar.classList.remove('open'); sidebarBackdrop.classList.remove('show'); }
     });
   })();
 </script>
