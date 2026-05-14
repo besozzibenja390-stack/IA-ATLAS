@@ -68,24 +68,19 @@
       overflow-x: hidden;
     }
     /* Landing */
-    #landing {
-      text-align: center; max-width: 500px; padding: 30px 20px; color: #e0e0e0; width: 100%;
-    }
+    #landing { text-align: center; max-width: 500px; padding: 30px 20px; color: #e0e0e0; width: 100%; }
     #landing .flag { font-size: 80px; margin-bottom: 20px; display: inline-block; animation: gentleSwing 3s ease-in-out infinite; }
     #landing h1 { font-size: 32px; margin-bottom: 10px; font-weight: 600; }
     #landing .desc { font-size: 16px; line-height: 1.6; margin: 20px 0; color: #b0b0b0; }
     .lang-selector { display: flex; flex-direction: column; gap: 12px; margin: 30px 0 20px; }
-    .lang-btn {
-      background: #252525; border: 1px solid #2e2e2e; border-radius: 12px;
-      padding: 12px 20px; font-size: 16px; color: #d4d4d4; cursor: pointer; transition: all 0.2s; text-align: left;
-    }
+    .lang-btn { background: #252525; border: 1px solid #2e2e2e; border-radius: 12px; padding: 12px 20px; font-size: 16px; color: #d4d4d4; cursor: pointer; transition: all 0.2s; text-align: left; }
     .lang-btn:hover { background: #333; border-color: #444; }
     .lang-btn.selected { background: #2a3a5e; border-color: #3a4f7a; color: #a8c4ff; box-shadow: 0 0 8px rgba(58,79,122,0.5); }
-    #startBtn {
-      background: #2a3a5e; border: none; color: white; padding: 14px 40px;
-      font-size: 18px; border-radius: 14px; cursor: pointer; transition: background 0.2s;
-      margin-top: 10px; width: 100%; font-weight: 600;
-    }
+    #name-section { margin-top: 20px; text-align: left; }
+    #name-section label { display: block; margin-bottom: 6px; color: #b0b0b0; font-size: 14px; }
+    #name-input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #2e2e2e; background: #252525; color: #e0e0e0; font-size: 16px; outline: none; }
+    #name-input:focus { border-color: #a8c4ff; }
+    #startBtn { background: #2a3a5e; border: none; color: white; padding: 14px 40px; font-size: 18px; border-radius: 14px; cursor: pointer; transition: background 0.2s; margin-top: 20px; width: 100%; font-weight: 600; }
     #startBtn:hover { background: #3a4f7a; }
     #startBtn:disabled { opacity: 0.4; cursor: default; background: #252525; color: #666; border: 1px solid #2e2e2e; }
     @media (max-width: 600px) {
@@ -93,26 +88,14 @@
       .lang-btn { padding: 10px 16px; font-size: 15px; }
     }
     /* App */
-    #app {
-      display: none; width: 100%; height: 100vh; max-width: 100%;
-      background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary);
-      border-radius: 0; overflow: hidden; position: relative;
-    }
+    #app { display: none; width: 100%; height: 100vh; max-width: 100%; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 0; overflow: hidden; position: relative; }
     @media (min-width: 769px) {
       #app { width: 95vw; height: 90vh; max-width: 1200px; border-radius: var(--border-radius-lg); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
       body { align-items: center; }
     }
     /* Sidebar */
-    #sidebar {
-      width: var(--sidebar-width); min-width: var(--sidebar-width);
-      background: var(--color-background-tertiary); display: flex; flex-direction: column;
-      border-right: 0.5px solid var(--color-border-tertiary); position: absolute;
-      top: 0; left: 0; bottom: 0; z-index: 100; transition: transform 0.3s ease;
-      transform: translateX(-100%);
-    }
-    @media (min-width: 769px) {
-      #sidebar { position: relative; transform: none; }
-    }
+    #sidebar { width: var(--sidebar-width); min-width: var(--sidebar-width); background: var(--color-background-tertiary); display: flex; flex-direction: column; border-right: 0.5px solid var(--color-border-tertiary); position: absolute; top: 0; left: 0; bottom: 0; z-index: 100; transition: transform 0.3s ease; transform: translateX(-100%); }
+    @media (min-width: 769px) { #sidebar { position: relative; transform: none; } }
     #sidebar.open { transform: translateX(0); }
     #sidebar-backdrop { display: none; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); z-index:99; }
     #sidebar-backdrop.show { display: block; }
@@ -152,7 +135,10 @@
     .bubble { padding: 8px 12px; border-radius: 16px; font-size: 14px; line-height: 1.5; color: var(--color-text-primary); word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap; }
     .msg-row.user .bubble { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 16px 16px 4px 16px; margin-right: 4px; }
     .msg-row.assistant .bubble { background: none; padding: 2px 0; border-radius: 0; border: none; }
-    /* Code block styling */
+    /* Toggle de voz y privacidad */
+    .toggle-btn { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .toggle-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-text-info); }
+    /* Code block */
     .code-container { background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); border-radius: 12px; padding: 12px; margin: 8px 0; position: relative; }
     .code-container pre { margin: 0; padding: 0; overflow-x: auto; font-size: 13px; font-family: 'Fira Code', monospace; color: var(--color-text-primary); white-space: pre-wrap; word-break: break-word; }
     .code-toolbar { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
@@ -160,14 +146,12 @@
     .code-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
     .code-btn.run { background: #2a3a5e; color: #a8c4ff; border-color: #3a4f7a; }
     .code-btn.run:hover { background: #3a4f7a; }
-    /* Run modal */
     #run-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
     #run-modal.open { display: flex; }
     #run-modal-content { background: var(--color-background-primary); border-radius: 16px; width: 100%; max-width: 900px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
     #run-modal-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border-tertiary); }
     #run-modal-header span { font-weight: 600; }
     #run-frame { flex: 1; width: 100%; border: none; }
-    /* Empty state */
     #empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 40px 16px; }
     #empty-state h2 { font-size: 20px; font-weight: 500; color: var(--color-text-primary); text-align: center; }
     .suggestions { display: grid; grid-template-columns: 1fr; gap: 8px; width: 100%; max-width: 480px; }
@@ -175,7 +159,6 @@
     .suggestion-card { padding: 12px 14px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; font-size: 13px; color: var(--color-text-secondary); transition: all 0.15s; background: none; text-align: left; line-height: 1.4; }
     .suggestion-card:hover { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-secondary); }
     .suggestion-card strong { display: block; color: var(--color-text-primary); font-weight: 500; margin-bottom: 2px; font-size: 13px; }
-    /* Input */
     #input-area { padding: 8px 8px 12px; } @media (min-width: 769px) { #input-area { padding: 12px 16px 16px; } }
     #input-box { border: 0.5px solid var(--color-border-secondary); border-radius: 16px; background: var(--color-background-secondary); display: flex; flex-direction: column; gap: 0; overflow: hidden; transition: border-color 0.15s; }
     #input-box:focus-within { border-color: var(--color-border-primary); }
@@ -188,7 +171,7 @@
     .input-tool-btn:hover { color: var(--color-text-secondary); background: var(--color-background-primary); }
     .input-tool-btn i { font-size: 16px; }
     #mic-btn.recording { color: #ff3b30; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
     #send-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--color-text-primary); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.15s, transform 0.1s; }
     #send-btn:hover { opacity: 0.85; } #send-btn:active { transform: scale(0.94); }
     #send-btn i { font-size: 14px; color: var(--color-background-primary); }
@@ -212,6 +195,10 @@
       <button class="lang-btn" data-lang="es">Español (Latino)</button>
       <button class="lang-btn" data-lang="es_AR">Español (Argentina)</button>
     </div>
+    <div id="name-section" style="display:none;">
+      <label for="name-input">¿Cómo te llamás?</label>
+      <input type="text" id="name-input" placeholder="Tu nombre o apodo..." maxlength="30" />
+    </div>
     <button id="startBtn" disabled onclick="iniciarChat()">Comenzar</button>
   </div>
 
@@ -221,7 +208,17 @@
       <div id="sidebar-header"><div class="logo"><i class="ti ti-message-chatbot"></i> AOS-0.1</div><button class="icon-btn" onclick="toggleSidebar()"><i class="ti ti-x"></i></button></div>
       <button class="new-chat-btn" onclick="newChat()"><i class="ti ti-plus"></i> Nueva conversación</button>
       <div class="sidebar-section">Conversaciones</div><div id="chat-list"></div>
-      <div class="sidebar-footer"><div class="user-row"><div class="avatar">U</div><div class="user-name">Usuario</div><button class="icon-btn" style="margin-left:auto" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-palette"></i></button></div></div>
+      <div class="sidebar-footer">
+        <div class="user-row">
+          <div class="avatar">U</div>
+          <div class="user-name" id="sidebar-username">Usuario</div>
+          <button class="icon-btn" style="margin-left:auto" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-palette"></i></button>
+        </div>
+        <div style="display:flex; gap:6px; margin-top:8px;">
+          <button class="toggle-btn" id="tts-toggle" onclick="toggleTTS()" title="Activar voz del asistente">🔊 Voz</button>
+          <button class="toggle-btn" id="privacy-toggle" onclick="togglePrivacy()" title="Modo privado (sin historial)">🕶️ Privado</button>
+        </div>
+      </div>
     </div>
     <div id="main">
       <div id="topbar">
@@ -285,7 +282,10 @@
     let currentTheme = 'dark';
     let recognition = null;
     let isRecording = false;
-    let conversationContext = []; // Memoria de las últimas 5 interacciones
+    let conversationContext = [];
+    let userName = 'Usuario';
+    let ttsEnabled = false;
+    let privacyMode = false;
 
     const textarea = document.getElementById('textarea');
     const sendBtn = document.getElementById('send-btn');
@@ -298,6 +298,11 @@
     const sidebar = document.getElementById('sidebar');
     const sidebarBackdrop = document.getElementById('sidebar-backdrop');
     const micBtn = document.getElementById('mic-btn');
+    const nameSection = document.getElementById('name-section');
+    const nameInput = document.getElementById('name-input');
+    const sidebarUsername = document.getElementById('sidebar-username');
+    const ttsToggle = document.getElementById('tts-toggle');
+    const privacyToggle = document.getElementById('privacy-toggle');
 
     // Carga modelo
     (async function () { mobilenetModel = await mobilenet.load(); console.log("Modelo listo 🖼️"); })();
@@ -311,15 +316,32 @@
         langButtons.forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         currentLang = btn.dataset.lang;
-        startBtn.disabled = false;
+        nameSection.style.display = 'block';
+        nameInput.focus();
+        checkStartButton();
       });
     });
 
+    function checkStartButton() {
+      const name = nameInput.value.trim();
+      startBtn.disabled = !name;
+    }
+
+    nameInput.addEventListener('input', checkStartButton);
+
     function iniciarChat() {
+      userName = nameInput.value.trim() || 'Usuario';
+      localStorage.setItem('atlas_username', userName);
+      sidebarUsername.textContent = userName;
       landing.style.display = 'none';
       app.style.display = 'flex';
       app.style.animation = 'fadeIn 0.6s ease';
       sidebar.classList.remove('open'); sidebarBackdrop.classList.remove('show');
+      ttsEnabled = localStorage.getItem('atlas_tts') === 'true';
+      privacyMode = localStorage.getItem('atlas_privacy') === 'true';
+      updateTTSButton();
+      updatePrivacyButton();
+      if (privacyMode) clearPrivateData();
     }
 
     function cambiarTema() {
@@ -328,17 +350,69 @@
       document.body.className = `theme-${currentTheme}`;
     }
 
+    // ========== TTS (Text-to-Speech) ==========
+    function toggleTTS() {
+      ttsEnabled = !ttsEnabled;
+      localStorage.setItem('atlas_tts', ttsEnabled);
+      updateTTSButton();
+      if (ttsEnabled) {
+        const utterance = new SpeechSynthesisUtterance("Voz activada");
+        utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
+        window.speechSynthesis.speak(utterance);
+      } else {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function updateTTSButton() {
+      ttsToggle.classList.toggle('active', ttsEnabled);
+    }
+
+    function speakText(text) {
+      if (!ttsEnabled) return;
+      // Limpiar markdown, emojis y enlaces para que suene más natural
+      const clean = text
+        .replace(/\*\*/g, '')
+        .replace(/🐱|🐶|🌿|🧑|📚|🔗/g, '')
+        .replace(/\[.*?\]\(.*?\)/g, '')
+        .replace(/https?:\/\/\S+/g, '')
+        .trim();
+      if (!clean) return;
+      const utterance = new SpeechSynthesisUtterance(clean);
+      utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
+      utterance.rate = 1.1;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // ========== PRIVACIDAD ==========
+    function togglePrivacy() {
+      privacyMode = !privacyMode;
+      localStorage.setItem('atlas_privacy', privacyMode);
+      updatePrivacyButton();
+      if (privacyMode) {
+        clearPrivateData();
+      }
+    }
+
+    function updatePrivacyButton() {
+      privacyToggle.classList.toggle('active', privacyMode);
+    }
+
+    function clearPrivateData() {
+      conversationContext = [];
+      messagesEl.innerHTML = '';
+      messagesEl.style.display = 'none';
+      emptyState.style.display = 'flex';
+    }
+
     // ========== RECONOCIMIENTO DE VOZ ==========
     function toggleVoice() {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert('El reconocimiento de voz no está soportado en este navegador. Prueba con Chrome.');
         return;
       }
-      if (isRecording) {
-        stopVoice();
-      } else {
-        startVoice();
-      }
+      if (isRecording) { stopVoice(); } else { startVoice(); }
     }
 
     function startVoice() {
@@ -347,68 +421,40 @@
       recognition.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
       recognition.interimResults = true;
       recognition.continuous = false;
-
-      recognition.onstart = function() {
-        isRecording = true;
-        micBtn.classList.add('recording');
-        textarea.value = '';
-        textarea.focus();
-      };
-
-      recognition.onresult = function(event) {
+      recognition.onstart = () => { isRecording = true; micBtn.classList.add('recording'); textarea.value = ''; textarea.focus(); };
+      recognition.onresult = (event) => {
         let interim = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            interim += event.results[i][0].transcript;
-          } else {
-            interim += event.results[i][0].transcript;
-          }
-        }
+        for (let i = event.resultIndex; i < event.results.length; i++) interim += event.results[i][0].transcript;
         textarea.value = interim;
         textarea.style.height = 'auto';
         textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
       };
-
-      recognition.onerror = function(event) {
-        stopVoice();
+      recognition.onerror = () => stopVoice();
+      recognition.onend = () => {
+        if (isRecording) { stopVoice(); if (textarea.value.trim()) sendMessage(textarea.value.trim()); }
       };
-
-      recognition.onend = function() {
-        if (isRecording) {
-          stopVoice();
-          if (textarea.value.trim()) {
-            sendMessage(textarea.value.trim());
-          }
-        }
-      };
-
       recognition.start();
     }
 
     function stopVoice() {
-      if (recognition) {
-        recognition.stop();
-        recognition = null;
-      }
+      if (recognition) { recognition.stop(); recognition = null; }
       isRecording = false;
       micBtn.classList.remove('recording');
     }
 
     // ========== CONTEXTO CONVERSACIONAL ==========
     function updateContext(userText, assistantText) {
+      if (privacyMode) return;
       conversationContext.push({ user: userText, assistant: assistantText });
-      if (conversationContext.length > 5) conversationContext.shift(); // mantener últimas 5 interacciones
+      if (conversationContext.length > 5) conversationContext.shift();
     }
 
     function getContextualQuery(text) {
       const lower = text.toLowerCase().trim();
       const ambiguousWords = ['eso', 'ese', 'esa', 'lo', 'la', 'esto', 'más', 'explícame', 'cómo', 'y', 'por qué'];
       if (ambiguousWords.some(w => lower.includes(w)) && conversationContext.length > 0) {
-        // Buscar el último tema relevante
         const last = conversationContext[conversationContext.length - 1];
-        const lastUser = last.user;
-        // Intentar extraer tema principal (primeras 4 palabras significativas)
-        const topicWords = lastUser.replace(/[?¿.,]/g, '').split(' ').slice(0, 4).join(' ');
+        const topicWords = last.user.replace(/[?¿.,]/g, '').split(' ').slice(0, 4).join(' ');
         return `${topicWords} ${text}`;
       }
       return text;
@@ -427,7 +473,6 @@
       ]
     };
 
-    // Keywords mapping
     const keywordMap = {
       calculadora: 'calculadora', tareas: 'tareas', juego: 'juego', login: 'login', notas: 'notas',
       'color boton': 'colorBoton', 'botón que cambie de color': 'colorBoton', contador: 'contador',
@@ -519,12 +564,10 @@
       return map[categoria]?.[currentLang] || map[categoria]?.es;
     }
 
-    // Wikipedia con contexto conversacional
+    // Wikipedia con contexto
     async function buscarEnWikipedia(consulta, usarContexto = false) {
       let query = consulta;
-      if (usarContexto) {
-        query = getContextualQuery(consulta);
-      }
+      if (usarContexto) query = getContextualQuery(consulta);
       const searchUrl = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
       try {
         const searchResponse = await fetch(searchUrl);
@@ -544,7 +587,6 @@
 
     async function obtenerRespuesta(texto) {
       const t = texto.toLowerCase().trim();
-      // 1. Saludos y frases predefinidas
       const resp = getRespuestas();
       for (const entrada of resp) {
         if (entrada.claves.some(c => t.includes(c))) {
@@ -553,13 +595,8 @@
           return respuesta;
         }
       }
-      // 2. Conocimiento preprogramado
       const codeAnswer = obtenerDeConocimiento(t);
-      if (codeAnswer) {
-        updateContext(texto, codeAnswer);
-        return codeAnswer;
-      }
-      // 3. Wikipedia con posible contexto
+      if (codeAnswer) { updateContext(texto, codeAnswer); return codeAnswer; }
       const resultado = await buscarEnWikipedia(texto, true);
       if (resultado) {
         const oraciones = resultado.extract.split('. ');
@@ -569,7 +606,6 @@
         updateContext(texto, respuesta);
         return respuesta;
       }
-      // 4. Fallback
       const fallback = random(getFallbacks());
       updateContext(texto, fallback);
       return fallback;
@@ -641,6 +677,8 @@
       } else {
         const processed = processCodeBlocks(text);
         row.innerHTML = `<div class="msg-content"><div class="assistant-icon"><i class="ti ti-robot"></i></div><div><div class="bubble">${processed}</div></div></div>`;
+        // Voz sintética: hablar el texto (sin código ni enlaces)
+        speakText(text);
       }
       messagesEl.appendChild(row);
       messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -693,13 +731,13 @@
       textarea.value = '';
       sendBtn.disabled = true;
       isTyping = false;
-      conversationContext = []; // limpiar contexto al empezar nueva conversación
+      if (privacyMode) clearPrivateData();
+      else conversationContext = [];
       if (window.innerWidth < 769) toggleSidebar();
     }
 
     // Feedback
     const DEVELOPER_EMAIL = 'supportaos5@gmail.com';
-
     function openFeedback() {
       document.getElementById('feedback-modal').style.display = 'flex';
       document.getElementById('feedback-text').focus();
@@ -730,7 +768,17 @@
     window.openFeedback = openFeedback;
     window.closeFeedback = closeFeedback;
     window.enviarFeedback = enviarFeedback;
-    window.toggleVoice = toggleVoice;  // <-- ¡Agregada!
+    window.toggleVoice = toggleVoice;
+    window.toggleTTS = toggleTTS;
+    window.togglePrivacy = togglePrivacy;
+
+    // Restaurar nombre guardado
+    const savedName = localStorage.getItem('atlas_username');
+    if (savedName) {
+      nameInput.value = savedName;
+      nameSection.style.display = 'block';
+      checkStartButton();
+    }
 
     textarea.addEventListener('input', () => {
       sendBtn.disabled = textarea.value.trim() === '' || isTyping;
