@@ -350,15 +350,30 @@
       document.body.className = `theme-${currentTheme}`;
     }
 
-    // ========== TTS (Text-to-Speech) ==========
+    // ========== TTS (Text-to-Speech) MEJORADO ==========
     function toggleTTS() {
       ttsEnabled = !ttsEnabled;
       localStorage.setItem('atlas_tts', ttsEnabled);
       updateTTSButton();
       if (ttsEnabled) {
-        const utterance = new SpeechSynthesisUtterance("Voz activada");
-        utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
-        window.speechSynthesis.speak(utterance);
+        // Mensaje de prueba con un pequeño delay
+        setTimeout(() => {
+          const utterance = new SpeechSynthesisUtterance("Voz activada");
+          utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
+          utterance.volume = 1;
+          utterance.rate = 1.1;
+          // Truco para Android: reproducir un audio mudo antes para desbloquear el altavoz multimedia
+          if (/Android/i.test(navigator.userAgent)) {
+            const dummy = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+            dummy.play().then(() => {
+              window.speechSynthesis.speak(utterance);
+            }).catch(() => {
+              window.speechSynthesis.speak(utterance);
+            });
+          } else {
+            window.speechSynthesis.speak(utterance);
+          }
+        }, 150);
       } else {
         window.speechSynthesis.cancel();
       }
@@ -376,13 +391,20 @@
         .replace(/🐱|🐶|🌿|🧑|📚|🔗/g, '')
         .replace(/\[.*?\]\(.*?\)/g, '')
         .replace(/https?:\/\/\S+/g, '')
+        .replace(/```[\s\S]*?```/g, '')
         .trim();
       if (!clean) return;
-      const utterance = new SpeechSynthesisUtterance(clean);
-      utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
-      utterance.rate = 1.1;
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utterance);
+
+      // Usamos un pequeño timeout para asegurar que el evento de clic haya terminado
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance(clean);
+        utterance.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
+        utterance.volume = 1;
+        utterance.rate = 1.1;
+        // Cancelar cualquier habla anterior para evitar solapamientos
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      }, 100);
     }
 
     // ========== PRIVACIDAD ==========
@@ -677,8 +699,8 @@
       } else {
         const processed = processCodeBlocks(text);
         row.innerHTML = `<div class="msg-content"><div class="assistant-icon"><i class="ti ti-robot"></i></div><div><div class="bubble">${processed}</div></div></div>`;
-        // Voz sintética: hablar el texto (sin código ni enlaces)
-        speakText(text);
+        // Disparar TTS después de un pequeño delay (importante en móviles)
+        setTimeout(() => speakText(text), 200);
       }
       messagesEl.appendChild(row);
       messagesEl.scrollTop = messagesEl.scrollHeight;
