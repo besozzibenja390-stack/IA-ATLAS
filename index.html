@@ -315,7 +315,7 @@
     </div>
   </div>
 
-  <!-- Modales (ejecutar código y feedback) -->
+  <!-- Modales -->
   <div id="run-modal"><div id="run-modal-content"><div id="run-modal-header"><span>Ejecutando código</span><button class="icon-btn" onclick="closeRunModal()"><i class="ti ti-x"></i></button></div><iframe id="run-frame" sandbox="allow-scripts allow-same-origin"></iframe></div></div>
 
   <div id="feedback-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; align-items:center; justify-content:center; padding:20px;" onclick="if(event.target===this)closeFeedback()">
@@ -332,7 +332,7 @@
 
 <script>
   (function() {
-    // Variables globales
+    // ========== VARIABLES GLOBALES ==========
     let currentLang = 'es';
     let mobilenetModel = null;
     let isTyping = false;
@@ -471,39 +471,57 @@
     }
     function stopVoice() { if(recognition){ recognition.stop(); recognition=null; } isRecording=false; micBtn.classList.remove('recording'); }
 
-    // Emociones
+    // ========== EMOCIONES (mejoradas) ==========
     const emociones = {
-      feliz: { en: ["happy","glad","joyful"], es: ["feliz","contento","alegre"], es_AR: ["feliz","contento","alegre","joya"] },
-      triste: { en: ["sad","unhappy","depressed"], es: ["triste","deprimido","bajón"], es_AR: ["triste","deprimido","bajón","hecho mierda"] },
-      enojado: { en: ["angry","mad","furious"], es: ["enojado","furioso","caliente"], es_AR: ["enojado","caliente","bronca","re caliente"] },
-      miedo: { en: ["scared","afraid","fear"], es: ["miedo","asustado","aterrado"], es_AR: ["miedo","cagaso","asustado","re cagado"] },
-      sorpresa: { en: ["surprised","shocked","amazed"], es: ["sorprendido","sorprendente","impactado"], es_AR: ["sorprendido","impactado","no lo puedo creer"] }
+      feliz: { en: ["happy","glad","joyful","i'm happy"], es: ["feliz","contento","alegre","estoy feliz","ando feliz"], es_AR: ["feliz","contento","alegre","joya","ando feliz","re feliz"] },
+      triste: { en: ["sad","unhappy","depressed","i'm sad"], es: ["triste","deprimido","bajón","estoy triste"], es_AR: ["triste","deprimido","bajón","hecho mierda","ando bajón"] },
+      enojado: { en: ["angry","mad","furious","i'm angry"], es: ["enojado","furioso","caliente","estoy enojado"], es_AR: ["enojado","caliente","bronca","re caliente","ando caliente"] },
+      miedo: { en: ["scared","afraid","fear","i'm scared"], es: ["miedo","asustado","aterrado","tengo miedo"], es_AR: ["miedo","cagaso","asustado","re cagado","tengo cagaso"] },
+      sorpresa: { en: ["surprised","shocked","amazed","i'm surprised"], es: ["sorprendido","sorprendente","impactado","estoy sorprendido"], es_AR: ["sorprendido","impactado","no lo puedo creer","estoy re sorprendido"] },
+      cansado: { en: ["tired","exhausted","i'm tired"], es: ["cansado","agotado","estoy cansado"], es_AR: ["cansado","agotado","re cansado","estoy muerto"] },
+      aburrido: { en: ["bored","i'm bored"], es: ["aburrido","estoy aburrido"], es_AR: ["aburrido","me embolo","estoy al pedo"] },
+      enamorado: { en: ["in love","i'm in love"], es: ["enamorado","estoy enamorado"], es_AR: ["enamorado","estoy enamorado","me enamoré"] }
     };
     const respEmocion = {
       feliz: {
-        en: ["That's great! 😊","So glad to hear that!"],
-        es: ["¡Qué bueno! 😊","¡Me alegra mucho!"],
-        es_AR: ["¡Qué bien, che! 😊","¡Joyita!"]
+        en: ["That's great! 😊 So glad to hear that!","Awesome! Keep that smile!"],
+        es: ["¡Qué bueno! 😊 Me alegra mucho.","¡Genial! Seguí así."],
+        es_AR: ["¡Qué bien, che! 😊 Me re alegra.","¡Joyita! Seguí con esa buena onda."]
       },
       triste: {
-        en: ["I'm sorry you feel this way. Want to talk?"],
-        es: ["Lamento que te sientas así. ¿Querés hablar?"],
-        es_AR: ["Uh, qué bajón. ¿Querés hablar?"]
+        en: ["I'm sorry you feel this way. Want to talk about it?","Sometimes things get tough... but you're not alone."],
+        es: ["Lamento que te sientas así. ¿Querés hablar de eso?","A veces todo cuesta, pero no estás solo/a."],
+        es_AR: ["Uh, qué bajón, che. ¿Querés hablar?","A veces la vida pega duro, pero acá estoy."]
       },
       enojado: {
-        en: ["I understand your frustration. Want to vent?"],
-        es: ["Entiendo tu bronca. ¿Querés desahogarte?"],
-        es_AR: ["Te entiendo, la bronca es grande. ¿Querés putear un rato?"]
+        en: ["I understand your frustration. Want to vent?","Breathe... sometimes letting it out helps."],
+        es: ["Entiendo tu bronca. ¿Querés desahogarte?","Respirá... a veces putear ayuda."],
+        es_AR: ["Te entiendo, la bronca es grande. ¿Querés putear un rato?","Tranqui, contame qué pasó."]
       },
       miedo: {
-        en: ["Fear is normal. What worries you?"],
-        es: ["El miedo es normal. ¿Qué te preocupa?"],
-        es_AR: ["El cagaso es normal. ¿Qué te preocupa?"]
+        en: ["Fear is normal. What worries you?","You're braver than you think."],
+        es: ["El miedo es normal. ¿Qué te preocupa?","Sos más valiente de lo que creés."],
+        es_AR: ["El cagaso es normal, che. ¿Qué te preocupa?","No te hagas drama, todo tiene solución."]
       },
       sorpresa: {
-        en: ["What a surprise! Tell me more."],
-        es: ["¡Qué sorpresa! Contame más."],
-        es_AR: ["¡Qué sorpresa, che! Contame más."]
+        en: ["What a surprise! Tell me more.","Unexpected, right? Life is full of surprises!"],
+        es: ["¡Qué sorpresa! Contame más.","Inesperado, ¿no? La vida te sorprende."],
+        es_AR: ["¡Qué sorpresa, che! Contame más.","No lo puedo creer, ¡qué locura!"]
+      },
+      cansado: {
+        en: ["Rest up! You deserve a break.","Sometimes the best thing is to stop and breathe."],
+        es: ["¡Descansá! Te lo merecés.","A veces lo mejor es parar y respirar."],
+        es_AR: ["Tiráte a descansar, te lo re merecés.","Tomate un respiro, che. Todo pasa."]
+      },
+      aburrido: {
+        en: ["Boredom can be a good time to be creative! Want to play something?","I can tell you a joke or a fun fact."],
+        es: ["El aburrimiento es oportunidad para crear. ¿Querés que te cuente algo?","Tengo chistes, datos curiosos... ¿qué preferís?"],
+        es_AR: ["Estar al pedo es una chance para hacer algo piola. ¿Querés un juego?","Te tiro un dato curioso o un chiste, ¿qué preferís?"]
+      },
+      enamorado: {
+        en: ["Love is beautiful! Tell me more about that person.","That's wonderful! How did you meet?"],
+        es: ["El amor es hermoso. ¡Contame más de esa persona!","Qué lindo, ¿cómo se conocieron?"],
+        es_AR: ["¡Qué lindo, che! Contame más de esa persona.","El amor es lo más, ¿cómo se conocieron?"]
       }
     };
     function detectarEmocion(texto) {
@@ -517,7 +535,7 @@
       return null;
     }
 
-    // Conocimiento
+    // ========== CONOCIMIENTO ==========
     const codeKnowledge = {
       calculadora: [`\`\`\`html\n<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Calculadora</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}.calc{background:#16213e;border-radius:20px;padding:20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.display{background:#0f3460;border-radius:12px;padding:20px;text-align:right;margin-bottom:15px}.expr{color:#aaa;font-size:.85rem;min-height:20px}.result{color:#e94560;font-size:2rem;font-weight:700;word-break:break-all}.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}button{padding:18px;border:none;border-radius:12px;font-size:1rem;cursor:pointer;transition:transform .1s;font-weight:600}button:active{transform:scale(.92)}.n{background:#1a1a2e;color:#fff}.o{background:#e94560;color:#fff}.e{background:#0f3460;color:#e94560;grid-column:span 2}.c{background:#533483;color:#fff}.z{grid-column:span 2}</style></head><body><div class="calc"><div class="display"><div class="expr" id="expr"></div><div class="result" id="res">0</div></div><div class="buttons"><button class="c" onclick="limpiar()">C</button><button class="c" onclick="borrar()">⌫</button><button class="c" onclick="agregar('%')">%</button><button class="o" onclick="agregar('/')">÷</button><button class="n" onclick="agregar('7')">7</button><button class="n" onclick="agregar('8')">8</button><button class="n" onclick="agregar('9')">9</button><button class="o" onclick="agregar('*')">×</button><button class="n" onclick="agregar('4')">4</button><button class="n" onclick="agregar('5')">5</button><button class="n" onclick="agregar('6')">6</button><button class="o" onclick="agregar('-')">−</button><button class="n" onclick="agregar('1')">1</button><button class="n" onclick="agregar('2')">2</button><button class="n" onclick="agregar('3')">3</button><button class="o" onclick="agregar('+')">+</button><button class="n z" onclick="agregar('0')">0</button><button class="n" onclick="agregar('.')">.</button><button class="e" onclick="calcular()">=</button></div></div><script>let expr='';function agregar(v){expr+=v;document.getElementById('res').textContent=expr}function limpiar(){expr='';document.getElementById('res').textContent='0';document.getElementById('expr').textContent=''}function borrar(){expr=expr.slice(0,-1);document.getElementById('res').textContent=expr||'0'}function calcular(){try{document.getElementById('expr').textContent=expr+' =';let r=Function('"use strict";return('+expr+')')();document.getElementById('res').textContent=parseFloat(r.toFixed(10));expr=String(r)}catch(e){document.getElementById('res').textContent='Error';expr=''}}<\/script></body></html>\n\`\`\``]
     };
@@ -526,6 +544,70 @@
     function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     function getRespuestas() { return respuestas[currentLang] || respuestas.es; }
     function getFallbacks() { return fallbacks[currentLang] || fallbacks.es; }
+
+    // ========== RESPUESTAS CONVERSACIONALES (mejoradas) ==========
+    const respuestas = {
+      en: [
+        { claves: ["hello","hi","hey","good morning","good afternoon","good evening"], respuestas: ["Hello! 👋 How can I help you?","Hey! 😊 What do you need?","Good day! How can I assist you?"] },
+        { claves: ["how are you","how's it going","what's up","how you doing"], respuestas: ["I'm great, thanks! 😄 And you?","Doing well! Ready to help. What about you?"] },
+        { claves: ["name","what's your name","who are you"], respuestas: ["I'm AOS-0.1, your virtual assistant. Created by a single developer who loves Argentina 🇦🇷"] },
+        { claves: ["thanks","thank you","thx"], respuestas: ["You're welcome! 😊","No problem! Always here to help.","It was a pleasure!"] },
+        { claves: ["bye","goodbye","see you","adios"], respuestas: ["See you later! 👋","Bye! Come back whenever you want.","Goodbye! Take care."] },
+        { claves: ["help","what can you do"], respuestas: ["I can chat, recognize images, search Wikipedia, write code, teach math, and even talk! Just ask me."] }
+      ],
+      es: [
+        { claves: ["hola","buenas","hey","saludos","buenos días","buenas tardes","buenas noches"], respuestas: ["¡Hola! 👋 ¿En qué te puedo ayudar?","¡Buenas! ¿Qué necesitás?","¡Hola! Un gusto verte."] },
+        { claves: ["cómo estás","como estas","qué tal","todo bien"], respuestas: ["¡Muy bien, gracias! 😄 ¿Y vos?","Todo excelente. ¿Qué contás?"] },
+        { claves: ["nombre","cómo te llamas","quién sos"], respuestas: ["Soy AOS-0.1, tu asistente virtual. Creado por una sola persona que ama Argentina 🇦🇷"] },
+        { claves: ["gracias","muchas gracias","te lo agradezco","grax"], respuestas: ["¡De nada! 😊 Para eso estoy.","¡Con gusto! Acá estoy cuando precises.","¡Un placer ayudarte!"] },
+        { claves: ["chau","adiós","hasta luego","nos vemos"], respuestas: ["¡Chau! 👋 Que andes bien.","¡Nos vemos! Volvé cuando quieras.","¡Hasta luego! Cuidate."] },
+        { claves: ["ayuda","qué podés hacer"], respuestas: ["Puedo charlar, reconocer imágenes, buscar en Wikipedia, programar, enseñar matemáticas... ¡y también hablar! Pedime lo que quieras."] }
+      ],
+      es_AR: [
+        { claves: ["hola","buenas","hey","saludos","buenos días","buenas tardes","buenas noches"], respuestas: ["¡Hola, che! 👋 ¿En qué te puedo dar una mano?","¡Buenas! ¿Qué precisás?","¡Hola, loco! ¿Qué andás buscando?"] },
+        { claves: ["cómo estás","como estas","qué tal","todo bien","cómo andás"], respuestas: ["¡Joyita, gracias! 😄 ¿Y vos?","Todo pipí cucú. ¿Vos qué contás?","De diez, che. ¿Y vos?"] },
+        { claves: ["nombre","cómo te llamás","quién sos"], respuestas: ["Soy AOS-0.1, un asistente virtual hecho por un solo pibe argentino 🇦🇷. ¿Qué te parece?"] },
+        { claves: ["gracias","muchas gracias","te lo agradezco","grax"], respuestas: ["¡De nada, che! 😊 Para eso estamos.","¡No hay problema! Cuando necesites, silbá.","¡Un placer, loco!"] },
+        { claves: ["chau","adiós","hasta luego","nos vemos","bye"], respuestas: ["¡Chau, che! 👋 Que te vaya bárbaro.","¡Nos vemos! Cuidate, eh.","¡Hasta luego! Pasá cuando quieras."] },
+        { claves: ["ayuda","qué podés hacer"], respuestas: ["Puedo charlar, reconocer imágenes, buscar en Wikipedia, programar, enseñar matemáticas... ¡y también hablar! Pedime lo que quieras, no tengo drama."] }
+      ]
+    };
+
+    const fallbacks = {
+      en: ["I didn't quite get that 🤔. Can you rephrase it?","Hmm, I'm not sure how to answer that. Try again!"],
+      es: ["No entendí bien eso 🤔. ¿Podés reformularlo?","Mmm, no estoy seguro de cómo responder eso. ¿Probás de nuevo?"],
+      es_AR: [
+        "No te entendí, che 🤔. ¿Lo podés decir de otra forma?",
+        "Mmm, no cazé bien. ¿Me lo repetís?",
+        "¡Uh, disculpá! No te entendí nada. ¿Probás de nuevo?",
+        "La verdad que no te entendí. ¿Lo decís más claro?",
+        "No te sigo... ¿me lo explicás de nuevo?"
+      ]
+    };
+
+    // ========== PETICIONES ESPECIALES CONVERSACIONALES ==========
+    function obtenerRespuestaConversacional(texto) {
+      const t = texto.toLowerCase().trim();
+      if (currentLang === 'es_AR' && (t.includes('quién te creó') || t.includes('quien te hizo') || t.includes('de dónde saliste'))) {
+        return "Me creó un pibe argentino que está aprendiendo a programar y quiere hacer el mejor asistente del mundo. ¿Viste? Bastante humilde no es, jaja.";
+      }
+      if (t.includes('te sentis solo') || t.includes('te sentís solo') || t.includes('estás solo')) {
+        const resp = { en: "I'm never alone! I have you to talk to. 😊", es: "¡Nunca estoy solo! Te tengo a vos para charlar. 😊", es_AR: "¡Nunca estoy solo, che! Te tengo a vos para charlar. 😊" };
+        return resp[currentLang] || resp.es;
+      }
+      if (t.includes('conta un chiste') || t.includes('hacé reír') || t.includes('dime un chiste')) {
+        const chistes = {
+          en: ["Why don't scientists trust atoms? Because they make up everything! 😂"],
+          es: ["¿Por qué los programadores confunden Halloween y Navidad? Porque Oct 31 == Dec 25. 😂"],
+          es_AR: ["¿Cuál es el colmo de un electricista? Tener un hijo que no le da ni pelota. 😂", "¿Qué le dice un jardinero a otro? Seamos felices mientras podamos. 😂"]
+        };
+        return random(chistes[currentLang] || chistes.es);
+      }
+      if (t.includes('que lindo día') || t.includes('hermoso día') || t.includes('dia lindo')) {
+        return currentLang === 'es_AR' ? "¡Posta! Ideal para tomar unos mates. ¿Vos tomás?" : "¡Qué bueno! Disfrutalo.";
+      }
+      return null;
+    }
 
     // Wikipedia y respuesta principal
     async function buscarEnWikipedia(consulta, usarContexto = false) {
@@ -546,16 +628,23 @@
 
     async function obtenerRespuesta(texto) {
       const t = texto.toLowerCase().trim();
+      // 1. Emociones
       const emocion = detectarEmocion(texto);
       if (emocion) { updateContext(texto, emocion); return emocion; }
+      // 2. Conversacional especial
+      const conversacional = obtenerRespuestaConversacional(texto);
+      if (conversacional) { updateContext(texto, conversacional); return conversacional; }
+      // 3. Saludos y frases predefinidas
       const resp = getRespuestas();
       for (const entrada of resp) {
         if (entrada.claves.some(c => t.includes(c))) {
           const r = random(entrada.respuestas); updateContext(texto, r); return r;
         }
       }
-      const code = obtenerDeConocimiento(t);
-      if (code) { updateContext(texto, code); return code; }
+      // 4. Conocimiento preprogramado
+      const codeAnswer = obtenerDeConocimiento(t);
+      if (codeAnswer) { updateContext(texto, codeAnswer); return codeAnswer; }
+      // 5. Wikipedia con contexto
       const wiki = await buscarEnWikipedia(texto, true);
       if (wiki) {
         const oraciones = wiki.extract.split('. ');
@@ -564,7 +653,22 @@
         const respuesta = `${resumen}\n\n🔗 Fuente: ${link}`;
         updateContext(texto, respuesta); return respuesta;
       }
+      // 6. Fallback mejorado
       const fb = random(getFallbacks()); updateContext(texto, fb); return fb;
+    }
+
+    function obtenerDeConocimiento(input) {
+      const t = input.toLowerCase().trim();
+      for (const [keyword, category] of Object.entries(keywordMap)) {
+        if (t.includes(keyword)) {
+          const arr = codeKnowledge[category];
+          if (arr) return random(arr);
+        }
+      }
+      if (t.includes('programa') || t.includes('código') || t.includes('html')) {
+        return random([codeKnowledge.calculadora[0]]);
+      }
+      return null;
     }
 
     // Contexto conversacional
@@ -575,7 +679,7 @@
     }
     function getContextualQuery(text) {
       const lower = text.toLowerCase().trim();
-      const words = ['eso','ese','esa','lo','la','esto','más','explícame','cómo','y','por qué'];
+      const words = ['eso','ese','esa','lo','la','esto','más','explícame','cómo','y','por qué','contame más','ampliá'];
       if (words.some(w => lower.includes(w)) && conversationContext.length) {
         const last = conversationContext[conversationContext.length-1];
         const topic = last.user.replace(/[?¿.,]/g,'').split(' ').slice(0,4).join(' ');
@@ -703,23 +807,6 @@
       reader.readAsDataURL(file); this.value = '';
     });
 
-    // Respuestas predefinidas (simplificadas)
-    const respuestas = {
-      es: [
-        { claves: ["hola","buenas","hey","saludos"], respuestas: ["¡Hola! 👋 ¿En qué te puedo ayudar?"] }
-      ],
-      en: [
-        { claves: ["hello","hi","hey"], respuestas: ["Hello! 👋 How can I help you?"] }
-      ],
-      es_AR: [
-        { claves: ["hola","buenas","hey"], respuestas: ["¡Hola, che! 👋 ¿En qué te puedo ayudar?"] }
-      ]
-    };
-    const fallbacks = {
-      es: ["No entendí bien eso 🤔"],
-      en: ["I didn't quite get that 🤔"],
-      es_AR: ["No te entendí, che 🤔"]
-    };
     const explicacionesGato = { es: ["🐱 Gato"], en: ["🐱 Cat"], es_AR: ["🐱 Gato"] };
     const explicacionesPerro = { es: ["🐶 Perro"], en: ["🐶 Dog"], es_AR: ["🐶 Perro"] };
     const explicacionesPlanta = { es: ["🌿 Planta"], en: ["🌿 Plant"], es_AR: ["🌿 Planta"] };
