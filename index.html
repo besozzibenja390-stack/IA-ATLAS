@@ -332,7 +332,6 @@
 
 <script>
   (function() {
-    // ========== VARIABLES GLOBALES ==========
     let currentLang = 'es';
     let mobilenetModel = null;
     let isTyping = false;
@@ -362,7 +361,6 @@
     const ttsToggle = document.getElementById('tts-toggle');
     const privacyToggle = document.getElementById('privacy-toggle');
 
-    // Carga modelo
     (async function () {
       try { mobilenetModel = await mobilenet.load(); console.log("Modelo listo 🖼️"); } catch(e) { console.warn("Error cargando modelo"); }
     })();
@@ -370,7 +368,6 @@
     function toggleSidebar() { sidebar.classList.toggle('open'); sidebarBackdrop.classList.toggle('show'); }
     sidebarBackdrop.addEventListener('click', toggleSidebar);
 
-    // Swipe para sidebar
     document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive: true});
     document.addEventListener('touchend', e => {
       if (!touchStartX || !touchStartY) return;
@@ -383,7 +380,6 @@
       touchStartX = touchStartY = 0;
     });
 
-    // Landing
     langButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         langButtons.forEach(b => b.classList.remove('selected'));
@@ -416,10 +412,9 @@
     function cambiarTema() {
       const themes = ['dark', 'gray', 'light'];
       currentTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
-      document.body.className = `theme-${currentTheme}`;
+      document.body.className = 'theme-' + currentTheme;
     }
 
-    // TTS
     function toggleTTS() {
       ttsEnabled = !ttsEnabled;
       localStorage.setItem('atlas_tts', ttsEnabled);
@@ -448,12 +443,10 @@
       }, 100);
     }
 
-    // Privacidad
     function togglePrivacy() { privacyMode = !privacyMode; localStorage.setItem('atlas_privacy', privacyMode); updatePrivacyButton(); if (privacyMode) clearPrivateData(); }
     function updatePrivacyButton() { privacyToggle.classList.toggle('active', privacyMode); }
     function clearPrivateData() { conversationContext = []; messagesEl.innerHTML = ''; messagesEl.style.display = 'none'; emptyState.style.display = 'flex'; }
 
-    // Voz
     function toggleVoice() {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('Reconocimiento de voz no soportado.'); return; }
       if (isRecording) stopVoice(); else startVoice();
@@ -471,7 +464,7 @@
     }
     function stopVoice() { if(recognition){ recognition.stop(); recognition=null; } isRecording=false; micBtn.classList.remove('recording'); }
 
-    // ========== EMOCIONES (mejoradas) ==========
+    // ========== EMOCIONES ==========
     const emociones = {
       feliz: { en: ["happy","glad","joyful","i'm happy"], es: ["feliz","contento","alegre","estoy feliz","ando feliz"], es_AR: ["feliz","contento","alegre","joya","ando feliz","re feliz"] },
       triste: { en: ["sad","unhappy","depressed","i'm sad"], es: ["triste","deprimido","bajón","estoy triste"], es_AR: ["triste","deprimido","bajón","hecho mierda","ando bajón"] },
@@ -483,46 +476,14 @@
       enamorado: { en: ["in love","i'm in love"], es: ["enamorado","estoy enamorado"], es_AR: ["enamorado","estoy enamorado","me enamoré"] }
     };
     const respEmocion = {
-      feliz: {
-        en: ["That's great! 😊 So glad to hear that!","Awesome! Keep that smile!"],
-        es: ["¡Qué bueno! 😊 Me alegra mucho.","¡Genial! Seguí así."],
-        es_AR: ["¡Qué bien, che! 😊 Me re alegra.","¡Joyita! Seguí con esa buena onda."]
-      },
-      triste: {
-        en: ["I'm sorry you feel this way. Want to talk about it?","Sometimes things get tough... but you're not alone."],
-        es: ["Lamento que te sientas así. ¿Querés hablar de eso?","A veces todo cuesta, pero no estás solo/a."],
-        es_AR: ["Uh, qué bajón, che. ¿Querés hablar?","A veces la vida pega duro, pero acá estoy."]
-      },
-      enojado: {
-        en: ["I understand your frustration. Want to vent?","Breathe... sometimes letting it out helps."],
-        es: ["Entiendo tu bronca. ¿Querés desahogarte?","Respirá... a veces putear ayuda."],
-        es_AR: ["Te entiendo, la bronca es grande. ¿Querés putear un rato?","Tranqui, contame qué pasó."]
-      },
-      miedo: {
-        en: ["Fear is normal. What worries you?","You're braver than you think."],
-        es: ["El miedo es normal. ¿Qué te preocupa?","Sos más valiente de lo que creés."],
-        es_AR: ["El cagaso es normal, che. ¿Qué te preocupa?","No te hagas drama, todo tiene solución."]
-      },
-      sorpresa: {
-        en: ["What a surprise! Tell me more.","Unexpected, right? Life is full of surprises!"],
-        es: ["¡Qué sorpresa! Contame más.","Inesperado, ¿no? La vida te sorprende."],
-        es_AR: ["¡Qué sorpresa, che! Contame más.","No lo puedo creer, ¡qué locura!"]
-      },
-      cansado: {
-        en: ["Rest up! You deserve a break.","Sometimes the best thing is to stop and breathe."],
-        es: ["¡Descansá! Te lo merecés.","A veces lo mejor es parar y respirar."],
-        es_AR: ["Tiráte a descansar, te lo re merecés.","Tomate un respiro, che. Todo pasa."]
-      },
-      aburrido: {
-        en: ["Boredom can be a good time to be creative! Want to play something?","I can tell you a joke or a fun fact."],
-        es: ["El aburrimiento es oportunidad para crear. ¿Querés que te cuente algo?","Tengo chistes, datos curiosos... ¿qué preferís?"],
-        es_AR: ["Estar al pedo es una chance para hacer algo piola. ¿Querés un juego?","Te tiro un dato curioso o un chiste, ¿qué preferís?"]
-      },
-      enamorado: {
-        en: ["Love is beautiful! Tell me more about that person.","That's wonderful! How did you meet?"],
-        es: ["El amor es hermoso. ¡Contame más de esa persona!","Qué lindo, ¿cómo se conocieron?"],
-        es_AR: ["¡Qué lindo, che! Contame más de esa persona.","El amor es lo más, ¿cómo se conocieron?"]
-      }
+      feliz: { en: ["That's great! 😊 So glad to hear that!","Awesome! Keep that smile!"], es: ["¡Qué bueno! 😊 Me alegra mucho.","¡Genial! Seguí así."], es_AR: ["¡Qué bien, che! 😊 Me re alegra.","¡Joyita! Seguí con esa buena onda."] },
+      triste: { en: ["I'm sorry you feel this way. Want to talk about it?","Sometimes things get tough... but you're not alone."], es: ["Lamento que te sientas así. ¿Querés hablar de eso?","A veces todo cuesta, pero no estás solo/a."], es_AR: ["Uh, qué bajón, che. ¿Querés hablar?","A veces la vida pega duro, pero acá estoy."] },
+      enojado: { en: ["I understand your frustration. Want to vent?","Breathe... sometimes letting it out helps."], es: ["Entiendo tu bronca. ¿Querés desahogarte?","Respirá... a veces putear ayuda."], es_AR: ["Te entiendo, la bronca es grande. ¿Querés putear un rato?","Tranqui, contame qué pasó."] },
+      miedo: { en: ["Fear is normal. What worries you?","You're braver than you think."], es: ["El miedo es normal. ¿Qué te preocupa?","Sos más valiente de lo que creés."], es_AR: ["El cagaso es normal, che. ¿Qué te preocupa?","No te hagas drama, todo tiene solución."] },
+      sorpresa: { en: ["What a surprise! Tell me more.","Unexpected, right? Life is full of surprises!"], es: ["¡Qué sorpresa! Contame más.","Inesperado, ¿no? La vida te sorprende."], es_AR: ["¡Qué sorpresa, che! Contame más.","No lo puedo creer, ¡qué locura!"] },
+      cansado: { en: ["Rest up! You deserve a break.","Sometimes the best thing is to stop and breathe."], es: ["¡Descansá! Te lo merecés.","A veces lo mejor es parar y respirar."], es_AR: ["Tiráte a descansar, te lo re merecés.","Tomate un respiro, che. Todo pasa."] },
+      aburrido: { en: ["Boredom can be a good time to be creative! Want to play something?","I can tell you a joke or a fun fact."], es: ["El aburrimiento es oportunidad para crear. ¿Querés que te cuente algo?","Tengo chistes, datos curiosos... ¿qué preferís?"], es_AR: ["Estar al pedo es una chance para hacer algo piola. ¿Querés un juego?","Te tiro un dato curioso o un chiste, ¿qué preferís?"] },
+      enamorado: { en: ["Love is beautiful! Tell me more about that person.","That's wonderful! How did you meet?"], es: ["El amor es hermoso. ¡Contame más de esa persona!","Qué lindo, ¿cómo se conocieron?"], es_AR: ["¡Qué lindo, che! Contame más de esa persona.","El amor es lo más, ¿cómo se conocieron?"] }
     };
     function detectarEmocion(texto) {
       const t = texto.toLowerCase().trim();
@@ -535,17 +496,50 @@
       return null;
     }
 
-    // ========== CONOCIMIENTO ==========
+    // ========== CONOCIMIENTO (CORREGIDO SIN TEMPLATE LITERALS ROTOS) ==========
     const codeKnowledge = {
-      calculadora: [`\`\`\`html\n<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Calculadora</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}.calc{background:#16213e;border-radius:20px;padding:20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.display{background:#0f3460;border-radius:12px;padding:20px;text-align:right;margin-bottom:15px}.expr{color:#aaa;font-size:.85rem;min-height:20px}.result{color:#e94560;font-size:2rem;font-weight:700;word-break:break-all}.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}button{padding:18px;border:none;border-radius:12px;font-size:1rem;cursor:pointer;transition:transform .1s;font-weight:600}button:active{transform:scale(.92)}.n{background:#1a1a2e;color:#fff}.o{background:#e94560;color:#fff}.e{background:#0f3460;color:#e94560;grid-column:span 2}.c{background:#533483;color:#fff}.z{grid-column:span 2}</style></head><body><div class="calc"><div class="display"><div class="expr" id="expr"></div><div class="result" id="res">0</div></div><div class="buttons"><button class="c" onclick="limpiar()">C</button><button class="c" onclick="borrar()">⌫</button><button class="c" onclick="agregar('%')">%</button><button class="o" onclick="agregar('/')">÷</button><button class="n" onclick="agregar('7')">7</button><button class="n" onclick="agregar('8')">8</button><button class="n" onclick="agregar('9')">9</button><button class="o" onclick="agregar('*')">×</button><button class="n" onclick="agregar('4')">4</button><button class="n" onclick="agregar('5')">5</button><button class="n" onclick="agregar('6')">6</button><button class="o" onclick="agregar('-')">−</button><button class="n" onclick="agregar('1')">1</button><button class="n" onclick="agregar('2')">2</button><button class="n" onclick="agregar('3')">3</button><button class="o" onclick="agregar('+')">+</button><button class="n z" onclick="agregar('0')">0</button><button class="n" onclick="agregar('.')">.</button><button class="e" onclick="calcular()">=</button></div></div><script>let expr='';function agregar(v){expr+=v;document.getElementById('res').textContent=expr}function limpiar(){expr='';document.getElementById('res').textContent='0';document.getElementById('expr').textContent=''}function borrar(){expr=expr.slice(0,-1);document.getElementById('res').textContent=expr||'0'}function calcular(){try{document.getElementById('expr').textContent=expr+' =';let r=Function('"use strict";return('+expr+')')();document.getElementById('res').textContent=parseFloat(r.toFixed(10));expr=String(r)}catch(e){document.getElementById('res').textContent='Error';expr=''}}<\/script></body></html>\n\`\`\``]
+      calculadora: [
+        '¡Perfecto pedido! Acá va una calculadora completa:\n```html\n' +
+        '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Calculadora</title>' +
+        '<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}' +
+        '.calc{background:#16213e;border-radius:20px;padding:20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.display{background:#0f3460;border-radius:12px;padding:20px;text-align:right;margin-bottom:15px}' +
+        '.expr{color:#aaa;font-size:.85rem;min-height:20px}.result{color:#e94560;font-size:2rem;font-weight:700;word-break:break-all}' +
+        '.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}button{padding:18px;border:none;border-radius:12px;font-size:1rem;cursor:pointer;transition:transform .1s;font-weight:600}button:active{transform:scale(.92)}' +
+        '.n{background:#1a1a2e;color:#fff}.o{background:#e94560;color:#fff}.e{background:#0f3460;color:#e94560;grid-column:span 2}.c{background:#533483;color:#fff}.z{grid-column:span 2}</style></head>' +
+        '<body><div class="calc"><div class="display"><div class="expr" id="expr"></div><div class="result" id="res">0</div></div>' +
+        '<div class="buttons"><button class="c" onclick="limpiar()">C</button><button class="c" onclick="borrar()">⌫</button><button class="c" onclick="agregar(\'%\')">%</button>' +
+        '<button class="o" onclick="agregar(\'/\')">÷</button><button class="n" onclick="agregar(\'7\')">7</button><button class="n" onclick="agregar(\'8\')">8</button>' +
+        '<button class="n" onclick="agregar(\'9\')">9</button><button class="o" onclick="agregar(\'*\')">×</button><button class="n" onclick="agregar(\'4\')">4</button>' +
+        '<button class="n" onclick="agregar(\'5\')">5</button><button class="n" onclick="agregar(\'6\')">6</button><button class="o" onclick="agregar(\'-\')">−</button>' +
+        '<button class="n" onclick="agregar(\'1\')">1</button><button class="n" onclick="agregar(\'2\')">2</button><button class="n" onclick="agregar(\'3\')">3</button>' +
+        '<button class="o" onclick="agregar(\'+\')">+</button><button class="n z" onclick="agregar(\'0\')">0</button><button class="n" onclick="agregar(\'.\')">.</button>' +
+        '<button class="e" onclick="calcular()">=</button></div></div><script>let expr=\'\';function agregar(v){expr+=v;document.getElementById(\'res\').textContent=expr}function limpiar(){expr=\'\';document.getElementById(\'res\').textContent=\'0\';document.getElementById(\'expr\').textContent=\'\'}function borrar(){expr=expr.slice(0,-1);document.getElementById(\'res\').textContent=expr||\'0\'}function calcular(){try{document.getElementById(\'expr\').textContent=expr+\' =\';let r=Function(\'"use strict";return(\'+expr+\')\')();document.getElementById(\'res\').textContent=parseFloat(r.toFixed(10));expr=String(r)}catch(e){document.getElementById(\'res\').textContent=\'Error\';expr=\'\'}}' +
+        '<\/script></body></html>\n```\nGuardalo como "calculadora.html" y abrilo directo en el navegador.'
+      ],
+      tareas: [
+        'App de tareas con diseño limpio y localStorage:\n```html\n' +
+        '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Mis Tareas</title><style>*{box-sizing:border-box;margin:0;padding:0}body{background:#f0f2f5;font-family:\"Segoe UI\",sans-serif;min-height:100vh;padding:2rem}.app{max-width:520px;margin:0 auto}h1{font-size:1.8rem;color:#1a1a1a;margin-bottom:.3rem}.sub{color:#888;font-size:.9rem;margin-bottom:1.5rem}.row{display:flex;gap:10px;margin-bottom:1.5rem}.row input{flex:1;padding:14px 18px;border:2px solid #e0e0e0;border-radius:14px;font-size:1rem;outline:none;background:#fff;transition:border .2s}.row input:focus{border-color:#007aff}.add{padding:14px 22px;background:#007aff;color:#fff;border:none;border-radius:14px;cursor:pointer;font-weight:600;transition:background .2s}.add:hover{background:#0051d5}.filtros{display:flex;gap:8px;margin-bottom:1rem}.f{padding:7px 16px;border:1px solid #ddd;border-radius:20px;background:#fff;cursor:pointer;font-size:.85rem;transition:all .2s}.f.on,.f:hover{background:#007aff;color:#fff;border-color:#007aff}.lista{display:flex;flex-direction:column;gap:10px}.item{background:#fff;border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:opacity .2s}.item.done{opacity:.55}.item.done .txt{text-decoration:line-through;color:#aaa}.cb{width:22px;height:22px;border-radius:50%;border:2px solid #007aff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}.cb.on{background:#007aff}.cb.on::after{content:\"✓\";color:#fff;font-size:13px;font-weight:700}.txt{flex:1;font-size:.95rem}.del{background:none;border:none;color:#ff3b30;cursor:pointer;font-size:1.1rem;padding:4px 8px;border-radius:8px;transition:background .2s}.del:hover{background:#fff0ee}.stats{text-align:center;margin-top:1.5rem;color:#aaa;font-size:.85rem}.vacio{text-align:center;padding:3rem;color:#bbb}</style></head>' +
+        '<body><div class="app"><h1>📝 Mis Tareas</h1><p class="sub">Organizá tu día sin complicaciones</p><div class="row"><input id="inp" placeholder="Nueva tarea..." onkeydown="if(event.key===\'Enter\')add()"><button class="add" onclick="add()">+ Agregar</button></div><div class="filtros"><button class="f on" onclick="setF(\'all\',this)">Todas</button><button class="f" onclick="setF(\'pen\',this)">Pendientes</button><button class="f" onclick="setF(\'don\',this)">Completadas</button></div><div class="lista" id="lista"></div><div class="stats" id="stats"></div></div>' +
+        '<script>let T=JSON.parse(localStorage.getItem(\'atlas_t\')||\'[]\'),filtro=\'all\';const save=()=>localStorage.setItem(\'atlas_t\',JSON.stringify(T));function add(){const v=document.getElementById(\'inp\').value.trim();if(!v)return;T.push({id:Date.now(),v,ok:false});document.getElementById(\'inp\').value=\'\';save();draw()}function tog(id){T=T.map(t=>t.id===id?{...t,ok:!t.ok}:t);save();draw()}function del(id){T=T.filter(t=>t.id!==id);save();draw()}function setF(f,btn){filtro=f;document.querySelectorAll(\'.f\').forEach(b=>b.classList.remove(\'on\'));btn.classList.add(\'on\');draw()}function draw(){let vis=T;if(filtro===\'pen\')vis=T.filter(t=>!t.ok);if(filtro===\'don\')vis=T.filter(t=>t.ok);const l=document.getElementById(\'lista\');l.innerHTML=vis.length?vis.map(t=>\'<div class="item\'+(t.ok?\' done\':\'\')+\'"><div class="cb\'+(t.ok?\' on\':\'\')+\'" onclick="tog(\'+t.id+\')"></div><span class="txt">\'+t.v+\'</span><button class="del" onclick="del(\'+t.id+\')">🗑</button></div>\').join(\'\'):\'<div class="vacio">No hay tareas acá 😌</div>\';const ok=T.filter(t=>t.ok).length;document.getElementById(\'stats\').textContent=T.length?ok+\' de \'+T.length+\' completadas\':\'\'}draw();' +
+        '<\/script></body></html>\n```'
+      ],
+      juego: [
+        'Snake clásico:\n```html\n' +
+        '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Snake</title><style>body{background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;color:#fff}h1{color:#4ade80;letter-spacing:4px;font-size:1.5rem;margin-bottom:8px}#info{color:#888;margin-bottom:12px;font-size:.9rem}canvas{border:2px solid #4ade80;border-radius:8px;box-shadow:0 0 30px rgba(74,222,128,.3)}#score{margin-top:12px;font-size:1.3rem;color:#4ade80}</style></head>' +
+        '<body><h1>🐍 SNAKE</h1><div id="info">Usá las flechas para mover</div><canvas id="c" width="400" height="400"></canvas><div id="score">Puntaje: 0</div>' +
+        '<script>const c=document.getElementById(\'c\'),ctx=c.getContext(\'2d\');const S=20,C=20,R=20;let snake,dir,food,pts,iv,alive;function init(){snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];dir={x:1,y:0};pts=0;alive=true;newFood();clearInterval(iv);iv=setInterval(loop,130)}function newFood(){do{food={x:Math.floor(Math.random()*C),y:Math.floor(Math.random()*R)}}while(snake.some(s=>s.x===food.x&&s.y===food.y))}function loop(){if(!alive)return;const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};if(h.x<0||h.x>=C||h.y<0||h.y>=R||snake.some(s=>s.x===h.x&&s.y===h.y)){alive=false;clearInterval(iv);alert(\'Game Over - Puntaje: \'+pts);return}snake.unshift(h);if(h.x===food.x&&h.y===food.y){pts+=10;document.getElementById(\'score\').textContent=\'Puntaje: \'+pts;newFood()}else snake.pop();draw()}function draw(){ctx.fillStyle=\'#0d0d0d\';ctx.fillRect(0,0,400,400);ctx.fillStyle=\'#f87171\';ctx.beginPath();ctx.arc(food.x*S+S/2,food.y*S+S/2,S/2-2,0,Math.PI*2);ctx.fill();snake.forEach((s,i)=>{ctx.fillStyle=i===0?\'#4ade80\':\'#22c55e\';ctx.beginPath();ctx.roundRect(s.x*S+1,s.y*S+1,S-2,S-2,4);ctx.fill()})}document.addEventListener(\'keydown\',e=>{const m={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};const nd=m[e.key];if(nd&&!(nd.x===-dir.x&&nd.y===-dir.y)){dir=nd;e.preventDefault()}});init();' +
+        '<\/script></body></html>\n```'
+      ]
     };
-    const keywordMap = { calculadora:'calculadora', tareas:'tareas', juego:'juego' };
+
+    const keywordMap = {
+      calculadora: 'calculadora', tareas: 'tareas', juego: 'juego'
+    };
 
     function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     function getRespuestas() { return respuestas[currentLang] || respuestas.es; }
     function getFallbacks() { return fallbacks[currentLang] || fallbacks.es; }
 
-    // ========== RESPUESTAS CONVERSACIONALES (mejoradas) ==========
     const respuestas = {
       en: [
         { claves: ["hello","hi","hey","good morning","good afternoon","good evening"], respuestas: ["Hello! 👋 How can I help you?","Hey! 😊 What do you need?","Good day! How can I assist you?"] },
@@ -585,7 +579,6 @@
       ]
     };
 
-    // ========== PETICIONES ESPECIALES CONVERSACIONALES ==========
     function obtenerRespuestaConversacional(texto) {
       const t = texto.toLowerCase().trim();
       if (currentLang === 'es_AR' && (t.includes('quién te creó') || t.includes('quien te hizo') || t.includes('de dónde saliste'))) {
@@ -609,16 +602,15 @@
       return null;
     }
 
-    // Wikipedia y respuesta principal
     async function buscarEnWikipedia(consulta, usarContexto = false) {
       let query = consulta;
       if (usarContexto) query = getContextualQuery(consulta);
-      const url = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
+      const url = 'https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(query) + '&format=json&origin=*';
       try {
         const resp = await fetch(url); const data = await resp.json();
         if (!data.query.search.length) return null;
         const titulo = data.query.search[0].title;
-        const extractUrl = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=${encodeURIComponent(titulo)}&format=json&origin=*`;
+        const extractUrl = 'https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=' + encodeURIComponent(titulo) + '&format=json&origin=*';
         const extResp = await fetch(extractUrl); const extData = await extResp.json();
         const page = extData.query.pages; const pageId = Object.keys(page)[0];
         if (page[pageId].missing) return null;
@@ -628,32 +620,26 @@
 
     async function obtenerRespuesta(texto) {
       const t = texto.toLowerCase().trim();
-      // 1. Emociones
       const emocion = detectarEmocion(texto);
       if (emocion) { updateContext(texto, emocion); return emocion; }
-      // 2. Conversacional especial
       const conversacional = obtenerRespuestaConversacional(texto);
       if (conversacional) { updateContext(texto, conversacional); return conversacional; }
-      // 3. Saludos y frases predefinidas
       const resp = getRespuestas();
       for (const entrada of resp) {
         if (entrada.claves.some(c => t.includes(c))) {
           const r = random(entrada.respuestas); updateContext(texto, r); return r;
         }
       }
-      // 4. Conocimiento preprogramado
       const codeAnswer = obtenerDeConocimiento(t);
       if (codeAnswer) { updateContext(texto, codeAnswer); return codeAnswer; }
-      // 5. Wikipedia con contexto
       const wiki = await buscarEnWikipedia(texto, true);
       if (wiki) {
         const oraciones = wiki.extract.split('. ');
-        const resumen = oraciones.slice(0,2).join('. ')+(oraciones.length>2?'.':'');
-        const link = `https://es.wikipedia.org/wiki/${encodeURIComponent(wiki.title)}`;
-        const respuesta = `${resumen}\n\n🔗 Fuente: ${link}`;
+        const resumen = oraciones.slice(0,2).join('. ') + (oraciones.length>2?'.':'');
+        const link = 'https://es.wikipedia.org/wiki/' + encodeURIComponent(wiki.title);
+        const respuesta = resumen + '\n\n🔗 Fuente: ' + link;
         updateContext(texto, respuesta); return respuesta;
       }
-      // 6. Fallback mejorado
       const fb = random(getFallbacks()); updateContext(texto, fb); return fb;
     }
 
@@ -662,16 +648,16 @@
       for (const [keyword, category] of Object.entries(keywordMap)) {
         if (t.includes(keyword)) {
           const arr = codeKnowledge[category];
-          if (arr) return random(arr);
+          if (arr && arr.length) return random(arr);
         }
       }
       if (t.includes('programa') || t.includes('código') || t.includes('html')) {
-        return random([codeKnowledge.calculadora[0]]);
+        const arr = codeKnowledge.calculadora;
+        return arr ? random(arr) : null;
       }
       return null;
     }
 
-    // Contexto conversacional
     function updateContext(userText, assistantText) {
       if (privacyMode) return;
       conversationContext.push({ user: userText, assistant: assistantText });
@@ -683,31 +669,30 @@
       if (words.some(w => lower.includes(w)) && conversationContext.length) {
         const last = conversationContext[conversationContext.length-1];
         const topic = last.user.replace(/[?¿.,]/g,'').split(' ').slice(0,4).join(' ');
-        return `${topic} ${text}`;
+        return topic + ' ' + text;
       }
       return text;
     }
 
-    // Mensajes
     function showMessages() { emptyState.style.display = 'none'; messagesEl.style.display = 'block'; }
     function addMessage(text, role) {
-      const row = document.createElement('div'); row.className = `msg-row ${role}`;
-      if (role === 'user') row.innerHTML = `<div class="msg-content"><div class="bubble">${text}</div></div>`;
+      const row = document.createElement('div'); row.className = 'msg-row ' + role;
+      if (role === 'user') row.innerHTML = '<div class="msg-content"><div class="bubble">' + text + '</div></div>';
       else {
         const processed = processCodeBlocks(text);
-        row.innerHTML = `<div class="msg-content"><div class="assistant-icon"><i class="ti ti-robot"></i></div><div><div class="bubble">${processed}</div></div></div>`;
+        row.innerHTML = '<div class="msg-content"><div class="assistant-icon"><i class="ti ti-robot"></i></div><div><div class="bubble">' + processed + '</div></div></div>';
         setTimeout(() => speakText(text), 200);
       }
       messagesEl.appendChild(row); messagesEl.scrollTop = messagesEl.scrollHeight;
     }
     function addImageMessage(url, role) {
-      const row = document.createElement('div'); row.className = `msg-row ${role}`;
-      row.innerHTML = `<div class="msg-content"><div class="bubble"><img src="${url}" style="max-width:200px;border-radius:10px;width:100%;" /></div></div>`;
+      const row = document.createElement('div'); row.className = 'msg-row ' + role;
+      row.innerHTML = '<div class="msg-content"><div class="bubble"><img src="' + url + '" style="max-width:200px;border-radius:10px;width:100%;" /></div></div>';
       messagesEl.appendChild(row); messagesEl.scrollTop = messagesEl.scrollHeight;
     }
     function addTyping() {
       const row = document.createElement('div'); row.className = 'msg-row assistant'; row.id = 'typing-row';
-      row.innerHTML = `<div class="msg-content"><div class="assistant-icon"><i class="ti ti-robot"></i></div><div><div class="bubble"><div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div></div></div>`;
+      row.innerHTML = '<div class="msg-content"><div class="assistant-icon"><i class="ti ti-robot"></i></div><div><div class="bubble"><div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div></div></div>';
       messagesEl.appendChild(row); messagesEl.scrollTop = messagesEl.scrollHeight;
     }
     async function sendMessage(msgText) {
@@ -716,9 +701,14 @@
       showMessages(); addMessage(text, 'user');
       textarea.value = ''; textarea.style.height = 'auto'; sendBtn.disabled = true; isTyping = true;
       addTyping();
-      const respuesta = await obtenerRespuesta(text);
-      const typingRow = document.getElementById('typing-row'); if (typingRow) typingRow.remove();
-      addMessage(respuesta, 'assistant');
+      try {
+        const respuesta = await obtenerRespuesta(text);
+        const typingRow = document.getElementById('typing-row'); if (typingRow) typingRow.remove();
+        addMessage(respuesta, 'assistant');
+      } catch(e) {
+        const typingRow = document.getElementById('typing-row'); if (typingRow) typingRow.remove();
+        addMessage('Perdón, hubo un error interno. ¿Probás de nuevo?', 'assistant');
+      }
       isTyping = false; sendBtn.disabled = (textarea.value.trim() === '');
     }
     function useSuggestion(btn) {
@@ -732,25 +722,23 @@
       if (window.innerWidth < 769) toggleSidebar();
     }
 
-    // Feedback
     function openFeedback() { document.getElementById('feedback-modal').style.display = 'flex'; document.getElementById('feedback-text').focus(); }
     function closeFeedback() { document.getElementById('feedback-modal').style.display = 'none'; document.getElementById('feedback-text').value = ''; }
     function enviarFeedback() {
       const mensaje = document.getElementById('feedback-text').value.trim();
       if (!mensaje) { alert('Escribe un mensaje'); return; }
-      window.open(`mailto:supportaos5@gmail.com?subject=Feedback AOS-0.1&body=${encodeURIComponent(mensaje)}`);
+      window.open('mailto:supportaos5@gmail.com?subject=Feedback AOS-0.1&body=' + encodeURIComponent(mensaje));
       closeFeedback();
     }
 
-    // Procesamiento de código
     function processCodeBlocks(text) {
       const regex = /```(\w*)\n([\s\S]*?)```/g; let result = text, match;
       while ((match = regex.exec(text)) !== null) {
         const code = match[2]; const isHTML = match[1] === 'html' || code.includes('<!DOCTYPE html>') || code.includes('<html');
         const blockId = 'code-' + Math.random().toString(36).substr(2,8);
         const escaped = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        const toolbar = `<div class="code-toolbar"><button class="code-btn" onclick="copyCode('${blockId}')"><i class="ti ti-copy"></i> Copiar</button><button class="code-btn" onclick="downloadCode('${blockId}','archivo${isHTML?'.html':'.txt'}')"><i class="ti ti-download"></i> Descargar</button>${isHTML ? `<button class="code-btn run" onclick="runCode('${blockId}')"><i class="ti ti-player-play"></i> Ejecutar</button>` : ''}</div>`;
-        result = result.replace(match[0], `<div class="code-container" id="${blockId}"><pre><code>${escaped}</code></pre>${toolbar}</div>`);
+        const toolbar = '<div class="code-toolbar"><button class="code-btn" onclick="copyCode(\'' + blockId + '\')"><i class="ti ti-copy"></i> Copiar</button><button class="code-btn" onclick="downloadCode(\'' + blockId + '\',\'archivo' + (isHTML?'.html':'.txt') + '\')"><i class="ti ti-download"></i> Descargar</button>' + (isHTML ? '<button class="code-btn run" onclick="runCode(\'' + blockId + '\')"><i class="ti ti-player-play"></i> Ejecutar</button>' : '') + '</div>';
+        result = result.replace(match[0], '<div class="code-container" id="' + blockId + '"><pre><code>' + escaped + '</code></pre>' + toolbar + '</div>');
       }
       return result;
     }
@@ -759,7 +747,6 @@
     window.runCode = (id) => { const code = document.getElementById(id).querySelector('code').textContent; const modal = document.getElementById('run-modal'); document.getElementById('run-frame').srcdoc = code; modal.classList.add('open'); };
     window.closeRunModal = () => { document.getElementById('run-modal').classList.remove('open'); document.getElementById('run-frame').srcdoc = ''; };
 
-    // Exponer globales
     window.iniciarChat = iniciarChat;
     window.toggleSidebar = toggleSidebar;
     window.cambiarTema = cambiarTema;
@@ -773,15 +760,18 @@
     window.toggleTTS = toggleTTS;
     window.togglePrivacy = togglePrivacy;
 
-    // Inicialización de eventos
     textarea.addEventListener('input', () => {
       sendBtn.disabled = textarea.value.trim() === '' || isTyping;
       textarea.style.height = 'auto'; textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
     });
     textarea.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) sendMessage(); } });
 
-    // Imagen
     const imageInput = document.getElementById('imageInput');
+    const explicacionesGato = { es: ["🐱 Gato"], en: ["🐱 Cat"], es_AR: ["🐱 Gato"] };
+    const explicacionesPerro = { es: ["🐶 Perro"], en: ["🐶 Dog"], es_AR: ["🐶 Perro"] };
+    const explicacionesPlanta = { es: ["🌿 Planta"], en: ["🌿 Plant"], es_AR: ["🌿 Planta"] };
+    const explicacionesHumano = { es: ["🧑 Humano"], en: ["🧑 Human"], es_AR: ["🧑 Humano"] };
+
     imageInput.addEventListener('change', async function() {
       const file = this.files[0]; if (!file) return;
       const reader = new FileReader();
@@ -800,19 +790,13 @@
             else if (className.includes('plant') || className.includes('flor')) explicacion = random(explicacionesPlanta[currentLang] || explicacionesPlanta.es);
             else if (className.includes('person') || className.includes('human')) explicacion = random(explicacionesHumano[currentLang] || explicacionesHumano.es);
             else explicacion = 'No reconocido 🚫';
-            addMessage(`${explicacion} (${confianza}% certeza)`, 'assistant');
+            addMessage(explicacion + ' (' + confianza + '% certeza)', 'assistant');
           } catch { addMessage('Error al analizar 😥', 'assistant'); }
         };
       };
       reader.readAsDataURL(file); this.value = '';
     });
 
-    const explicacionesGato = { es: ["🐱 Gato"], en: ["🐱 Cat"], es_AR: ["🐱 Gato"] };
-    const explicacionesPerro = { es: ["🐶 Perro"], en: ["🐶 Dog"], es_AR: ["🐶 Perro"] };
-    const explicacionesPlanta = { es: ["🌿 Planta"], en: ["🌿 Plant"], es_AR: ["🌿 Planta"] };
-    const explicacionesHumano = { es: ["🧑 Humano"], en: ["🧑 Human"], es_AR: ["🧑 Humano"] };
-
-    // Restaurar nombre
     const savedName = localStorage.getItem('atlas_username');
     if (savedName) { nameInput.value = savedName; nameSection.style.display = 'block'; checkStartButton(); }
 
