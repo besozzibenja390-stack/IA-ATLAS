@@ -358,23 +358,28 @@
   </div>
 
 <script>
+  // ============================================
+  // AOS-0.1 - ASISTENTE VIRTUAL ARGENTINO
+  // ============================================
   (function() {
-    let currentLang = 'es';
-    let mobilenetModel = null;
-    let isTyping = false;
-    let currentTheme = 'dark';
-    let recognition = null;
-    let isRecording = false;
-    let conversationContext = [];
-    let userName = 'Usuario';
-    let ttsEnabled = true; // Activado por defecto
-    let privacyMode = false;
-    let touchStartX = 0, touchStartY = 0;
-    let voiceModeActive = false;
-    let audioContext = null;
-    let analyser = null;
-    let animationId = null;
+    // ----- VARIABLES GLOBALES -----
+    let currentLang = 'es';               // Idioma seleccionado
+    let mobilenetModel = null;           // Modelo de reconocimiento de imágenes
+    let isTyping = false;                // ¿Está escribiendo la IA?
+    let currentTheme = 'dark';           // Tema actual
+    let recognition = null;              // Objeto SpeechRecognition
+    let isRecording = false;             // ¿Está grabando?
+    let conversationContext = [];        // Historial de la conversación
+    let userName = 'Usuario';            // Nombre del usuario
+    let ttsEnabled = true;               // Voz activada por defecto
+    let privacyMode = false;             // Modo privado
+    let touchStartX = 0, touchStartY = 0; // Para gestos swipe
+    let voiceModeActive = false;         // ¿Modo voz activo?
+    let audioContext = null;             // Contexto de audio para ondas
+    let analyser = null;                 // Analizador de audio
+    let animationId = null;              // ID de animación de ondas
 
+    // ----- ELEMENTOS DEL DOM -----
     const textarea = document.getElementById('textarea');
     const sendBtn = document.getElementById('send-btn');
     const messagesEl = document.getElementById('messages');
@@ -395,13 +400,16 @@
     const voiceCanvas = document.getElementById('voice-canvas');
     const voiceSubtitles = document.getElementById('voice-subtitles');
 
+    // ----- CARGA DEL MODELO DE IMAGEN -----
     (async function () {
       try { mobilenetModel = await mobilenet.load(); console.log("Modelo listo 🖼️"); } catch(e) { console.warn("Error cargando modelo"); }
     })();
 
+    // ----- SIDEBAR -----
     function toggleSidebar() { sidebar.classList.toggle('open'); sidebarBackdrop.classList.toggle('show'); }
     sidebarBackdrop.addEventListener('click', toggleSidebar);
 
+    // ----- SWIPE PARA ABRIR/CERRAR SIDEBAR EN MÓVILES -----
     document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive: true});
     document.addEventListener('touchend', e => {
       if (!touchStartX || !touchStartY) return;
@@ -414,6 +422,7 @@
       touchStartX = touchStartY = 0;
     });
 
+    // ----- LANDING: SELECCIÓN DE IDIOMA Y NOMBRE -----
     langButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         langButtons.forEach(b => b.classList.remove('selected'));
@@ -436,17 +445,21 @@
       app.style.display = 'flex';
       app.style.animation = 'fadeIn 0.6s ease';
       sidebar.classList.remove('open'); sidebarBackdrop.classList.remove('show');
+      // Activar TTS por defecto
+      ttsEnabled = localStorage.getItem('atlas_tts') !== 'false'; // true si no está guardado
       updateTTSButton();
       updatePrivacyButton();
       if (privacyMode) clearPrivateData();
     }
 
+    // ----- TEMAS -----
     function cambiarTema() {
       const themes = ['dark', 'gray', 'light'];
       currentTheme = themes[(themes.indexOf(currentTheme) + 1) % themes.length];
       document.body.className = 'theme-' + currentTheme;
     }
 
+    // ----- VOZ SINTÉTICA (TTS) -----
     function toggleTTS() {
       ttsEnabled = !ttsEnabled;
       localStorage.setItem('atlas_tts', ttsEnabled);
@@ -470,11 +483,12 @@
       }
     }
 
+    // ----- PRIVACIDAD -----
     function togglePrivacy() { privacyMode = !privacyMode; localStorage.setItem('atlas_privacy', privacyMode); updatePrivacyButton(); if (privacyMode) clearPrivateData(); }
     function updatePrivacyButton() { privacyToggle.classList.toggle('active', privacyMode); }
     function clearPrivateData() { conversationContext = []; messagesEl.innerHTML = ''; messagesEl.style.display = 'none'; emptyState.style.display = 'flex'; }
 
-    // ========== VISUALIZACIÓN DE VOZ ==========
+    // ----- VISUALIZACIÓN DE ONDAS DE VOZ -----
     function startVoiceVisualization() {
       if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -521,7 +535,7 @@
       speechSynthesis.cancel();
     }
 
-    // ========== RECONOCIMIENTO DE VOZ MEJORADO ==========
+    // ----- RECONOCIMIENTO DE VOZ -----
     function toggleVoice() {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert('Reconocimiento de voz no soportado.');
@@ -554,10 +568,7 @@
           const text = voiceSubtitles.textContent.trim();
           stopVoice();
           sendMessage(text);
-          // Reiniciar reconocimiento para seguir conversando
-          setTimeout(() => {
-            if (voiceModeActive) startVoice();
-          }, 500);
+          setTimeout(() => { if (voiceModeActive) startVoice(); }, 500);
         } else {
           stopVoice();
           stopVoiceMode();
@@ -571,7 +582,7 @@
       micBtn.classList.remove('recording');
     }
 
-    // ========== EMOCIONES ==========
+    // ----- EMOCIONES -----
     const emociones = {
       feliz: { en: ["happy","glad","joyful","i'm happy"], es: ["feliz","contento","alegre","estoy feliz","ando feliz"], es_AR: ["feliz","contento","alegre","joya","ando feliz","re feliz"] },
       triste: { en: ["sad","unhappy","depressed","i'm sad"], es: ["triste","deprimido","bajón","estoy triste"], es_AR: ["triste","deprimido","bajón","hecho mierda","ando bajón"] },
@@ -603,7 +614,7 @@
       return null;
     }
 
-    // ========== CONOCIMIENTO ==========
+    // ----- CONOCIMIENTO PREPROGRAMADO -----
     const codeKnowledge = {
       calculadora: ['```html\n<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Calculadora</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}.calc{background:#16213e;border-radius:20px;padding:20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.display{background:#0f3460;border-radius:12px;padding:20px;text-align:right;margin-bottom:15px}.expr{color:#aaa;font-size:.85rem;min-height:20px}.result{color:#e94560;font-size:2rem;font-weight:700;word-break:break-all}.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}button{padding:18px;border:none;border-radius:12px;font-size:1rem;cursor:pointer;transition:transform .1s;font-weight:600}button:active{transform:scale(.92)}.n{background:#1a1a2e;color:#fff}.o{background:#e94560;color:#fff}.e{background:#0f3460;color:#e94560;grid-column:span 2}.c{background:#533483;color:#fff}.z{grid-column:span 2}</style></head><body><div class="calc"><div class="display"><div class="expr" id="expr"></div><div class="result" id="res">0</div></div><div class="buttons"><button class="c" onclick="limpiar()">C</button><button class="c" onclick="borrar()">⌫</button><button class="c" onclick="agregar(\'%\')">%</button><button class="o" onclick="agregar(\'/\')">÷</button><button class="n" onclick="agregar(\'7\')">7</button><button class="n" onclick="agregar(\'8\')">8</button><button class="n" onclick="agregar(\'9\')">9</button><button class="o" onclick="agregar(\'*\')">×</button><button class="n" onclick="agregar(\'4\')">4</button><button class="n" onclick="agregar(\'5\')">5</button><button class="n" onclick="agregar(\'6\')">6</button><button class="o" onclick="agregar(\'-\')">−</button><button class="n" onclick="agregar(\'1\')">1</button><button class="n" onclick="agregar(\'2\')">2</button><button class="n" onclick="agregar(\'3\')">3</button><button class="o" onclick="agregar(\'+\')">+</button><button class="n z" onclick="agregar(\'0\')">0</button><button class="n" onclick="agregar(\'.\')">.</button><button class="e" onclick="calcular()">=</button></div></div><script>let expr=\'\';function agregar(v){expr+=v;document.getElementById(\'res\').textContent=expr}function limpiar(){expr=\'\';document.getElementById(\'res\').textContent=\'0\';document.getElementById(\'expr\').textContent=\'\'}function borrar(){expr=expr.slice(0,-1);document.getElementById(\'res\').textContent=expr||\'0\'}function calcular(){try{document.getElementById(\'expr\').textContent=expr+\' =\';let r=Function(\'"use strict";return(\'+expr+\')\')();document.getElementById(\'res\').textContent=parseFloat(r.toFixed(10));expr=String(r)}catch(e){document.getElementById(\'res\').textContent=\'Error\';expr=\'\'}}<\/script></body></html>\n```']
     };
@@ -613,6 +624,7 @@
     function getRespuestas() { return respuestas[currentLang] || respuestas.es; }
     function getFallbacks() { return fallbacks[currentLang] || fallbacks.es; }
 
+    // ----- RESPUESTAS PREDEFINIDAS -----
     const respuestas = {
       en: [
         { claves: ["hello","hi","hey"], respuestas: ["Hello! 👋 How can I help you?"] },
@@ -636,19 +648,39 @@
       es_AR: ["No te entendí, che 🤔. ¿Lo podés decir de otra forma?"]
     };
 
-    // ========== CONTEXTO CONVERSACIONAL MEJORADO ==========
-    function analizarContexto(texto) {
+    // ----- FUNCIÓN PRINCIPAL DE RESPUESTA (CORREGIDA) -----
+    async function obtenerRespuesta(texto) {
       const t = texto.toLowerCase().trim();
-      const lastMessages = conversationContext.slice(-3);
-      // Determinar si la consulta es una pregunta factual (requiere Wikipedia)
-      const factualPatterns = ['qué es', 'quien es', 'dónde está', 'cuándo fue', 'cómo funciona', 'definición de', 'historia de', 'biografía de'];
-      const isFactual = factualPatterns.some(p => t.includes(p));
-      // Determinar si es conversacional
-      const conversationalPatterns = ['hola', 'gracias', 'chau', 'cómo estás', 'qué tal', 'conta un chiste', 'decime algo'];
-      const isConversational = conversationalPatterns.some(p => t.includes(p));
-      return { isFactual, isConversational };
+      // 1. Emociones
+      const emocion = detectarEmocion(texto);
+      if (emocion) { updateContext(texto, emocion); return emocion; }
+      // 2. Conversacional especial (chistes, quién te creó, etc.)
+      const conversacional = obtenerRespuestaConversacional(texto);
+      if (conversacional) { updateContext(texto, conversacional); return conversacional; }
+      // 3. Saludos y frases predefinidas
+      const resp = getRespuestas();
+      for (const entrada of resp) {
+        if (entrada.claves.some(c => t.includes(c))) {
+          const r = random(entrada.respuestas); updateContext(texto, r); return r;
+        }
+      }
+      // 4. Conocimiento preprogramado (calculadora, tareas, etc.)
+      const codeAnswer = obtenerDeConocimiento(t);
+      if (codeAnswer) { updateContext(texto, codeAnswer); return codeAnswer; }
+      // 5. Wikipedia (para todo lo demás)
+      const wiki = await buscarEnWikipedia(texto);
+      if (wiki) {
+        const oraciones = wiki.extract.split('. ');
+        const resumen = oraciones.slice(0,2).join('. ') + (oraciones.length>2?'.':'');
+        const link = 'https://es.wikipedia.org/wiki/' + encodeURIComponent(wiki.title);
+        const respuesta = resumen + '\n\n🔗 Fuente: ' + link;
+        updateContext(texto, respuesta); return respuesta;
+      }
+      // 6. Fallback
+      const fb = random(getFallbacks()); updateContext(texto, fb); return fb;
     }
 
+    // ----- RESPUESTAS CONVERSACIONALES ESPECIALES -----
     function obtenerRespuestaConversacional(texto) {
       const t = texto.toLowerCase().trim();
       if (currentLang === 'es_AR' && (t.includes('quién te creó') || t.includes('quien te hizo'))) {
@@ -668,6 +700,7 @@
       return null;
     }
 
+    // ----- BÚSQUEDA EN WIKIPEDIA -----
     async function buscarEnWikipedia(consulta) {
       const url = 'https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(consulta) + '&format=json&origin=*';
       try {
@@ -682,45 +715,7 @@
       } catch(e) { return null; }
     }
 
-    async function obtenerRespuesta(texto) {
-      const t = texto.toLowerCase().trim();
-      // 1. Emociones
-      const emocion = detectarEmocion(texto);
-      if (emocion) { updateContext(texto, emocion); return emocion; }
-      // 2. Conversacional especial
-      const conversacional = obtenerRespuestaConversacional(texto);
-      if (conversacional) { updateContext(texto, conversacional); return conversacional; }
-      // 3. Saludos
-      const resp = getRespuestas();
-      for (const entrada of resp) {
-        if (entrada.claves.some(c => t.includes(c))) {
-          const r = random(entrada.respuestas); updateContext(texto, r); return r;
-        }
-      }
-      // 4. Conocimiento preprogramado
-      const codeAnswer = obtenerDeConocimiento(t);
-      if (codeAnswer) { updateContext(texto, codeAnswer); return codeAnswer; }
-      // 5. Analizar contexto para decidir si buscar en Wikipedia
-      const contexto = analizarContexto(texto);
-      if (contexto.isFactual) {
-        const wiki = await buscarEnWikipedia(texto);
-        if (wiki) {
-          const oraciones = wiki.extract.split('. ');
-          const resumen = oraciones.slice(0,2).join('. ') + (oraciones.length>2?'.':'');
-          const link = 'https://es.wikipedia.org/wiki/' + encodeURIComponent(wiki.title);
-          const respuesta = resumen + '\n\n🔗 Fuente: ' + link;
-          updateContext(texto, respuesta); return respuesta;
-        }
-      }
-      // 6. Fallback con contexto
-      if (conversationContext.length > 0 && !contexto.isFactual) {
-        const last = conversationContext[conversationContext.length-1];
-        const fb = 'Entiendo que hablábamos de "' + last.user.substring(0,30) + '". ¿Querés que profundice en algo específico?';
-        updateContext(texto, fb); return fb;
-      }
-      const fb = random(getFallbacks()); updateContext(texto, fb); return fb;
-    }
-
+    // ----- OBTENER CONOCIMIENTO PREPROGRAMADO -----
     function obtenerDeConocimiento(input) {
       const t = input.toLowerCase().trim();
       for (const [keyword, category] of Object.entries(keywordMap)) {
@@ -732,12 +727,14 @@
       return null;
     }
 
+    // ----- CONTEXTO DE CONVERSACIÓN -----
     function updateContext(userText, assistantText) {
       if (privacyMode) return;
       conversationContext.push({ user: userText, assistant: assistantText });
       if (conversationContext.length > 10) conversationContext.shift();
     }
 
+    // ----- GESTIÓN DE MENSAJES -----
     function showMessages() { emptyState.style.display = 'none'; messagesEl.style.display = 'block'; }
     function addMessage(text, role) {
       const row = document.createElement('div'); row.className = 'msg-row ' + role;
@@ -786,6 +783,7 @@
       if (window.innerWidth < 769) toggleSidebar();
     }
 
+    // ----- FEEDBACK -----
     function openFeedback() { document.getElementById('feedback-modal').style.display = 'flex'; document.getElementById('feedback-text').focus(); }
     function closeFeedback() { document.getElementById('feedback-modal').style.display = 'none'; document.getElementById('feedback-text').value = ''; }
     function enviarFeedback() {
@@ -795,6 +793,7 @@
       closeFeedback();
     }
 
+    // ----- PROCESAMIENTO DE CÓDIGO HTML -----
     function processCodeBlocks(text) {
       const regex = /```(\w*)\n([\s\S]*?)```/g; let result = text, match;
       while ((match = regex.exec(text)) !== null) {
@@ -811,6 +810,7 @@
     window.runCode = (id) => { const code = document.getElementById(id).querySelector('code').textContent; const modal = document.getElementById('run-modal'); document.getElementById('run-frame').srcdoc = code; modal.classList.add('open'); };
     window.closeRunModal = () => { document.getElementById('run-modal').classList.remove('open'); document.getElementById('run-frame').srcdoc = ''; };
 
+    // ----- EXPONER FUNCIONES GLOBALES -----
     window.iniciarChat = iniciarChat;
     window.toggleSidebar = toggleSidebar;
     window.cambiarTema = cambiarTema;
@@ -824,12 +824,14 @@
     window.toggleTTS = toggleTTS;
     window.togglePrivacy = togglePrivacy;
 
+    // ----- EVENTOS DEL TEXTAREA -----
     textarea.addEventListener('input', () => {
       sendBtn.disabled = textarea.value.trim() === '' || isTyping;
       textarea.style.height = 'auto'; textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
     });
     textarea.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) sendMessage(); } });
 
+    // ----- RECONOCIMIENTO DE IMÁGENES -----
     const imageInput = document.getElementById('imageInput');
     const explicacionesGato = { es: ["🐱 Gato"], en: ["🐱 Cat"], es_AR: ["🐱 Gato"] };
     const explicacionesPerro = { es: ["🐶 Perro"], en: ["🐶 Dog"], es_AR: ["🐶 Perro"] };
@@ -861,9 +863,11 @@
       reader.readAsDataURL(file); this.value = '';
     });
 
+    // ----- RESTAURAR NOMBRE GUARDADO -----
     const savedName = localStorage.getItem('atlas_username');
     if (savedName) { nameInput.value = savedName; nameSection.style.display = 'block'; checkStartButton(); }
 
+    // ----- AJUSTE DE SIDEBAR EN REDIMENSIÓN -----
     window.addEventListener('resize', () => {
       if (window.innerWidth >= 769) { sidebar.classList.remove('open'); sidebarBackdrop.classList.remove('show'); }
     });
