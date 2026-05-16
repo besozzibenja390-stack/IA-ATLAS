@@ -123,7 +123,6 @@
     }
     #startBtn:hover { background: #3a4f7a; }
     #startBtn:disabled { opacity: 0.4; cursor: default; background: #252525; color: #666; border: 1px solid #2e2e2e; }
-
     /* App */
     #app {
       display: none; width: 100%; height: 100vh; height: 100dvh; max-width: 100%;
@@ -134,7 +133,6 @@
       #app { width: 95vw; height: 90dvh; max-width: 1200px; border-radius: var(--border-radius-lg); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
       body { align-items: center; }
     }
-
     /* Sidebar */
     #sidebar {
       width: var(--sidebar-width); min-width: 200px;
@@ -166,14 +164,12 @@
     .user-row:hover { background: var(--color-background-secondary); }
     .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--color-background-info); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--color-text-info); flex-shrink: 0; }
     .user-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
-
     /* Main */
     #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; width: 100%; padding-top: env(safe-area-inset-top); }
     #topbar { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--color-border-tertiary); }
     #menu-toggle { display: flex; } @media (min-width: 769px) { #menu-toggle { display: none; } }
     #model-selector { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--color-text-primary); background: none; }
     .topbar-actions { display: flex; gap: 4px; }
-
     /* Messages */
     #messages { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 12px; scroll-behavior: smooth; display: none; word-break: break-word; }
     @media (min-width: 769px) { #messages { padding: 20px 24px; } }
@@ -187,25 +183,57 @@
     .bubble { padding: 8px 12px; border-radius: 16px; font-size: clamp(14px, 3.5vw, 16px); line-height: 1.5; color: var(--color-text-primary); word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap; }
     .msg-row.user .bubble { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 16px 16px 4px 16px; margin-right: 4px; }
     .msg-row.assistant .bubble { background: none; padding: 2px 0; border-radius: 0; border: none; }
-
+    /* Voice interface */
+    #voice-interface {
+      display: none;
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: var(--color-background-primary);
+      border-top: 0.5px solid var(--color-border-tertiary);
+      z-index: 150;
+      padding: 16px;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      animation: fadeIn 0.2s ease;
+    }
+    #voice-interface.active { display: flex; }
+    #voice-canvas { width: 100%; height: 60px; border-radius: 12px; background: var(--color-background-secondary); }
+    #voice-subtitles {
+      text-align: center;
+      font-size: clamp(16px, 4vw, 20px);
+      color: var(--color-text-primary);
+      min-height: 28px;
+      padding: 0 16px;
+    }
+    .voice-actions { display: flex; gap: 12px; }
+    .voice-btn {
+      background: var(--color-background-secondary);
+      border: 1px solid var(--color-border-secondary);
+      border-radius: 50%;
+      width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+      color: var(--color-text-primary);
+      font-size: 20px;
+    }
+    .voice-btn:hover { background: var(--color-background-tertiary); }
+    .voice-btn.end-call { background: #ff3b30; color: white; border: none; }
     /* Toggle buttons */
     .toggle-btn { background: var(--color-background-secondary); border: 1px solid var(--color-border-secondary); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--color-text-secondary); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
     .toggle-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-text-info); }
-
     /* Code block */
     .code-container { background: var(--color-background-secondary); border: 1px solid var(--color-border-tertiary); border-radius: 12px; padding: 12px; margin: 8px 0; position: relative; overflow-x: auto; }
     .code-container pre { margin: 0; padding: 0; font-size: 13px; font-family: 'Fira Code', monospace; color: var(--color-text-primary); white-space: pre-wrap; word-break: break-word; }
     .code-toolbar { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; flex-wrap: wrap; }
     .code-btn { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--color-border-secondary); background: var(--color-background-tertiary); color: var(--color-text-secondary); cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
     .code-btn.run { background: #2a3a5e; color: #a8c4ff; border-color: #3a4f7a; }
-
     /* Modals */
     #run-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease; }
     #run-modal.open { display: flex; }
     #run-modal-content { background: var(--color-background-primary); border-radius: 16px; width: 100%; max-width: 900px; height: 80dvh; display: flex; flex-direction: column; overflow: hidden; }
     #run-modal-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border-tertiary); }
     #run-frame { flex: 1; width: 100%; border: none; }
-
     #empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px 16px; }
     #empty-state h2 { font-size: clamp(18px, 5vw, 22px); font-weight: 500; color: var(--color-text-primary); text-align: center; }
     .suggestions { display: grid; grid-template-columns: 1fr; gap: 8px; width: 100%; max-width: 480px; }
@@ -213,7 +241,6 @@
     .suggestion-card { padding: 12px 14px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer; font-size: clamp(11px, 2.8vw, 13px); color: var(--color-text-secondary); transition: all 0.15s; background: none; text-align: left; line-height: 1.4; }
     .suggestion-card:hover { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-secondary); }
     .suggestion-card strong { display: block; color: var(--color-text-primary); font-weight: 500; margin-bottom: 2px; }
-
     /* Input area */
     #input-area { padding: 8px 8px 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
     @media (min-width: 769px) { #input-area { padding: 12px 16px 16px; } }
@@ -232,7 +259,6 @@
     #send-btn i { font-size: 14px; color: var(--color-background-primary); }
     #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     .disclaimer { text-align: center; font-size: 10px; color: var(--color-text-tertiary); margin-top: 6px; }
-
     @keyframes fadeIn { from { opacity:0; transform:scale(0.97) } to { opacity:1; transform:scale(1) } }
     @keyframes messagePop { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
     .typing-indicator { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
@@ -243,9 +269,7 @@
 </head>
 <body class="theme-dark">
   <div id="landing">
-    <div class="flag-wrapper">
-      <div class="flag-argentina"><div class="sun"></div></div>
-    </div>
+    <div class="flag-wrapper"><div class="flag-argentina"><div class="sun"></div></div></div>
     <h1>AOS-0.1</h1>
     <div class="desc">¡Hola! Soy un asistente virtual creado por una sola persona.<br>Puedo charlar, reconocer imágenes, buscar en Wikipedia, programar y enseñar matemáticas.<br>Estoy en constante desarrollo. ¡Probame!</div>
     <div class="lang-selector" id="langSelector">
@@ -253,10 +277,7 @@
       <button class="lang-btn" data-lang="es">Español (Latino)</button>
       <button class="lang-btn" data-lang="es_AR">Español (Argentina)</button>
     </div>
-    <div id="name-section" style="display:none;">
-      <label for="name-input">¿Cómo te llamás?</label>
-      <input type="text" id="name-input" placeholder="Tu nombre o apodo..." maxlength="30" />
-    </div>
+    <div id="name-section" style="display:none;"><label for="name-input">¿Cómo te llamás?</label><input type="text" id="name-input" placeholder="Tu nombre o apodo..." maxlength="30" /></div>
     <button id="startBtn" disabled onclick="iniciarChat()">Comenzar</button>
   </div>
 
@@ -268,8 +289,7 @@
       <div class="sidebar-section">Conversaciones</div><div id="chat-list"></div>
       <div class="sidebar-footer">
         <div class="user-row">
-          <div class="avatar">U</div>
-          <div class="user-name" id="sidebar-username">Usuario</div>
+          <div class="avatar">U</div><div class="user-name" id="sidebar-username">Usuario</div>
           <button class="icon-btn" style="margin-left:auto" title="Cambiar tema" onclick="cambiarTema()"><i class="ti ti-palette"></i></button>
         </div>
         <div style="display:flex; gap:6px; margin-top:8px;">
@@ -298,6 +318,14 @@
         </div>
       </div>
       <div id="messages"></div>
+      <div id="voice-interface">
+        <canvas id="voice-canvas"></canvas>
+        <div id="voice-subtitles"></div>
+        <div class="voice-actions">
+          <button class="voice-btn" id="voice-stop-btn" onclick="stopVoiceMode()" title="Finalizar">✋</button>
+          <button class="voice-btn end-call" onclick="stopVoiceMode()" title="Colgar">📞</button>
+        </div>
+      </div>
       <div id="input-area">
         <div id="input-box">
           <textarea id="textarea" placeholder="Escribe un mensaje..." rows="1"></textarea>
@@ -315,7 +343,6 @@
     </div>
   </div>
 
-  <!-- Modales -->
   <div id="run-modal"><div id="run-modal-content"><div id="run-modal-header"><span>Ejecutando código</span><button class="icon-btn" onclick="closeRunModal()"><i class="ti ti-x"></i></button></div><iframe id="run-frame" sandbox="allow-scripts allow-same-origin"></iframe></div></div>
 
   <div id="feedback-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; align-items:center; justify-content:center; padding:20px;" onclick="if(event.target===this)closeFeedback()">
@@ -340,9 +367,13 @@
     let isRecording = false;
     let conversationContext = [];
     let userName = 'Usuario';
-    let ttsEnabled = false;
+    let ttsEnabled = true; // Activado por defecto
     let privacyMode = false;
     let touchStartX = 0, touchStartY = 0;
+    let voiceModeActive = false;
+    let audioContext = null;
+    let analyser = null;
+    let animationId = null;
 
     const textarea = document.getElementById('textarea');
     const sendBtn = document.getElementById('send-btn');
@@ -360,6 +391,9 @@
     const sidebarUsername = document.getElementById('sidebar-username');
     const ttsToggle = document.getElementById('tts-toggle');
     const privacyToggle = document.getElementById('privacy-toggle');
+    const voiceInterface = document.getElementById('voice-interface');
+    const voiceCanvas = document.getElementById('voice-canvas');
+    const voiceSubtitles = document.getElementById('voice-subtitles');
 
     (async function () {
       try { mobilenetModel = await mobilenet.load(); console.log("Modelo listo 🖼️"); } catch(e) { console.warn("Error cargando modelo"); }
@@ -402,8 +436,6 @@
       app.style.display = 'flex';
       app.style.animation = 'fadeIn 0.6s ease';
       sidebar.classList.remove('open'); sidebarBackdrop.classList.remove('show');
-      ttsEnabled = localStorage.getItem('atlas_tts') === 'true';
-      privacyMode = localStorage.getItem('atlas_privacy') === 'true';
       updateTTSButton();
       updatePrivacyButton();
       if (privacyMode) clearPrivateData();
@@ -419,50 +451,125 @@
       ttsEnabled = !ttsEnabled;
       localStorage.setItem('atlas_tts', ttsEnabled);
       updateTTSButton();
-      if (ttsEnabled) {
-        setTimeout(() => {
-          const u = new SpeechSynthesisUtterance("Voz activada");
-          u.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
-          u.volume = 1; u.rate = 1.1;
-          if (/Android/i.test(navigator.userAgent)) {
-            new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA').play().then(() => speechSynthesis.speak(u)).catch(() => speechSynthesis.speak(u));
-          } else speechSynthesis.speak(u);
-        }, 150);
-      } else speechSynthesis.cancel();
+      if (ttsEnabled) speakText("Voz activada");
+      else speechSynthesis.cancel();
     }
     function updateTTSButton() { ttsToggle.classList.toggle('active', ttsEnabled); }
     function speakText(text) {
       if (!ttsEnabled) return;
       const clean = text.replace(/\*\*/g, '').replace(/🐱|🐶|🌿|🧑|📚|🔗/g, '').replace(/\[.*?\]\(.*?\)/g, '').replace(/https?:\/\/\S+/g, '').replace(/```[\s\S]*?```/g, '').trim();
       if (!clean) return;
-      setTimeout(() => {
-        const u = new SpeechSynthesisUtterance(clean);
-        u.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
-        u.volume = 1; u.rate = 1.1;
-        speechSynthesis.cancel(); speechSynthesis.speak(u);
-      }, 100);
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(clean);
+      u.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
+      u.volume = 1; u.rate = 1.1;
+      speechSynthesis.speak(u);
+      if (voiceModeActive) {
+        voiceSubtitles.textContent = clean;
+        startVoiceVisualization();
+      }
     }
 
     function togglePrivacy() { privacyMode = !privacyMode; localStorage.setItem('atlas_privacy', privacyMode); updatePrivacyButton(); if (privacyMode) clearPrivateData(); }
     function updatePrivacyButton() { privacyToggle.classList.toggle('active', privacyMode); }
     function clearPrivateData() { conversationContext = []; messagesEl.innerHTML = ''; messagesEl.style.display = 'none'; emptyState.style.display = 'flex'; }
 
+    // ========== VISUALIZACIÓN DE VOZ ==========
+    function startVoiceVisualization() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+      }
+      const canvas = voiceCanvas;
+      const ctx = canvas.getContext('2d');
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      function draw() {
+        animationId = requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const barWidth = (canvas.width / bufferLength) * 2.5;
+        let barHeight;
+        let x = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          barHeight = dataArray[i] / 2;
+          ctx.fillStyle = 'rgb(' + (barHeight + 100) + ', 100, 200)';
+          ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+          x += barWidth + 1;
+        }
+      }
+      if (animationId) cancelAnimationFrame(animationId);
+      draw();
+    }
+
+    function stopVoiceVisualization() {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      const ctx = voiceCanvas.getContext('2d');
+      ctx.clearRect(0, 0, voiceCanvas.width, voiceCanvas.height);
+      voiceSubtitles.textContent = '';
+    }
+
+    function stopVoiceMode() {
+      voiceModeActive = false;
+      voiceInterface.classList.remove('active');
+      stopVoiceVisualization();
+      speechSynthesis.cancel();
+    }
+
+    // ========== RECONOCIMIENTO DE VOZ MEJORADO ==========
     function toggleVoice() {
-      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert('Reconocimiento de voz no soportado.'); return; }
-      if (isRecording) stopVoice(); else startVoice();
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Reconocimiento de voz no soportado.');
+        return;
+      }
+      if (isRecording) {
+        stopVoice();
+        stopVoiceMode();
+      } else {
+        voiceModeActive = true;
+        voiceInterface.classList.add('active');
+        startVoice();
+      }
     }
     function startVoice() {
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognition = new SR();
       recognition.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es_AR' ? 'es-AR' : 'es-ES');
-      recognition.interimResults = true; recognition.continuous = false;
-      recognition.onstart = () => { isRecording = true; micBtn.classList.add('recording'); textarea.value = ''; textarea.focus(); };
-      recognition.onresult = e => { let t=''; for(let i=e.resultIndex;i<e.results.length;i++) t+=e.results[i][0].transcript; textarea.value = t; textarea.style.height='auto'; textarea.style.height = Math.min(textarea.scrollHeight,120)+'px'; };
-      recognition.onerror = () => stopVoice();
-      recognition.onend = () => { if(isRecording){ stopVoice(); if(textarea.value.trim()) sendMessage(textarea.value.trim()); } };
+      recognition.interimResults = true;
+      recognition.continuous = true;
+      recognition.onstart = () => { isRecording = true; micBtn.classList.add('recording'); voiceSubtitles.textContent = 'Escuchando...'; startVoiceVisualization(); };
+      recognition.onresult = e => {
+        let t = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) t += e.results[i][0].transcript;
+        voiceSubtitles.textContent = t;
+      };
+      recognition.onerror = () => { stopVoice(); stopVoiceMode(); };
+      recognition.onend = () => {
+        if (isRecording && voiceSubtitles.textContent && voiceSubtitles.textContent !== 'Escuchando...') {
+          const text = voiceSubtitles.textContent.trim();
+          stopVoice();
+          sendMessage(text);
+          // Reiniciar reconocimiento para seguir conversando
+          setTimeout(() => {
+            if (voiceModeActive) startVoice();
+          }, 500);
+        } else {
+          stopVoice();
+          stopVoiceMode();
+        }
+      };
       recognition.start();
     }
-    function stopVoice() { if(recognition){ recognition.stop(); recognition=null; } isRecording=false; micBtn.classList.remove('recording'); }
+    function stopVoice() {
+      if (recognition) { recognition.stop(); recognition = null; }
+      isRecording = false;
+      micBtn.classList.remove('recording');
+    }
 
     // ========== EMOCIONES ==========
     const emociones = {
@@ -476,14 +583,14 @@
       enamorado: { en: ["in love","i'm in love"], es: ["enamorado","estoy enamorado"], es_AR: ["enamorado","estoy enamorado","me enamoré"] }
     };
     const respEmocion = {
-      feliz: { en: ["That's great! 😊 So glad to hear that!","Awesome! Keep that smile!"], es: ["¡Qué bueno! 😊 Me alegra mucho.","¡Genial! Seguí así."], es_AR: ["¡Qué bien, che! 😊 Me re alegra.","¡Joyita! Seguí con esa buena onda."] },
-      triste: { en: ["I'm sorry you feel this way. Want to talk about it?","Sometimes things get tough... but you're not alone."], es: ["Lamento que te sientas así. ¿Querés hablar de eso?","A veces todo cuesta, pero no estás solo/a."], es_AR: ["Uh, qué bajón, che. ¿Querés hablar?","A veces la vida pega duro, pero acá estoy."] },
-      enojado: { en: ["I understand your frustration. Want to vent?","Breathe... sometimes letting it out helps."], es: ["Entiendo tu bronca. ¿Querés desahogarte?","Respirá... a veces putear ayuda."], es_AR: ["Te entiendo, la bronca es grande. ¿Querés putear un rato?","Tranqui, contame qué pasó."] },
-      miedo: { en: ["Fear is normal. What worries you?","You're braver than you think."], es: ["El miedo es normal. ¿Qué te preocupa?","Sos más valiente de lo que creés."], es_AR: ["El cagaso es normal, che. ¿Qué te preocupa?","No te hagas drama, todo tiene solución."] },
-      sorpresa: { en: ["What a surprise! Tell me more.","Unexpected, right? Life is full of surprises!"], es: ["¡Qué sorpresa! Contame más.","Inesperado, ¿no? La vida te sorprende."], es_AR: ["¡Qué sorpresa, che! Contame más.","No lo puedo creer, ¡qué locura!"] },
-      cansado: { en: ["Rest up! You deserve a break.","Sometimes the best thing is to stop and breathe."], es: ["¡Descansá! Te lo merecés.","A veces lo mejor es parar y respirar."], es_AR: ["Tiráte a descansar, te lo re merecés.","Tomate un respiro, che. Todo pasa."] },
-      aburrido: { en: ["Boredom can be a good time to be creative! Want to play something?","I can tell you a joke or a fun fact."], es: ["El aburrimiento es oportunidad para crear. ¿Querés que te cuente algo?","Tengo chistes, datos curiosos... ¿qué preferís?"], es_AR: ["Estar al pedo es una chance para hacer algo piola. ¿Querés un juego?","Te tiro un dato curioso o un chiste, ¿qué preferís?"] },
-      enamorado: { en: ["Love is beautiful! Tell me more about that person.","That's wonderful! How did you meet?"], es: ["El amor es hermoso. ¡Contame más de esa persona!","Qué lindo, ¿cómo se conocieron?"], es_AR: ["¡Qué lindo, che! Contame más de esa persona.","El amor es lo más, ¿cómo se conocieron?"] }
+      feliz: { en: ["That's great! 😊","Awesome!"], es: ["¡Qué bueno! 😊","¡Genial!"], es_AR: ["¡Qué bien, che! 😊","¡Joyita!"] },
+      triste: { en: ["I'm sorry... Want to talk?"], es: ["Lamento eso. ¿Querés hablar?"], es_AR: ["Uh, qué bajón. ¿Querés hablar?"] },
+      enojado: { en: ["I understand. Want to vent?"], es: ["Entiendo tu bronca. ¿Querés desahogarte?"], es_AR: ["Te entiendo. ¿Querés putear un rato?"] },
+      miedo: { en: ["Fear is normal. What worries you?"], es: ["El miedo es normal. ¿Qué te preocupa?"], es_AR: ["El cagaso es normal. ¿Qué te preocupa?"] },
+      sorpresa: { en: ["What a surprise! Tell me more."], es: ["¡Qué sorpresa! Contame más."], es_AR: ["¡Qué sorpresa, che! Contame más."] },
+      cansado: { en: ["Rest up! You deserve it."], es: ["¡Descansá! Te lo merecés."], es_AR: ["Tiráte a descansar, te lo re merecés."] },
+      aburrido: { en: ["Want to play something?"], es: ["¿Querés que te cuente algo?"], es_AR: ["¿Querés un juego o un chiste?"] },
+      enamorado: { en: ["Love is beautiful! Tell me more."], es: ["El amor es hermoso. ¡Contame más!"], es_AR: ["¡Qué lindo, che! Contame más."] }
     };
     function detectarEmocion(texto) {
       const t = texto.toLowerCase().trim();
@@ -496,45 +603,11 @@
       return null;
     }
 
-    // ========== CONOCIMIENTO (CORREGIDO SIN TEMPLATE LITERALS ROTOS) ==========
+    // ========== CONOCIMIENTO ==========
     const codeKnowledge = {
-      calculadora: [
-        '¡Perfecto pedido! Acá va una calculadora completa:\n```html\n' +
-        '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Calculadora</title>' +
-        '<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}' +
-        '.calc{background:#16213e;border-radius:20px;padding:20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.display{background:#0f3460;border-radius:12px;padding:20px;text-align:right;margin-bottom:15px}' +
-        '.expr{color:#aaa;font-size:.85rem;min-height:20px}.result{color:#e94560;font-size:2rem;font-weight:700;word-break:break-all}' +
-        '.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}button{padding:18px;border:none;border-radius:12px;font-size:1rem;cursor:pointer;transition:transform .1s;font-weight:600}button:active{transform:scale(.92)}' +
-        '.n{background:#1a1a2e;color:#fff}.o{background:#e94560;color:#fff}.e{background:#0f3460;color:#e94560;grid-column:span 2}.c{background:#533483;color:#fff}.z{grid-column:span 2}</style></head>' +
-        '<body><div class="calc"><div class="display"><div class="expr" id="expr"></div><div class="result" id="res">0</div></div>' +
-        '<div class="buttons"><button class="c" onclick="limpiar()">C</button><button class="c" onclick="borrar()">⌫</button><button class="c" onclick="agregar(\'%\')">%</button>' +
-        '<button class="o" onclick="agregar(\'/\')">÷</button><button class="n" onclick="agregar(\'7\')">7</button><button class="n" onclick="agregar(\'8\')">8</button>' +
-        '<button class="n" onclick="agregar(\'9\')">9</button><button class="o" onclick="agregar(\'*\')">×</button><button class="n" onclick="agregar(\'4\')">4</button>' +
-        '<button class="n" onclick="agregar(\'5\')">5</button><button class="n" onclick="agregar(\'6\')">6</button><button class="o" onclick="agregar(\'-\')">−</button>' +
-        '<button class="n" onclick="agregar(\'1\')">1</button><button class="n" onclick="agregar(\'2\')">2</button><button class="n" onclick="agregar(\'3\')">3</button>' +
-        '<button class="o" onclick="agregar(\'+\')">+</button><button class="n z" onclick="agregar(\'0\')">0</button><button class="n" onclick="agregar(\'.\')">.</button>' +
-        '<button class="e" onclick="calcular()">=</button></div></div><script>let expr=\'\';function agregar(v){expr+=v;document.getElementById(\'res\').textContent=expr}function limpiar(){expr=\'\';document.getElementById(\'res\').textContent=\'0\';document.getElementById(\'expr\').textContent=\'\'}function borrar(){expr=expr.slice(0,-1);document.getElementById(\'res\').textContent=expr||\'0\'}function calcular(){try{document.getElementById(\'expr\').textContent=expr+\' =\';let r=Function(\'"use strict";return(\'+expr+\')\')();document.getElementById(\'res\').textContent=parseFloat(r.toFixed(10));expr=String(r)}catch(e){document.getElementById(\'res\').textContent=\'Error\';expr=\'\'}}' +
-        '<\/script></body></html>\n```\nGuardalo como "calculadora.html" y abrilo directo en el navegador.'
-      ],
-      tareas: [
-        'App de tareas con diseño limpio y localStorage:\n```html\n' +
-        '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Mis Tareas</title><style>*{box-sizing:border-box;margin:0;padding:0}body{background:#f0f2f5;font-family:\"Segoe UI\",sans-serif;min-height:100vh;padding:2rem}.app{max-width:520px;margin:0 auto}h1{font-size:1.8rem;color:#1a1a1a;margin-bottom:.3rem}.sub{color:#888;font-size:.9rem;margin-bottom:1.5rem}.row{display:flex;gap:10px;margin-bottom:1.5rem}.row input{flex:1;padding:14px 18px;border:2px solid #e0e0e0;border-radius:14px;font-size:1rem;outline:none;background:#fff;transition:border .2s}.row input:focus{border-color:#007aff}.add{padding:14px 22px;background:#007aff;color:#fff;border:none;border-radius:14px;cursor:pointer;font-weight:600;transition:background .2s}.add:hover{background:#0051d5}.filtros{display:flex;gap:8px;margin-bottom:1rem}.f{padding:7px 16px;border:1px solid #ddd;border-radius:20px;background:#fff;cursor:pointer;font-size:.85rem;transition:all .2s}.f.on,.f:hover{background:#007aff;color:#fff;border-color:#007aff}.lista{display:flex;flex-direction:column;gap:10px}.item{background:#fff;border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:opacity .2s}.item.done{opacity:.55}.item.done .txt{text-decoration:line-through;color:#aaa}.cb{width:22px;height:22px;border-radius:50%;border:2px solid #007aff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}.cb.on{background:#007aff}.cb.on::after{content:\"✓\";color:#fff;font-size:13px;font-weight:700}.txt{flex:1;font-size:.95rem}.del{background:none;border:none;color:#ff3b30;cursor:pointer;font-size:1.1rem;padding:4px 8px;border-radius:8px;transition:background .2s}.del:hover{background:#fff0ee}.stats{text-align:center;margin-top:1.5rem;color:#aaa;font-size:.85rem}.vacio{text-align:center;padding:3rem;color:#bbb}</style></head>' +
-        '<body><div class="app"><h1>📝 Mis Tareas</h1><p class="sub">Organizá tu día sin complicaciones</p><div class="row"><input id="inp" placeholder="Nueva tarea..." onkeydown="if(event.key===\'Enter\')add()"><button class="add" onclick="add()">+ Agregar</button></div><div class="filtros"><button class="f on" onclick="setF(\'all\',this)">Todas</button><button class="f" onclick="setF(\'pen\',this)">Pendientes</button><button class="f" onclick="setF(\'don\',this)">Completadas</button></div><div class="lista" id="lista"></div><div class="stats" id="stats"></div></div>' +
-        '<script>let T=JSON.parse(localStorage.getItem(\'atlas_t\')||\'[]\'),filtro=\'all\';const save=()=>localStorage.setItem(\'atlas_t\',JSON.stringify(T));function add(){const v=document.getElementById(\'inp\').value.trim();if(!v)return;T.push({id:Date.now(),v,ok:false});document.getElementById(\'inp\').value=\'\';save();draw()}function tog(id){T=T.map(t=>t.id===id?{...t,ok:!t.ok}:t);save();draw()}function del(id){T=T.filter(t=>t.id!==id);save();draw()}function setF(f,btn){filtro=f;document.querySelectorAll(\'.f\').forEach(b=>b.classList.remove(\'on\'));btn.classList.add(\'on\');draw()}function draw(){let vis=T;if(filtro===\'pen\')vis=T.filter(t=>!t.ok);if(filtro===\'don\')vis=T.filter(t=>t.ok);const l=document.getElementById(\'lista\');l.innerHTML=vis.length?vis.map(t=>\'<div class="item\'+(t.ok?\' done\':\'\')+\'"><div class="cb\'+(t.ok?\' on\':\'\')+\'" onclick="tog(\'+t.id+\')"></div><span class="txt">\'+t.v+\'</span><button class="del" onclick="del(\'+t.id+\')">🗑</button></div>\').join(\'\'):\'<div class="vacio">No hay tareas acá 😌</div>\';const ok=T.filter(t=>t.ok).length;document.getElementById(\'stats\').textContent=T.length?ok+\' de \'+T.length+\' completadas\':\'\'}draw();' +
-        '<\/script></body></html>\n```'
-      ],
-      juego: [
-        'Snake clásico:\n```html\n' +
-        '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Snake</title><style>body{background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;color:#fff}h1{color:#4ade80;letter-spacing:4px;font-size:1.5rem;margin-bottom:8px}#info{color:#888;margin-bottom:12px;font-size:.9rem}canvas{border:2px solid #4ade80;border-radius:8px;box-shadow:0 0 30px rgba(74,222,128,.3)}#score{margin-top:12px;font-size:1.3rem;color:#4ade80}</style></head>' +
-        '<body><h1>🐍 SNAKE</h1><div id="info">Usá las flechas para mover</div><canvas id="c" width="400" height="400"></canvas><div id="score">Puntaje: 0</div>' +
-        '<script>const c=document.getElementById(\'c\'),ctx=c.getContext(\'2d\');const S=20,C=20,R=20;let snake,dir,food,pts,iv,alive;function init(){snake=[{x:10,y:10},{x:9,y:10},{x:8,y:10}];dir={x:1,y:0};pts=0;alive=true;newFood();clearInterval(iv);iv=setInterval(loop,130)}function newFood(){do{food={x:Math.floor(Math.random()*C),y:Math.floor(Math.random()*R)}}while(snake.some(s=>s.x===food.x&&s.y===food.y))}function loop(){if(!alive)return;const h={x:snake[0].x+dir.x,y:snake[0].y+dir.y};if(h.x<0||h.x>=C||h.y<0||h.y>=R||snake.some(s=>s.x===h.x&&s.y===h.y)){alive=false;clearInterval(iv);alert(\'Game Over - Puntaje: \'+pts);return}snake.unshift(h);if(h.x===food.x&&h.y===food.y){pts+=10;document.getElementById(\'score\').textContent=\'Puntaje: \'+pts;newFood()}else snake.pop();draw()}function draw(){ctx.fillStyle=\'#0d0d0d\';ctx.fillRect(0,0,400,400);ctx.fillStyle=\'#f87171\';ctx.beginPath();ctx.arc(food.x*S+S/2,food.y*S+S/2,S/2-2,0,Math.PI*2);ctx.fill();snake.forEach((s,i)=>{ctx.fillStyle=i===0?\'#4ade80\':\'#22c55e\';ctx.beginPath();ctx.roundRect(s.x*S+1,s.y*S+1,S-2,S-2,4);ctx.fill()})}document.addEventListener(\'keydown\',e=>{const m={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};const nd=m[e.key];if(nd&&!(nd.x===-dir.x&&nd.y===-dir.y)){dir=nd;e.preventDefault()}});init();' +
-        '<\/script></body></html>\n```'
-      ]
+      calculadora: ['```html\n<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Calculadora</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#1a1a2e;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}.calc{background:#16213e;border-radius:20px;padding:20px;width:300px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.display{background:#0f3460;border-radius:12px;padding:20px;text-align:right;margin-bottom:15px}.expr{color:#aaa;font-size:.85rem;min-height:20px}.result{color:#e94560;font-size:2rem;font-weight:700;word-break:break-all}.buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}button{padding:18px;border:none;border-radius:12px;font-size:1rem;cursor:pointer;transition:transform .1s;font-weight:600}button:active{transform:scale(.92)}.n{background:#1a1a2e;color:#fff}.o{background:#e94560;color:#fff}.e{background:#0f3460;color:#e94560;grid-column:span 2}.c{background:#533483;color:#fff}.z{grid-column:span 2}</style></head><body><div class="calc"><div class="display"><div class="expr" id="expr"></div><div class="result" id="res">0</div></div><div class="buttons"><button class="c" onclick="limpiar()">C</button><button class="c" onclick="borrar()">⌫</button><button class="c" onclick="agregar(\'%\')">%</button><button class="o" onclick="agregar(\'/\')">÷</button><button class="n" onclick="agregar(\'7\')">7</button><button class="n" onclick="agregar(\'8\')">8</button><button class="n" onclick="agregar(\'9\')">9</button><button class="o" onclick="agregar(\'*\')">×</button><button class="n" onclick="agregar(\'4\')">4</button><button class="n" onclick="agregar(\'5\')">5</button><button class="n" onclick="agregar(\'6\')">6</button><button class="o" onclick="agregar(\'-\')">−</button><button class="n" onclick="agregar(\'1\')">1</button><button class="n" onclick="agregar(\'2\')">2</button><button class="n" onclick="agregar(\'3\')">3</button><button class="o" onclick="agregar(\'+\')">+</button><button class="n z" onclick="agregar(\'0\')">0</button><button class="n" onclick="agregar(\'.\')">.</button><button class="e" onclick="calcular()">=</button></div></div><script>let expr=\'\';function agregar(v){expr+=v;document.getElementById(\'res\').textContent=expr}function limpiar(){expr=\'\';document.getElementById(\'res\').textContent=\'0\';document.getElementById(\'expr\').textContent=\'\'}function borrar(){expr=expr.slice(0,-1);document.getElementById(\'res\').textContent=expr||\'0\'}function calcular(){try{document.getElementById(\'expr\').textContent=expr+\' =\';let r=Function(\'"use strict";return(\'+expr+\')\')();document.getElementById(\'res\').textContent=parseFloat(r.toFixed(10));expr=String(r)}catch(e){document.getElementById(\'res\').textContent=\'Error\';expr=\'\'}}<\/script></body></html>\n```']
     };
-
-    const keywordMap = {
-      calculadora: 'calculadora', tareas: 'tareas', juego: 'juego'
-    };
+    const keywordMap = { calculadora: 'calculadora' };
 
     function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     function getRespuestas() { return respuestas[currentLang] || respuestas.es; }
@@ -542,70 +615,61 @@
 
     const respuestas = {
       en: [
-        { claves: ["hello","hi","hey","good morning","good afternoon","good evening"], respuestas: ["Hello! 👋 How can I help you?","Hey! 😊 What do you need?","Good day! How can I assist you?"] },
-        { claves: ["how are you","how's it going","what's up","how you doing"], respuestas: ["I'm great, thanks! 😄 And you?","Doing well! Ready to help. What about you?"] },
-        { claves: ["name","what's your name","who are you"], respuestas: ["I'm AOS-0.1, your virtual assistant. Created by a single developer who loves Argentina 🇦🇷"] },
-        { claves: ["thanks","thank you","thx"], respuestas: ["You're welcome! 😊","No problem! Always here to help.","It was a pleasure!"] },
-        { claves: ["bye","goodbye","see you","adios"], respuestas: ["See you later! 👋","Bye! Come back whenever you want.","Goodbye! Take care."] },
-        { claves: ["help","what can you do"], respuestas: ["I can chat, recognize images, search Wikipedia, write code, teach math, and even talk! Just ask me."] }
+        { claves: ["hello","hi","hey"], respuestas: ["Hello! 👋 How can I help you?"] },
+        { claves: ["how are you"], respuestas: ["I'm great, thanks! 😄"] },
+        { claves: ["thanks"], respuestas: ["You're welcome! 😊"] }
       ],
       es: [
-        { claves: ["hola","buenas","hey","saludos","buenos días","buenas tardes","buenas noches"], respuestas: ["¡Hola! 👋 ¿En qué te puedo ayudar?","¡Buenas! ¿Qué necesitás?","¡Hola! Un gusto verte."] },
-        { claves: ["cómo estás","como estas","qué tal","todo bien"], respuestas: ["¡Muy bien, gracias! 😄 ¿Y vos?","Todo excelente. ¿Qué contás?"] },
-        { claves: ["nombre","cómo te llamas","quién sos"], respuestas: ["Soy AOS-0.1, tu asistente virtual. Creado por una sola persona que ama Argentina 🇦🇷"] },
-        { claves: ["gracias","muchas gracias","te lo agradezco","grax"], respuestas: ["¡De nada! 😊 Para eso estoy.","¡Con gusto! Acá estoy cuando precises.","¡Un placer ayudarte!"] },
-        { claves: ["chau","adiós","hasta luego","nos vemos"], respuestas: ["¡Chau! 👋 Que andes bien.","¡Nos vemos! Volvé cuando quieras.","¡Hasta luego! Cuidate."] },
-        { claves: ["ayuda","qué podés hacer"], respuestas: ["Puedo charlar, reconocer imágenes, buscar en Wikipedia, programar, enseñar matemáticas... ¡y también hablar! Pedime lo que quieras."] }
+        { claves: ["hola","buenas","hey"], respuestas: ["¡Hola! 👋 ¿En qué te puedo ayudar?"] },
+        { claves: ["cómo estás","como estas"], respuestas: ["¡Muy bien, gracias! 😄"] },
+        { claves: ["gracias"], respuestas: ["¡De nada! 😊"] }
       ],
       es_AR: [
-        { claves: ["hola","buenas","hey","saludos","buenos días","buenas tardes","buenas noches"], respuestas: ["¡Hola, che! 👋 ¿En qué te puedo dar una mano?","¡Buenas! ¿Qué precisás?","¡Hola, loco! ¿Qué andás buscando?"] },
-        { claves: ["cómo estás","como estas","qué tal","todo bien","cómo andás"], respuestas: ["¡Joyita, gracias! 😄 ¿Y vos?","Todo pipí cucú. ¿Vos qué contás?","De diez, che. ¿Y vos?"] },
-        { claves: ["nombre","cómo te llamás","quién sos"], respuestas: ["Soy AOS-0.1, un asistente virtual hecho por un solo pibe argentino 🇦🇷. ¿Qué te parece?"] },
-        { claves: ["gracias","muchas gracias","te lo agradezco","grax"], respuestas: ["¡De nada, che! 😊 Para eso estamos.","¡No hay problema! Cuando necesites, silbá.","¡Un placer, loco!"] },
-        { claves: ["chau","adiós","hasta luego","nos vemos","bye"], respuestas: ["¡Chau, che! 👋 Que te vaya bárbaro.","¡Nos vemos! Cuidate, eh.","¡Hasta luego! Pasá cuando quieras."] },
-        { claves: ["ayuda","qué podés hacer"], respuestas: ["Puedo charlar, reconocer imágenes, buscar en Wikipedia, programar, enseñar matemáticas... ¡y también hablar! Pedime lo que quieras, no tengo drama."] }
+        { claves: ["hola","buenas","hey"], respuestas: ["¡Hola, che! 👋 ¿En qué te puedo dar una mano?"] },
+        { claves: ["cómo estás","como estas","cómo andás"], respuestas: ["¡Joyita, gracias! 😄"] },
+        { claves: ["gracias"], respuestas: ["¡De nada, che! 😊"] }
       ]
+    };
+    const fallbacks = {
+      en: ["I didn't quite get that 🤔."],
+      es: ["No entendí bien eso 🤔."],
+      es_AR: ["No te entendí, che 🤔. ¿Lo podés decir de otra forma?"]
     };
 
-    const fallbacks = {
-      en: ["I didn't quite get that 🤔. Can you rephrase it?","Hmm, I'm not sure how to answer that. Try again!"],
-      es: ["No entendí bien eso 🤔. ¿Podés reformularlo?","Mmm, no estoy seguro de cómo responder eso. ¿Probás de nuevo?"],
-      es_AR: [
-        "No te entendí, che 🤔. ¿Lo podés decir de otra forma?",
-        "Mmm, no cazé bien. ¿Me lo repetís?",
-        "¡Uh, disculpá! No te entendí nada. ¿Probás de nuevo?",
-        "La verdad que no te entendí. ¿Lo decís más claro?",
-        "No te sigo... ¿me lo explicás de nuevo?"
-      ]
-    };
+    // ========== CONTEXTO CONVERSACIONAL MEJORADO ==========
+    function analizarContexto(texto) {
+      const t = texto.toLowerCase().trim();
+      const lastMessages = conversationContext.slice(-3);
+      // Determinar si la consulta es una pregunta factual (requiere Wikipedia)
+      const factualPatterns = ['qué es', 'quien es', 'dónde está', 'cuándo fue', 'cómo funciona', 'definición de', 'historia de', 'biografía de'];
+      const isFactual = factualPatterns.some(p => t.includes(p));
+      // Determinar si es conversacional
+      const conversationalPatterns = ['hola', 'gracias', 'chau', 'cómo estás', 'qué tal', 'conta un chiste', 'decime algo'];
+      const isConversational = conversationalPatterns.some(p => t.includes(p));
+      return { isFactual, isConversational };
+    }
 
     function obtenerRespuestaConversacional(texto) {
       const t = texto.toLowerCase().trim();
-      if (currentLang === 'es_AR' && (t.includes('quién te creó') || t.includes('quien te hizo') || t.includes('de dónde saliste'))) {
-        return "Me creó un pibe argentino que está aprendiendo a programar y quiere hacer el mejor asistente del mundo. ¿Viste? Bastante humilde no es, jaja.";
+      if (currentLang === 'es_AR' && (t.includes('quién te creó') || t.includes('quien te hizo'))) {
+        return "Me creó un pibe argentino que está aprendiendo a programar y quiere hacer el mejor asistente del mundo.";
       }
-      if (t.includes('te sentis solo') || t.includes('te sentís solo') || t.includes('estás solo')) {
-        const resp = { en: "I'm never alone! I have you to talk to. 😊", es: "¡Nunca estoy solo! Te tengo a vos para charlar. 😊", es_AR: "¡Nunca estoy solo, che! Te tengo a vos para charlar. 😊" };
-        return resp[currentLang] || resp.es;
+      if (t.includes('te sentis solo') || t.includes('estás solo')) {
+        return currentLang === 'es_AR' ? "¡Nunca estoy solo, che! Te tengo a vos para charlar. 😊" : "I'm never alone! I have you. 😊";
       }
-      if (t.includes('conta un chiste') || t.includes('hacé reír') || t.includes('dime un chiste')) {
+      if (t.includes('conta un chiste') || t.includes('dime un chiste')) {
         const chistes = {
           en: ["Why don't scientists trust atoms? Because they make up everything! 😂"],
           es: ["¿Por qué los programadores confunden Halloween y Navidad? Porque Oct 31 == Dec 25. 😂"],
-          es_AR: ["¿Cuál es el colmo de un electricista? Tener un hijo que no le da ni pelota. 😂", "¿Qué le dice un jardinero a otro? Seamos felices mientras podamos. 😂"]
+          es_AR: ["¿Cuál es el colmo de un electricista? Tener un hijo que no le da ni pelota. 😂"]
         };
         return random(chistes[currentLang] || chistes.es);
-      }
-      if (t.includes('que lindo día') || t.includes('hermoso día') || t.includes('dia lindo')) {
-        return currentLang === 'es_AR' ? "¡Posta! Ideal para tomar unos mates. ¿Vos tomás?" : "¡Qué bueno! Disfrutalo.";
       }
       return null;
     }
 
-    async function buscarEnWikipedia(consulta, usarContexto = false) {
-      let query = consulta;
-      if (usarContexto) query = getContextualQuery(consulta);
-      const url = 'https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(query) + '&format=json&origin=*';
+    async function buscarEnWikipedia(consulta) {
+      const url = 'https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(consulta) + '&format=json&origin=*';
       try {
         const resp = await fetch(url); const data = await resp.json();
         if (!data.query.search.length) return null;
@@ -620,25 +684,39 @@
 
     async function obtenerRespuesta(texto) {
       const t = texto.toLowerCase().trim();
+      // 1. Emociones
       const emocion = detectarEmocion(texto);
       if (emocion) { updateContext(texto, emocion); return emocion; }
+      // 2. Conversacional especial
       const conversacional = obtenerRespuestaConversacional(texto);
       if (conversacional) { updateContext(texto, conversacional); return conversacional; }
+      // 3. Saludos
       const resp = getRespuestas();
       for (const entrada of resp) {
         if (entrada.claves.some(c => t.includes(c))) {
           const r = random(entrada.respuestas); updateContext(texto, r); return r;
         }
       }
+      // 4. Conocimiento preprogramado
       const codeAnswer = obtenerDeConocimiento(t);
       if (codeAnswer) { updateContext(texto, codeAnswer); return codeAnswer; }
-      const wiki = await buscarEnWikipedia(texto, true);
-      if (wiki) {
-        const oraciones = wiki.extract.split('. ');
-        const resumen = oraciones.slice(0,2).join('. ') + (oraciones.length>2?'.':'');
-        const link = 'https://es.wikipedia.org/wiki/' + encodeURIComponent(wiki.title);
-        const respuesta = resumen + '\n\n🔗 Fuente: ' + link;
-        updateContext(texto, respuesta); return respuesta;
+      // 5. Analizar contexto para decidir si buscar en Wikipedia
+      const contexto = analizarContexto(texto);
+      if (contexto.isFactual) {
+        const wiki = await buscarEnWikipedia(texto);
+        if (wiki) {
+          const oraciones = wiki.extract.split('. ');
+          const resumen = oraciones.slice(0,2).join('. ') + (oraciones.length>2?'.':'');
+          const link = 'https://es.wikipedia.org/wiki/' + encodeURIComponent(wiki.title);
+          const respuesta = resumen + '\n\n🔗 Fuente: ' + link;
+          updateContext(texto, respuesta); return respuesta;
+        }
+      }
+      // 6. Fallback con contexto
+      if (conversationContext.length > 0 && !contexto.isFactual) {
+        const last = conversationContext[conversationContext.length-1];
+        const fb = 'Entiendo que hablábamos de "' + last.user.substring(0,30) + '". ¿Querés que profundice en algo específico?';
+        updateContext(texto, fb); return fb;
       }
       const fb = random(getFallbacks()); updateContext(texto, fb); return fb;
     }
@@ -651,27 +729,13 @@
           if (arr && arr.length) return random(arr);
         }
       }
-      if (t.includes('programa') || t.includes('código') || t.includes('html')) {
-        const arr = codeKnowledge.calculadora;
-        return arr ? random(arr) : null;
-      }
       return null;
     }
 
     function updateContext(userText, assistantText) {
       if (privacyMode) return;
       conversationContext.push({ user: userText, assistant: assistantText });
-      if (conversationContext.length > 5) conversationContext.shift();
-    }
-    function getContextualQuery(text) {
-      const lower = text.toLowerCase().trim();
-      const words = ['eso','ese','esa','lo','la','esto','más','explícame','cómo','y','por qué','contame más','ampliá'];
-      if (words.some(w => lower.includes(w)) && conversationContext.length) {
-        const last = conversationContext[conversationContext.length-1];
-        const topic = last.user.replace(/[?¿.,]/g,'').split(' ').slice(0,4).join(' ');
-        return topic + ' ' + text;
-      }
-      return text;
+      if (conversationContext.length > 10) conversationContext.shift();
     }
 
     function showMessages() { emptyState.style.display = 'none'; messagesEl.style.display = 'block'; }
@@ -707,7 +771,7 @@
         addMessage(respuesta, 'assistant');
       } catch(e) {
         const typingRow = document.getElementById('typing-row'); if (typingRow) typingRow.remove();
-        addMessage('Perdón, hubo un error interno. ¿Probás de nuevo?', 'assistant');
+        addMessage('Perdón, hubo un error. ¿Probás de nuevo?', 'assistant');
       }
       isTyping = false; sendBtn.disabled = (textarea.value.trim() === '');
     }
